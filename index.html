@@ -647,6 +647,20 @@ body.dark .confirm-delete{background:#dc2626}
 .debt-stat-label{font-size:9px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.04em}
 .debt-stat-val{font-size:13px;font-weight:600;margin-top:2px}
 .debt-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+/* Debt installments */
+.debt-install-toggle{font-size:11px;padding:4px 11px;border-radius:6px;border:0.5px solid var(--border);background:transparent;cursor:pointer;color:var(--sub);white-space:nowrap;transition:all .15s}
+.debt-install-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.debt-installment-body{display:none;margin-top:6px}
+.debt-installment-body.open{display:block}
+.debt-installment-row{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:0.5px solid var(--border)}
+.debt-installment-row:last-child{border-bottom:none}
+.debt-installment-row.paid .debt-inst-num,.debt-installment-row.paid .debt-inst-label,.debt-installment-row.paid .debt-inst-due,.debt-installment-row.paid .debt-inst-amt{opacity:.45;text-decoration:line-through}
+.debt-installment-row.overdue .debt-inst-num,.debt-installment-row.overdue .debt-inst-due{color:var(--amber)}
+.debt-inst-check{width:14px;height:14px;cursor:pointer;accent-color:var(--accent);flex-shrink:0}
+.debt-inst-num{font-size:11px;font-weight:500;color:var(--text);min-width:60px}
+.debt-inst-label{flex:1;font-size:10px;color:var(--amber)}
+.debt-inst-due{font-size:10px;color:var(--sub);min-width:38px;text-align:right}
+.debt-inst-amt{font-size:11px;font-weight:600;color:var(--accent);min-width:52px;text-align:right}
 /* Debt payment modal */
 #debtPayModal{position:fixed;inset:0;z-index:1100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);padding:1rem}
 .debt-pay-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.4rem;width:100%;max-width:380px;box-shadow:var(--shadow-md)}
@@ -1309,6 +1323,7 @@ body.dark .confirm-delete{background:#dc2626}
           <div><label id="dv-total-label">Valor total ($)</label><input id="dv-total" type="number" placeholder="0" inputmode="decimal"></div>
           <div><label id="dv-juros-label">Juros mensais (%)</label><input id="dv-juros" type="number" placeholder="0" step="0.1" inputmode="decimal"></div>
           <div><label id="dv-min-label">Pagamento mínimo ($)</label><input id="dv-min" type="number" placeholder="0" inputmode="decimal"></div>
+          <div><label id="dv-freq-label">Frequência</label><select id="dv-freq"><option value="monthly">Mensal</option><option value="biweekly">Quinzenal</option><option value="weekly">Semanal</option></select></div>
           <div><label id="dv-date-label">Data alvo (opcional)</label><input id="dv-date" type="date"></div>
           <div style="display:flex;align-items:flex-end"><button class="btn primary" style="width:100%" onclick="addDivida()" id="dv-add-btn">+ Adicionar dívida</button></div>
         </div>
@@ -1582,13 +1597,16 @@ const TRANSLATIONS = {
     dividas_form_title:'Nova dívida',
     dividas_name_label:'Nome', dividas_total_label:'Valor total ($)',
     dividas_juros_label:'Juros mensais (%)', dividas_min_label:'Pagamento mínimo ($)',
+    dividas_freq_label:'Frequência', dividas_freq_monthly:'Mensal', dividas_freq_biweekly:'Quinzenal', dividas_freq_weekly:'Semanal',
     dividas_date_label:'Data alvo (opcional)',
     dividas_add_btn:'+ Adicionar dívida',
     dividas_empty:'Nenhuma dívida cadastrada. Adicione sua primeira dívida acima.',
     dividas_remaining:'Restante', dividas_total_orig:'Dívida original',
     dividas_paid_pct:'quitado',
+    dividas_interest_per:'Juros/pgto', dividas_payments_min:'Pgtos (mín.)',
     dividas_interest_mo:'Juros/mês', dividas_months_min:'Meses (mín.)',
-    dividas_total_interest:'Juros total', dividas_suggested:'Sugestão/mês',
+    dividas_total_interest:'Juros total', dividas_suggested:'Sugestão/mês', dividas_suggested_per:'Sugestão/pgto',
+    dividas_inst_toggle:'Ver parcelas ▼', dividas_inst_progress:'parcelas pagas', dividas_installment:'Parcela', dividas_inst_overdue:'vencida',
     dividas_pay_btn:'Registrar pagamento', dividas_remove:'Remover',
     dividas_pay_modal_title:'Registrar pagamento',
     dividas_pay_amt_label:'Valor pago ($)',
@@ -1720,13 +1738,16 @@ const TRANSLATIONS = {
     dividas_form_title:'New debt',
     dividas_name_label:'Name', dividas_total_label:'Total amount ($)',
     dividas_juros_label:'Monthly interest (%)', dividas_min_label:'Minimum payment ($)',
+    dividas_freq_label:'Frequency', dividas_freq_monthly:'Monthly', dividas_freq_biweekly:'Biweekly', dividas_freq_weekly:'Weekly',
     dividas_date_label:'Target date (optional)',
     dividas_add_btn:'+ Add debt',
     dividas_empty:'No debts added yet. Add your first debt above.',
     dividas_remaining:'Remaining', dividas_total_orig:'Original debt',
     dividas_paid_pct:'paid off',
+    dividas_interest_per:'Interest/pmt', dividas_payments_min:'Pmts (min.)',
     dividas_interest_mo:'Interest/mo', dividas_months_min:'Months (min.)',
-    dividas_total_interest:'Total interest', dividas_suggested:'Suggested/mo',
+    dividas_total_interest:'Total interest', dividas_suggested:'Suggested/mo', dividas_suggested_per:'Suggested/pmt',
+    dividas_inst_toggle:'See installments ▼', dividas_inst_progress:'installments paid', dividas_installment:'Installment', dividas_inst_overdue:'overdue',
     dividas_pay_btn:'Register payment', dividas_remove:'Remove',
     dividas_pay_modal_title:'Register payment',
     dividas_pay_amt_label:'Amount paid ($)',
@@ -1814,8 +1835,10 @@ function applyLang(){
   // dividas form labels
   const _dfl=[['dv-name-label','dividas_name_label'],['dv-total-label','dividas_total_label'],
     ['dv-juros-label','dividas_juros_label'],['dv-min-label','dividas_min_label'],
-    ['dv-date-label','dividas_date_label']];
+    ['dv-freq-label','dividas_freq_label'],['dv-date-label','dividas_date_label']];
   _dfl.forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=t(key);});
+  const dvFreq=document.getElementById('dv-freq');
+  if(dvFreq){dvFreq.options[0].text=t('dividas_freq_monthly');dvFreq.options[1].text=t('dividas_freq_biweekly');dvFreq.options[2].text=t('dividas_freq_weekly');}
   const dvAddBtn=document.getElementById('dv-add-btn');if(dvAddBtn)dvAddBtn.textContent=t('dividas_add_btn');
   const dvToggle=document.getElementById('dividasToggleLabel');if(dvToggle)dvToggle.textContent=t('dividas_form_title');
   // Drawer
@@ -2043,7 +2066,9 @@ async function loadFromSupabase(){
   dividas = (dv.data||[]).map(x=>({
     id:x.id, name:x.name, total:x.total, remaining:x.remaining,
     juros:x.juros||0, min_payment:x.min_payment||0,
-    target_date:x.target_date||null, payments:x.payments||[]
+    frequencia:x.frequencia||'monthly',
+    target_date:x.target_date||null, payments:x.payments||[],
+    parcelas:x.parcelas||[]
   }));
   // load initial balance from localStorage per user
   const saved=localStorage.getItem('ib_'+_user.id);
@@ -3954,8 +3979,10 @@ async function saveDivida(d){
     id:d.id, user_id:_user.id, name:d.name,
     total:d.total, remaining:d.remaining,
     juros:d.juros, min_payment:d.min_payment,
+    frequencia:d.frequencia||'monthly',
     target_date:d.target_date||null,
-    payments:d.payments||[]
+    payments:d.payments||[],
+    parcelas:d.parcelas||[]
   },{onConflict:'id'});
   if(error) console.error('saveDivida error:',error);
 }
@@ -3965,6 +3992,7 @@ async function deleteDividaDB(id){
   if(error) console.error('deleteDivida error:',error);
 }
 function buildDividas(){
+  const openIds=dividas.filter(d=>document.getElementById('debt-inst-body-'+d.id)?.classList.contains('open')).map(d=>d.id);
   const list=document.getElementById('dividasList');
   if(!list) return;
   if(!dividas.length){
@@ -3975,29 +4003,34 @@ function buildDividas(){
   dividas.forEach(d=>{
     const paidTotal=d.total-d.remaining;
     const pct=Math.min(100,Math.round((paidTotal/d.total)*100));
-    const r=d.juros/100;
-    const interestMo=d.remaining*r;
-    let monthsMin=Infinity,totalInterest=0;
+    const freq=d.frequencia||'monthly';
+    const periodDays=freq==='weekly'?7:freq==='biweekly'?14:30;
+    const monthlyR=(d.juros||0)/100;
+    const periodR=freq==='monthly'?monthlyR:freq==='biweekly'?monthlyR/2:monthlyR*12/52;
+    const interestPerPeriod=Math.round(d.remaining*periodR*100)/100;
+    let periodsMin=Infinity,totalInterest=0;
     if(d.min_payment>0){
-      if(d.juros===0){monthsMin=Math.ceil(d.remaining/d.min_payment);totalInterest=0;}
-      else if(d.min_payment>interestMo){
-        monthsMin=Math.ceil(-Math.log(1-d.remaining*r/d.min_payment)/Math.log(1+r));
-        totalInterest=Math.round(d.min_payment*monthsMin-d.remaining);
-      } else {monthsMin=Infinity;totalInterest=Infinity;}
+      if(d.juros===0){periodsMin=Math.ceil(d.remaining/d.min_payment);totalInterest=0;}
+      else if(d.min_payment>interestPerPeriod){
+        periodsMin=Math.ceil(-Math.log(1-d.remaining*periodR/d.min_payment)/Math.log(1+periodR));
+        totalInterest=Math.round(d.min_payment*periodsMin-d.remaining);
+      } else {periodsMin=Infinity;totalInterest=Infinity;}
     }
     let suggested=0;
     if(d.target_date){
       const td=new Date(d.target_date);
-      const mo=Math.max(1,Math.round((td-new Date())/(30.44*24*3600*1000)));
-      if(d.juros===0) suggested=Math.ceil(d.remaining/mo);
-      else suggested=Math.ceil(d.remaining*r/(1-Math.pow(1+r,-mo)));
+      const daysLeft=Math.max(1,Math.round((td-new Date())/86400000));
+      const periodsLeft=Math.max(1,Math.round(daysLeft/periodDays));
+      if(d.juros===0) suggested=Math.ceil(d.remaining/periodsLeft);
+      else suggested=Math.ceil(d.remaining*periodR/(1-Math.pow(1+periodR,-periodsLeft)));
     }
+    const freqLabel=t('dividas_freq_'+freq);
     const card=document.createElement('div');
     card.className='debt-card';
     card.innerHTML=`
       <div class="debt-header">
         <div>
-          <div class="debt-name">${d.name}</div>
+          <div class="debt-name">${d.name} <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:var(--accent-dim);color:var(--accent);font-weight:500;margin-left:4px">${freqLabel}</span></div>
           <div class="debt-remaining">${fmt(d.remaining)}</div>
         </div>
         <div style="text-align:right">
@@ -4008,16 +4041,23 @@ function buildDividas(){
       <div class="debt-bar-bg"><div class="debt-bar-fill" style="width:${100-pct}%"></div></div>
       <div style="font-size:10px;color:var(--sub);text-align:right;margin-bottom:6px">${t('dividas_remaining')}: ${fmt(d.remaining)}</div>
       <div class="debt-stats">
-        <div class="debt-stat"><div class="debt-stat-label">${t('dividas_interest_mo')}</div><div class="debt-stat-val" style="color:var(--red)">${fmt(interestMo)}</div></div>
-        <div class="debt-stat"><div class="debt-stat-label">${t('dividas_months_min')}</div><div class="debt-stat-val">${isFinite(monthsMin)?monthsMin:'∞'}</div></div>
+        <div class="debt-stat"><div class="debt-stat-label">${t('dividas_interest_per')}</div><div class="debt-stat-val" style="color:var(--red)">${fmt(interestPerPeriod)}</div></div>
+        <div class="debt-stat"><div class="debt-stat-label">${t('dividas_payments_min')}</div><div class="debt-stat-val">${isFinite(periodsMin)?periodsMin:'∞'}</div></div>
         <div class="debt-stat"><div class="debt-stat-label">${t('dividas_total_interest')}</div><div class="debt-stat-val" style="color:var(--red)">${isFinite(totalInterest)?fmt(totalInterest):'∞'}</div></div>
-        ${suggested?`<div class="debt-stat"><div class="debt-stat-label">${t('dividas_suggested')}</div><div class="debt-stat-val" style="color:var(--accent)">${fmt(suggested)}</div></div>`:''}
+        ${suggested?`<div class="debt-stat"><div class="debt-stat-label">${t('dividas_suggested_per')}</div><div class="debt-stat-val" style="color:var(--accent)">${fmt(suggested)}</div></div>`:''}
       </div>
+      ${buildDebtInstallmentsHTML(d)}
       <div class="debt-actions">
         <button class="btn primary" style="font-size:12px;padding:5px 14px" onclick="openDebtPayModal('${d.id}')">${t('dividas_pay_btn')}</button>
         <button class="btn" style="font-size:12px;padding:5px 14px" onclick="removeDivida('${d.id}')">${t('dividas_remove')}</button>
       </div>`;
     list.appendChild(card);
+  });
+  openIds.forEach(id=>{
+    const el=document.getElementById('debt-inst-body-'+id);
+    const btn=document.getElementById('debt-inst-toggle-'+id);
+    if(el) el.classList.add('open');
+    if(btn) btn.textContent=lang==='en'?'Hide ▲':'Ocultar ▲';
   });
 }
 function addDivida(){
@@ -4025,15 +4065,18 @@ function addDivida(){
   const total=parseFloat(document.getElementById('dv-total').value)||0;
   const juros=parseFloat(document.getElementById('dv-juros').value)||0;
   const min_payment=parseFloat(document.getElementById('dv-min').value)||0;
+  const frequencia=document.getElementById('dv-freq').value||'monthly';
   const target_date=document.getElementById('dv-date').value||null;
   if(!name||!total){alert(t('alert_fill_name_val'));return;}
-  const nd={id:newId(),name,total,remaining:total,juros,min_payment,target_date,payments:[]};
+  const nd={id:newId(),name,total,remaining:total,juros,min_payment,frequencia,target_date,payments:[],parcelas:[]};
+  nd.parcelas=generateDebtInstallments(nd);
   dividas.push(nd);
   saveDivida(nd);
   document.getElementById('dv-name').value='';
   document.getElementById('dv-total').value='';
   document.getElementById('dv-juros').value='';
   document.getElementById('dv-min').value='';
+  document.getElementById('dv-freq').value='monthly';
   document.getElementById('dv-date').value='';
   toggleForm('dividas',false);
   buildDividas();
@@ -4044,6 +4087,103 @@ function removeDivida(id){
   openConfirm(d.name,()=>{
     dividas=dividas.filter(x=>x.id!==id);
     deleteDividaDB(id);buildDividas();
+  });
+}
+
+function generateDebtInstallments(d){
+  if(!d.remaining||d.remaining<=0||!d.min_payment) return [];
+  const freq=d.frequencia||'monthly';
+  const periodDays=freq==='weekly'?7:freq==='biweekly'?14:30;
+  const monthlyR=(d.juros||0)/100;
+  const periodR=freq==='monthly'?monthlyR:freq==='biweekly'?monthlyR/2:monthlyR*12/52;
+  const minPay=d.min_payment;
+  const installments=[];
+  let remaining=d.remaining;
+  const today=new Date();today.setHours(0,0,0,0);
+  let i=1;
+  const MAX=240;
+  while(remaining>0.005&&i<=MAX){
+    const dueDate=new Date(today);
+    dueDate.setDate(today.getDate()+i*periodDays);
+    const interest=Math.round(remaining*periodR*100)/100;
+    const payment=Math.min(minPay,remaining+interest);
+    const principal=Math.max(0,Math.round((payment-interest)*100)/100);
+    remaining=Math.max(0,Math.round((remaining+interest-payment)*100)/100);
+    installments.push({num:i,due:dueDate.toISOString().split('T')[0],amount:Math.round(payment*100)/100,interest,principal,paid:false,paid_date:null});
+    i++;
+  }
+  return installments;
+}
+function buildDebtInstallmentsHTML(d){
+  let parcelas=d.parcelas||[];
+  if(!parcelas.length&&d.remaining>0&&d.min_payment>0){
+    parcelas=generateDebtInstallments(d);
+    d.parcelas=parcelas;
+    saveDivida(d);
+  }
+  if(!parcelas.length) return '';
+  const paidCount=parcelas.filter(p=>p.paid).length;
+  const pct=Math.round(parcelas.length>0?(paidCount/parcelas.length)*100:0);
+  const today=new Date();today.setHours(0,0,0,0);
+  const summary=lang==='en'
+    ?`${paidCount} of ${parcelas.length} ${t('dividas_inst_progress')}`
+    :`${paidCount} de ${parcelas.length} ${t('dividas_inst_progress')}`;
+  const rowsHTML=parcelas.map((p,i)=>{
+    const dueDate=new Date(p.due+'T00:00:00');
+    const isOverdue=!p.paid&&dueDate<today;
+    const dd=`${String(dueDate.getDate()).padStart(2,'0')}/${String(dueDate.getMonth()+1).padStart(2,'0')}`;
+    let rowCls='debt-installment-row';
+    if(p.paid) rowCls+=' paid';
+    else if(isOverdue) rowCls+=' overdue';
+    return `<div class="${rowCls}">
+      <input type="checkbox" class="debt-inst-check" ${p.paid?'checked':''} onclick="event.stopPropagation()" onchange="toggleDebtInstallment('${d.id}',${i})">
+      <span class="debt-inst-num">${t('dividas_installment')} ${p.num}</span>
+      <span class="debt-inst-label">${isOverdue?'⚠ '+t('dividas_inst_overdue'):''}</span>
+      <span class="debt-inst-due">${dd}</span>
+      <span class="debt-inst-amt">${fmt(p.amount)}</span>
+    </div>`;
+  }).join('');
+  return `<div style="margin-top:10px;border-top:0.5px solid var(--border);padding-top:10px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">
+      <span style="font-size:11px;color:var(--sub)">${summary}</span>
+      <button class="debt-install-toggle" id="debt-inst-toggle-${d.id}" onclick="toggleDebtInstallments('${d.id}')">${t('dividas_inst_toggle')}</button>
+    </div>
+    <div class="debt-bar-bg"><div class="debt-bar-fill" style="width:${pct}%;background:var(--accent)"></div></div>
+    <div class="debt-installment-body" id="debt-inst-body-${d.id}">
+      <div style="max-height:260px;overflow-y:auto;margin-top:8px">${rowsHTML}</div>
+    </div>
+  </div>`;
+}
+function toggleDebtInstallments(debtId){
+  const el=document.getElementById('debt-inst-body-'+debtId);
+  const btn=document.getElementById('debt-inst-toggle-'+debtId);
+  if(!el) return;
+  const open=el.classList.toggle('open');
+  if(btn) btn.textContent=open?(lang==='en'?'Hide ▲':'Ocultar ▲'):t('dividas_inst_toggle');
+}
+function toggleDebtInstallment(debtId,idx){
+  const d=dividas.find(x=>x.id===debtId);
+  if(!d) return;
+  if(!d.parcelas||!d.parcelas.length) d.parcelas=generateDebtInstallments(d);
+  const inst=d.parcelas[idx];
+  if(!inst) return;
+  const wasPaid=inst.paid;
+  inst.paid=!wasPaid;
+  inst.paid_date=inst.paid?new Date().toISOString():null;
+  if(inst.paid){
+    d.remaining=Math.max(0,Math.round((d.remaining-inst.principal)*100)/100);
+    d.payments.push({date:inst.paid_date,amount:inst.amount,interest:inst.interest,principal:inst.principal,installment_idx:idx});
+  } else {
+    d.remaining=Math.min(d.total,Math.round((d.remaining+inst.principal)*100)/100);
+    d.payments=d.payments.filter(p=>p.installment_idx!==idx);
+  }
+  const openIds=dividas.filter(x=>document.getElementById('debt-inst-body-'+x.id)?.classList.contains('open')).map(x=>x.id);
+  saveDivida(d);buildDividas();
+  openIds.forEach(id=>{
+    const el=document.getElementById('debt-inst-body-'+id);
+    const btn=document.getElementById('debt-inst-toggle-'+id);
+    if(el) el.classList.add('open');
+    if(btn) btn.textContent=lang==='en'?'Hide ▲':'Ocultar ▲';
   });
 }
 
