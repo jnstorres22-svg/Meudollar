@@ -628,24 +628,27 @@ body.dark .confirm-delete{background:#dc2626}
   /* Forms full width */
   .frow6{grid-template-columns:1fr 1fr!important}
 
-  /* Row: 2-row layout on mobile
-     Line 1: [name+badge]  [value]
-     Line 2: [day control] [action buttons]            */
+  /* Row: 2-line clean layout on mobile
+     Line 1: [nome + badge]          [valor bold]
+     Line 2: [texto "Todo Sexta"]    [🔒 🗑]
+     O div do dropdown de dia é ocultado — só mostra o texto descritivo */
   .row{
     grid-template-columns:1fr auto!important;
-    grid-template-rows:auto auto;
-    grid-template-areas:"rn rv" "rd ra"!important;
-    gap:4px 8px!important;
+    grid-template-rows:auto auto!important;
+    grid-template-areas:"rn rv" "rs ra"!important;
+    gap:2px 8px!important;
+    padding:12px 0!important;
+    align-items:start!important;
   }
-  .row > :nth-child(1){grid-area:rn;min-width:0}
-  .row > :nth-child(2){grid-area:rv;text-align:right;align-self:center}
-  .row > :nth-child(3){grid-area:rd;min-width:0}
-  .row > :nth-child(3) .sel-sm,
-  .row > :nth-child(3) .inp-sm,
-  .row > :nth-child(3) input{width:100%!important;min-width:0}
-  .row > :nth-child(3) > div{display:flex;gap:4px}
-  .row > :nth-child(3) > div .inp-sm{width:100%!important;min-width:0}
-  .row > :nth-child(4){grid-area:ra;display:flex;align-items:center;justify-content:flex-end;gap:4px}
+  /* Expande o primeiro filho (div wrapper) para que .rname e .rsub
+     virem grid items independentes e caiam em áreas diferentes */
+  .row > :first-child{display:contents}
+  .row .rname{grid-area:rn;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .row .rsub{grid-area:rs;min-width:0;margin-top:0}
+  .row .rval{grid-area:rv;text-align:right;font-weight:600!important;align-self:start;white-space:nowrap}
+  /* Esconde coluna de edição de dia no mobile */
+  .row > :nth-child(3){display:none!important}
+  .row .row-act{grid-area:ra;display:flex;align-items:center;justify-content:flex-end;gap:4px;align-self:end}
 
   /* Calendar smaller cells */
   .dc{min-height:52px;padding:3px 3px}
