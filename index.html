@@ -576,8 +576,54 @@ body.dark .confirm-delete{background:#dc2626}
 .rsub-edit{cursor:pointer;border-bottom:1px dotted var(--sub);display:inline;padding-bottom:1px}
 .rsub-edit:hover{opacity:.75}
 
-/* ── BILL PAYMENT ─────────────────────────────────────────────── */
-.row.bill-paid .rname,.row.bill-paid .rsub,.row.bill-paid .rval{opacity:.45}
+/* ── CALENDAR DAY PANEL ───────────────────────────────────────── */
+#calDayOverlay{position:fixed;inset:0;z-index:490;display:none}
+#calDayOverlay.open{display:block}
+#calDayPanel{
+  position:fixed;top:0;right:-340px;width:300px;height:100%;
+  background:var(--card);border-left:0.5px solid var(--border);
+  z-index:491;transition:right .25s ease;overflow-y:auto;
+  box-shadow:-8px 0 32px rgba(0,0,0,.12);
+  display:flex;flex-direction:column;
+}
+#calDayPanel.open{right:0}
+.cal-panel-header{
+  padding:1.1rem 1.2rem .8rem;border-bottom:0.5px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.cal-panel-title{font-size:14px;font-weight:600}
+.cal-panel-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--sub);padding:2px 6px;border-radius:6px}
+.cal-panel-close:hover{background:var(--panel)}
+.cal-panel-empty{padding:1.5rem 1.2rem;font-size:13px;color:var(--sub);text-align:center}
+.cal-pay-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 1.2rem;border-bottom:0.5px solid var(--border);gap:8px;
+}
+.cal-pay-row:last-child{border-bottom:none}
+.cal-pay-left{display:flex;align-items:flex-start;gap:8px;flex:1;min-width:0}
+.cal-pay-icon{font-size:16px;flex-shrink:0;margin-top:1px;width:20px;text-align:center}
+.cal-pay-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-pay-status{font-size:10px;margin-top:1px}
+.cal-pay-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.cal-mark-btn{font-size:11px;padding:3px 9px;border-radius:5px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--sub);white-space:nowrap;transition:all .15s}
+.cal-mark-btn:hover{border-color:var(--green);color:var(--green)}
+.cal-mark-btn.paid{border-color:var(--green);color:var(--green)}
+.cal-mark-btn.undo{border-color:var(--border);color:var(--sub);font-size:10px}
+/* Dot indicators on calendar cells */
+.cal-dots{display:flex;gap:2px;justify-content:flex-end;margin-top:2px;position:absolute;bottom:2px;right:4px}
+.cal-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.dc{position:relative}
+/* Mobile: bottom sheet */
+@media(max-width:640px){
+  #calDayPanel{
+    top:auto;right:0;bottom:-100%;left:0;width:100%;height:auto;
+    max-height:72vh;border-left:none;border-top:0.5px solid var(--border);
+    border-radius:16px 16px 0 0;transition:bottom .25s ease;
+  }
+  #calDayPanel.open{bottom:0;right:0}
+  #calDayOverlay{background:rgba(0,0,0,.35)}
+}
+/* ── BILL PAYMENT (kept for report) ──────────────────────────── */
 .icon-btn.pay-ok{color:var(--green)!important}
 /* ── META CHECKINS ────────────────────────────────────────────── */
 .checkin-toggle{font-size:11px;padding:4px 11px;border-radius:5px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--sub);margin-top:8px;transition:all .15s}
@@ -1367,6 +1413,16 @@ CREATE POLICY "dividas all" ON dividas
   </div>
 </div>
 
+<!-- CALENDAR DAY PANEL -->
+<div id="calDayOverlay" onclick="closeCalDayPanel()"></div>
+<div id="calDayPanel">
+  <div class="cal-panel-header">
+    <span class="cal-panel-title" id="calDayPanelTitle"></span>
+    <button class="cal-panel-close" onclick="closeCalDayPanel()">✕</button>
+  </div>
+  <div id="calDayPanelBody"></div>
+</div>
+
 <!-- DEBT PAYMENT MODAL -->
 <div id="debtPayModal" style="display:none">
   <div class="debt-pay-card">
@@ -1467,6 +1523,7 @@ const TRANSLATIONS = {
     week_summary_in:'Entradas', week_summary_out:'Saídas', week_summary_margin:'Margem', week_summary_balance:'Saldo acumulado',
     week_bills_title:'Contas desta semana',
     cal_summary_in:'Entradas do mês', cal_summary_out:'Saídas do mês',
+    cal_no_bills:'Nenhuma conta neste dia.', cal_mark_paid:'Marcar como pago', cal_undo_pay:'Desfazer', cal_overdue:'Vencida', cal_paid_on:'Pago em',
     days_short:['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
     days_long:['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
     months_long:['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
@@ -1613,6 +1670,7 @@ const TRANSLATIONS = {
     week_summary_in:'Income', week_summary_out:'Expenses', week_summary_margin:'Margin', week_summary_balance:'Running balance',
     week_bills_title:'Bills this week',
     cal_summary_in:'Month income', cal_summary_out:'Month expenses',
+    cal_no_bills:'No bills on this day.', cal_mark_paid:'Mark as paid', cal_undo_pay:'Undo', cal_overdue:'Overdue', cal_paid_on:'Paid on',
     days_short:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
     days_long:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
     months_long:['January','February','March','April','May','June','July','August','September','October','November','December'],
@@ -2210,7 +2268,7 @@ function buildNotifBanner(){
       }
     }
     dates.forEach(date=>{
-      items.push({name:b.name,val:b.val,cat:b.cat||'outros',date,daysFromNow:Math.round((date-today)/86400000),paid:isBillPaidThisMonth(b)});
+      items.push({name:b.name,val:b.val,cat:b.cat||'outros',date,daysFromNow:Math.round((date-today)/86400000),paid:isBillPaidOnDay(b,date.getFullYear(),date.getMonth(),date.getDate())});
     });
   });
 
@@ -2514,21 +2572,16 @@ function renderBills(){
   }
 }
 function makeBillRow(b){
-  const isPaid=b.type!=='once'&&isBillPaidThisMonth(b);
-  const paidEntry=isPaid?(b.pagamentos||[]).find(p=>{const n=new Date();return p.month===n.getMonth()&&p.year===n.getFullYear();}):null;
-  const row=document.createElement('div');row.className='row'+(isPaid?' bill-paid':'');
+  const row=document.createElement('div');row.className='row';
   const tm={monthly:['bm',t('type_monthly')],weekly:['bw',t('type_weekly')],extra:['be',t('type_extra')],once:['bu',t('type_once')]};
   const [bc,bl]=tm[b.type]||['bm',t('type_monthly')];
   const dn=b.day===99?'último dia':'dia '+b.day;
   const dl=b.type==='once'?`${b.day}/${MS(b.month||4)}/${b.year||2026}`:(b.note||dn);
   const cat=CATS[b.cat||'outros'];
-  const paidLabel=paidEntry?` · <span style="color:var(--green)">${t('bill_paid_prefix')} ${new Date(paidEntry.date).getDate()}/${new Date(paidEntry.date).getMonth()+1}</span>`:'';
-  const checkSVG=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
-  const circleSVG=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>`;
   row.innerHTML=`
     <div>
       <div class="rname" onclick="startInlineEdit(this,'bill','${b.id}')" title="${lang==='en'?'Click to edit name':'Clique para editar o nome'}" style="cursor:pointer">${b.name} <span class="badge ${bc}">${bl}</span></div>
-      <div class="rsub">${(!b.locked&&b.type!=='once')?`<span class="rsub-edit" onclick="openDayEditModal('bill','${b.id}')">${dl}</span>`:dl}${paidLabel} · ${cat.label}</div>
+      <div class="rsub">${(!b.locked&&b.type!=='once')?`<span class="rsub-edit" onclick="openDayEditModal('bill','${b.id}')">${dl}</span>`:dl} · ${cat.label}</div>
     </div>
     <div class="rval" onclick="startInlineEditVal(this,'bill','${b.id}')" title="${lang==='en'?'Click to edit value':'Clique para editar o valor'}">${fmt(b.val)}</div>
     <div>
@@ -2538,7 +2591,6 @@ function makeBillRow(b){
       }
     </div>
     <div class="row-act">
-      ${b.type!=='once'?`<button class="icon-btn${isPaid?' pay-ok':''}" onclick="${isPaid?'unPayBill':'payBill'}('${b.id}')" title="${isPaid?t('bill_unpay_title'):t('bill_pay_btn')}">${isPaid?checkSVG:circleSVG}</button>`:''}
       <button class="icon-btn${b.locked?' lock-on':''}" onclick="toggleLock('${b.id}')" title="${b.locked?'Desbloquear':'Bloquear'}">${b.locked?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`}</button>
       ${!b.locked?`<button class="icon-btn del" onclick="removeBill('${b.id}')" title="Remover"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>`:''}
     </div>`;
@@ -2750,6 +2802,20 @@ function buildCal(){
     if(evs.length>3){const m2=document.createElement('div');m2.className='ev';m2.textContent='+'+(evs.length-3)+' mais';evc.appendChild(m2);}
     cell.appendChild(evc);
     const db=document.createElement('div');db.className='db'+(bal<0?' neg':'');db.textContent=fmt(bal);cell.appendChild(db);
+    if(inRange){
+      const billsDue=getBillsDueOnDay(calYear,calMonth,d);
+      if(billsDue.length){
+        const dotsEl=document.createElement('div');dotsEl.className='cal-dots';
+        billsDue.slice(0,3).forEach(b=>{
+          const dot=document.createElement('div');dot.className='cal-dot';
+          dot.style.background=isBillPaidOnDay(b,calYear,calMonth,d)?'var(--green)':'var(--amber)';
+          dotsEl.appendChild(dot);
+        });
+        cell.appendChild(dotsEl);
+        cell.style.cursor='pointer';
+        cell.addEventListener('click',((yr,mo,dy)=>()=>openCalDayPanel(yr,mo,dy))(calYear,calMonth,d));
+      }
+    }
     cg.appendChild(cell);
   }
   grid.appendChild(cg);
@@ -2803,21 +2869,6 @@ function buildMetas(){
       alertMsg=t('meta_warn_risk_msg')(fmt(sobraSem),MN(altDate.getMonth()),altDate.getFullYear(),fmt(Math.round(sobraSem*weeksLeft)));
     }
 
-    // build weekly schedule — find next Friday from today
-    const schedule=[];
-    let acc=saved;
-    // Find next friday
-    const nextFri=new Date(today);
-    const daysToFri=(5-nextFri.getDay()+7)%7||7;
-    nextFri.setDate(nextFri.getDate()+daysToFri);
-    for(let w=1;w<=weeksLeft&&acc<meta.val;w++){
-      const wdate=new Date(nextFri);wdate.setDate(nextFri.getDate()+(w-1)*7);
-      const deposit=Math.min(needPerWeek,meta.val-acc);
-      acc+=deposit;
-      const hit=acc>=meta.val;
-      schedule.push({w,date:wdate,deposit,acc:Math.min(acc,meta.val),hit});
-    }
-
     const card=document.createElement('div');
     card.className='goal-card'+(meta.done?' done':'');
     card.innerHTML=`
@@ -2859,42 +2910,12 @@ function buildMetas(){
 
       ${alertMsg?`<div style="padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:10px;background:${sc==='gs-ok'?'#EAF3DE':sc==='gs-warn'?'#FAEEDA':'#FCEBEB'};color:${sc==='gs-ok'?'#27500A':sc==='gs-warn'?'#633806':'#8B1A1A'}">${alertMsg}</div>`:''}
 
-      ${!meta.done&&schedule.length?`
-      <div style="margin-bottom:10px">
-        <div style="font-size:12px;font-weight:500;color:#555;margin-bottom:8px">${t('meta_schedule_title')}</div>
-        <div style="max-height:240px;overflow-y:auto;border-radius:8px;border:0.5px solid #e0e0e0">
-          <table style="width:100%;border-collapse:collapse;font-size:12px">
-            <thead><tr style="background:#f5f5f2;position:sticky;top:0">
-              <th style="padding:6px 8px;text-align:left;font-weight:500;color:#888;border-bottom:0.5px solid #e0e0e0">${t('meta_sched_week')}</th>
-              <th style="padding:6px 8px;text-align:left;font-weight:500;color:#888;border-bottom:0.5px solid #e0e0e0">${t('meta_sched_date')}</th>
-              <th style="padding:6px 8px;text-align:right;font-weight:500;color:#888;border-bottom:0.5px solid #e0e0e0">${t('meta_sched_deposit')}</th>
-              <th style="padding:6px 8px;text-align:right;font-weight:500;color:#888;border-bottom:0.5px solid #e0e0e0">${t('meta_sched_acc')}</th>
-              <th style="padding:6px 8px;text-align:center;font-weight:500;color:#888;border-bottom:0.5px solid #e0e0e0"></th>
-            </tr></thead>
-            <tbody>${schedule.map(s=>{
-              const isToday=s.date>=new Date()&&s.w===1;
-              return`<tr style="${s.hit?'background:#EAF3DE;font-weight:500':isToday?'background:#E6F1FB':''}">
-                <td style="padding:6px 8px;border-bottom:0.5px solid #f0f0f0;color:#888">${s.w}</td>
-                <td style="padding:6px 8px;border-bottom:0.5px solid #f0f0f0">
-                  <span style="font-weight:500">${s.date.getMonth()+1}/${s.date.getDate()}/${s.date.getFullYear()}</span>
-                  <span style="font-size:10px;color:#888;margin-left:4px">${DAYS_SHORT(s.date.getDay())}</span>
-                  ${isToday?`<span style="font-size:10px;background:#185FA5;color:white;border-radius:4px;padding:1px 5px;margin-left:4px">${t('meta_today_badge')}</span>`:''}
-                </td>
-                <td style="padding:6px 8px;border-bottom:0.5px solid #f0f0f0;text-align:right;color:#185FA5;font-weight:500">${fmt(s.deposit)}</td>
-                <td style="padding:6px 8px;border-bottom:0.5px solid #f0f0f0;text-align:right;color:#3B6D11">${fmt(s.acc)}</td>
-                <td style="padding:6px 8px;border-bottom:0.5px solid #f0f0f0;text-align:center">${s.hit?t('meta_goal_badge'):''}</td>
-              </tr>`;
-            }).join('')}
-            </tbody>
-          </table>
-        </div>
-      </div>`:''}
+      ${buildMetaCheckinsHTML(meta)}
 
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
         ${!meta.done?`<button class="btn success" style="font-size:12px;padding:5px 12px" onclick="completeMeta('${meta.id}')">${t('meta_complete_btn')}</button>`:''}
         <button class="btn" style="font-size:12px;padding:5px 12px" onclick="removeMeta('${meta.id}')">${t('meta_remove_btn')}</button>
-      </div>
-      ${buildMetaCheckinsHTML(meta)}`;
+      </div>`;
     list.appendChild(card);
   });
 }
@@ -3789,21 +3810,88 @@ function isBillPaidThisMonth(b){
   const n=new Date();
   return (b.pagamentos||[]).some(p=>p.month===n.getMonth()&&p.year===n.getFullYear()&&p.paid);
 }
-function payBill(id){
-  const b=bills.find(x=>x.id===id);
-  if(!b) return;
-  const n=new Date();
-  if(!b.pagamentos) b.pagamentos=[];
-  b.pagamentos=b.pagamentos.filter(p=>!(p.month===n.getMonth()&&p.year===n.getFullYear()));
-  b.pagamentos.push({month:n.getMonth(),year:n.getFullYear(),paid:true,date:n.toISOString()});
-  saveBill(b);renderBills();buildNotifBanner();
+function isBillPaidOnDay(b,year,month,day){
+  return (b.pagamentos||[]).some(p=>p.year===year&&p.month===month&&p.day===day&&p.paid);
 }
-function unPayBill(id){
-  const b=bills.find(x=>x.id===id);
+function getBillsDueOnDay(year,month,day){
+  const date=new Date(year,month,day);
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  return bills.filter(b=>{
+    if(b.metaId) return false;
+    if(b.type==='monthly'||b.type==='extra'){
+      const bd=b.day===99?daysInMonth:b.day;
+      return day===bd;
+    }
+    if(b.type==='weekly') return date.getDay()===b.day;
+    if(b.type==='once') return b.year===year&&b.month===month&&b.day===day;
+    return false;
+  });
+}
+function payBillOnDay(billId,year,month,day){
+  const b=bills.find(x=>x.id===billId);
   if(!b) return;
-  const n=new Date();
-  b.pagamentos=(b.pagamentos||[]).filter(p=>!(p.month===n.getMonth()&&p.year===n.getFullYear()));
-  saveBill(b);renderBills();buildNotifBanner();
+  if(!b.pagamentos) b.pagamentos=[];
+  b.pagamentos=b.pagamentos.filter(p=>!(p.year===year&&p.month===month&&p.day===day));
+  b.pagamentos.push({year,month,day,paid:true,paid_date:new Date().toISOString()});
+  saveBill(b);
+  if(_calDayOpen) renderCalDayPanel(_calDayOpen.year,_calDayOpen.month,_calDayOpen.day);
+  buildCal();buildNotifBanner();
+}
+function unPayBillOnDay(billId,year,month,day){
+  const b=bills.find(x=>x.id===billId);
+  if(!b) return;
+  b.pagamentos=(b.pagamentos||[]).filter(p=>!(p.year===year&&p.month===month&&p.day===day));
+  saveBill(b);
+  if(_calDayOpen) renderCalDayPanel(_calDayOpen.year,_calDayOpen.month,_calDayOpen.day);
+  buildCal();buildNotifBanner();
+}
+let _calDayOpen=null;
+function openCalDayPanel(year,month,day){
+  _calDayOpen={year,month,day};
+  const mn=t('months_short');
+  document.getElementById('calDayPanelTitle').textContent=`${day} ${mn[month]}`;
+  renderCalDayPanel(year,month,day);
+  document.getElementById('calDayOverlay').classList.add('open');
+  document.getElementById('calDayPanel').classList.add('open');
+}
+function closeCalDayPanel(){
+  document.getElementById('calDayOverlay').classList.remove('open');
+  document.getElementById('calDayPanel').classList.remove('open');
+  _calDayOpen=null;
+}
+function renderCalDayPanel(year,month,day){
+  const body=document.getElementById('calDayPanelBody');
+  if(!body) return;
+  const billsDue=getBillsDueOnDay(year,month,day);
+  if(!billsDue.length){
+    body.innerHTML=`<div class="cal-panel-empty">${t('cal_no_bills')}</div>`;
+    return;
+  }
+  const today=new Date();today.setHours(0,0,0,0);
+  const dateD=new Date(year,month,day);
+  const isOverdue=dateD<today;
+  body.innerHTML=billsDue.map(b=>{
+    const paid=isBillPaidOnDay(b,year,month,day);
+    const paidEntry=paid?(b.pagamentos||[]).find(p=>p.year===year&&p.month===month&&p.day===day):null;
+    const paidDateStr=paidEntry&&paidEntry.paid_date?new Date(paidEntry.paid_date).toLocaleDateString('pt-BR'):'';
+    let icon,statusText,iconColor;
+    if(paid){icon='✓';iconColor='var(--green)';statusText=`${t('cal_paid_on')} ${paidDateStr}`;}
+    else if(isOverdue){icon='⚠';iconColor='var(--amber)';statusText=t('cal_overdue');}
+    else{icon='○';iconColor='var(--sub)';statusText='';}
+    return `<div class="cal-pay-row">
+      <div class="cal-pay-left">
+        <span class="cal-pay-icon" style="color:${iconColor}">${icon}</span>
+        <div>
+          <div class="cal-pay-name">${b.name}</div>
+          ${statusText?`<div class="cal-pay-status" style="color:${iconColor}">${statusText}</div>`:''}
+        </div>
+      </div>
+      <div class="cal-pay-right">
+        <span style="font-size:12px;font-weight:500;color:var(--red)">-${fmt(b.val)}</span>
+        <button class="cal-mark-btn${paid?' paid':''}" onclick="${paid?`unPayBillOnDay('${b.id}',${year},${month},${day})`:`payBillOnDay('${b.id}',${year},${month},${day})`}">${paid?t('cal_undo_pay'):t('cal_mark_paid')}</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ── META CHECKINS ─────────────────────────────────────────────────
@@ -3812,56 +3900,77 @@ function generateMetaCheckins(meta){
   const targetDate=new Date(meta.year,meta.month,meta.day||28);
   const weeksLeft=Math.max(1,weeksBetween(today,targetDate));
   const needPerWeek=meta.needPerWeek||Math.ceil(meta.val/weeksLeft);
-  const nextFri=new Date(today);
-  const daysToFri=(5-nextFri.getDay()+7)%7||7;
-  nextFri.setDate(nextFri.getDate()+daysToFri);
+  const nextMon=new Date(today);
+  const daysToMon=(1-nextMon.getDay()+7)%7||7;
+  nextMon.setDate(nextMon.getDate()+daysToMon);
   const checkins=[];
   let acc=0;
   for(let w=1;w<=weeksLeft&&acc<meta.val;w++){
-    const wdate=new Date(nextFri);
-    wdate.setDate(nextFri.getDate()+(w-1)*7);
+    const wstart=new Date(nextMon);
+    wstart.setDate(nextMon.getDate()+(w-1)*7);
+    const wend=new Date(wstart);
+    wend.setDate(wstart.getDate()+6);
     const val=Math.min(needPerWeek,meta.val-acc);
     acc+=val;
-    checkins.push({week:w,date:wdate.toISOString().split('T')[0],val,done:false});
+    checkins.push({week:w,date:wstart.toISOString().split('T')[0],weekEnd:wend.toISOString().split('T')[0],val,done:false});
   }
   return checkins;
 }
+function getWeekRange(dateStr){
+  const d=new Date(dateStr+'T00:00:00');
+  const dow=d.getDay();
+  const mon=new Date(d);mon.setDate(d.getDate()-(dow===0?6:dow-1));
+  const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+  return [mon,sun];
+}
 function buildMetaCheckinsHTML(meta){
-  const checkins=meta.checkins||[];
+  let checkins=meta.checkins||[];
+  if(!checkins.length){
+    checkins=generateMetaCheckins(meta);
+  }
   if(!checkins.length) return '';
   const done=checkins.filter(c=>c.done);
   const savedCI=done.reduce((s,c)=>s+c.val,0);
-  const pct=Math.round((done.length/checkins.length)*100);
+  const totalCI=checkins.reduce((s,c)=>s+c.val,0);
+  const pct=Math.round(checkins.length>0?(done.length/checkins.length)*100:0);
   const isEN=lang==='en';
+  const pad=n=>String(n).padStart(2,'0');
   const rowsHTML=checkins.map((c,i)=>{
-    const d=new Date(c.date);
-    const ds=`${d.getDate()}/${d.getMonth()+1}`;
+    const [ws,we]=c.weekEnd?[new Date(c.date+'T00:00:00'),new Date(c.weekEnd+'T00:00:00')]:getWeekRange(c.date);
+    const fs=`${pad(ws.getDate())}/${pad(ws.getMonth()+1)}`;
+    const fe=`${pad(we.getDate())}/${pad(we.getMonth()+1)}`;
     return `<div class="checkin-row${c.done?' done':''}">
       <input type="checkbox" class="checkin-check" ${c.done?'checked':''} onchange="toggleMetaCheckin('${meta.id}',${i})">
-      <span class="checkin-label" style="flex:1">${t('meta_checkin_week')} ${c.week} &mdash; ${ds}</span>
+      <span class="checkin-label" style="flex:1">${t('meta_checkin_week')} ${c.week} <span style="color:var(--sub);font-size:10px">${fs}–${fe}</span></span>
       <span style="color:var(--accent);font-weight:500;font-size:11px">${fmt(c.val)}</span>
     </div>`;
   }).join('');
-  return `<div style="margin-top:8px">
-    <button class="checkin-toggle" onclick="toggleCheckinBody('${meta.id}')">${t('meta_checkin_toggle')} (${done.length}/${checkins.length})</button>
+  const summary=isEN
+    ?`${done.length} of ${checkins.length} weeks done · ${fmt(savedCI)} saved of ${fmt(totalCI)}`
+    :`${done.length} de ${checkins.length} semanas concluídas · ${fmt(savedCI)} guardados de ${fmt(totalCI)}`;
+  return `<div style="margin-top:10px;border-top:0.5px solid var(--border);padding-top:10px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">
+      <span style="font-size:11px;color:var(--sub)">${summary}</span>
+      <button class="checkin-toggle" id="checkin-toggle-${meta.id}" onclick="toggleCheckinBody('${meta.id}')">${isEN?'See weeks ▼':'Ver semanas ▼'}</button>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:var(--accent)"></div></div>
     <div class="checkin-body" id="checkin-body-${meta.id}">
-      <div class="checkin-summary">
-        <span><b>${done.length}</b> ${t('meta_checkin_progress')}</span>
-        <span style="color:var(--green)">${t('meta_checkin_saved')}: <b>${fmt(savedCI)}</b></span>
-        <span>${pct}%</span>
-      </div>
-      <div class="bar-bg" style="margin:6px 0"><div class="bar-fill" style="width:${pct}%;background:var(--accent)"></div></div>
-      <div style="max-height:200px;overflow-y:auto;margin-top:6px">${rowsHTML}</div>
+      <div style="max-height:220px;overflow-y:auto;margin-top:8px">${rowsHTML}</div>
     </div>
   </div>`;
 }
 function toggleCheckinBody(metaId){
   const el=document.getElementById('checkin-body-'+metaId);
-  if(el) el.classList.toggle('open');
+  const btn=document.getElementById('checkin-toggle-'+metaId);
+  if(!el) return;
+  const open=el.classList.toggle('open');
+  if(btn){const isEN=lang==='en';btn.textContent=open?(isEN?'Hide ▲':'Ocultar ▲'):(isEN?'See weeks ▼':'Ver semanas ▼');}
 }
 function toggleMetaCheckin(metaId,weekIdx){
   const meta=metas.find(x=>x.id===metaId);
-  if(!meta||!meta.checkins||meta.checkins[weekIdx]===undefined) return;
+  if(!meta) return;
+  if(!meta.checkins||!meta.checkins.length) meta.checkins=generateMetaCheckins(meta);
+  if(meta.checkins[weekIdx]===undefined) return;
   meta.checkins[weekIdx].done=!meta.checkins[weekIdx].done;
   saveMeta(meta);buildMetas();
 }
