@@ -58,8 +58,8 @@ body.dark{
   --cal-pur-bg:#12091e;--cal-pur-bdr:#2a1a3a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg);padding:0;transition:background .2s,color .2s}
-.wrap{max-width:1100px;margin:0 auto;padding:1.5rem 1.25rem 2rem}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg);padding:0;transition:background .2s,color .2s;overflow-x:hidden}
+.wrap{max-width:1100px;margin:0 auto;padding:1.5rem 1.25rem 2rem;overflow-x:hidden}
 .header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 h1{font-size:20px;font-weight:700;letter-spacing:-.4px}
 .sub{color:var(--sub);font-size:12px;margin-bottom:.75rem;letter-spacing:.01em}
@@ -616,14 +616,22 @@ body.dark .confirm-delete{background:#dc2626}
   /* Content padding */
   .sec{padding-top:4px}
 
-  /* Cards 2 columns */
-  .cards{grid-template-columns:1fr 1fr!important}
-  .card{padding:.7rem .8rem}
-  .card-val{font-size:17px}
+  /* Cards: 2×2 grid, no overflow */
+  .cards{grid-template-columns:1fr 1fr!important;gap:8px!important;width:100%}
+  .card{padding:12px!important;min-width:0;overflow:hidden}
+  .card-label{font-size:10px!important;word-break:break-word;white-space:normal;line-height:1.3}
+  .card-val{font-size:18px!important}
+
+  /* Period row: wraps so buttons never overflow */
+  .period-row{flex-wrap:wrap;gap:6px!important}
 
   /* Forms full width */
   .frow6{grid-template-columns:1fr 1fr!important}
-  .row{grid-template-columns:1fr 72px 36px!important;gap:4px}
+  /* Row: 4 cols, all shrunk to fit mobile screen */
+  .row{grid-template-columns:1fr 60px 36px 60px!important;gap:3px}
+  .row > *{min-width:0}
+  .rval{font-size:12px!important}
+  .row-act{gap:2px!important}
 
   /* Calendar smaller cells */
   .dc{min-height:52px;padding:3px 3px}
@@ -646,9 +654,9 @@ body.dark .confirm-delete{background:#dc2626}
   .frow{gap:12px!important}
   .panel .frow6 > div{margin-bottom:2px}
 
-  /* Inline row inputs: slightly bigger touch target */
-  .inp-sm{font-size:16px!important;padding:6px 6px!important;height:36px}
-  .sel-sm{font-size:16px!important;padding:5px 4px!important}
+  /* Inline row inputs: fit within their grid column */
+  .inp-sm{font-size:16px!important;padding:6px 4px!important;height:36px;width:100%!important;min-width:0}
+  .sel-sm{font-size:16px!important;padding:5px 2px!important;width:100%!important;min-width:0}
 
   /* Wizard field spacing */
   .ob-field{margin-bottom:20px!important}
@@ -1048,7 +1056,7 @@ body.dark .confirm-delete{background:#dc2626}
 </header>
 
 <div class="wrap">
-  <div class="sub">May 11, 2026 — December 31, 2028 &nbsp;·&nbsp; Starting balance: $0</div>
+  <div class="sub">Saldo inicial: $0</div>
 
   <!-- WEEK NOTIFICATIONS BANNER -->
   <div class="notif-banner" id="notifBanner">
@@ -1379,7 +1387,7 @@ const TRANSLATIONS = {
     subtitle_balance:'Saldo inicial:',
     // Sub start/end
     sub_period_label:'',
-    starting_balance_label:'Starting balance:',
+    starting_balance_label:'Saldo inicial:',
   },
   en: {
     tab_renda:'Income', tab_bills:'Expenses', tab_semana:'Week',
