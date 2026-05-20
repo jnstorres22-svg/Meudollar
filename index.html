@@ -561,6 +561,21 @@ body.dark .confirm-delete{background:#dc2626}
 .drawer-theme{display:flex;align-items:center;justify-content:space-between}
 .drawer-theme span{font-size:13px;color:var(--text)}
 
+/* Day edit bottom sheet */
+#dayEditModal{position:fixed;inset:0;z-index:1100;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(3px)}
+.day-edit-overlay{position:absolute;inset:0}
+.day-edit-sheet{position:relative;background:var(--card);border:.5px solid var(--border);border-radius:16px 16px 0 0;padding:1.2rem 1.2rem calc(1.2rem + env(safe-area-inset-bottom));width:100%;max-width:480px;animation:slideUp .22s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.day-edit-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.day-edit-title{font-size:14px;font-weight:600;color:var(--text)}
+.day-edit-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--sub);padding:2px 6px;border-radius:6px;line-height:1}
+.day-edit-body{margin-bottom:.8rem}
+.day-edit-body label{font-size:11px;font-weight:500;color:var(--sub);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.day-edit-body select,.day-edit-body input{width:100%;font-size:16px;padding:10px 12px;border-radius:8px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);outline:none;box-sizing:border-box}
+.day-edit-save{width:100%;padding:13px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+.rsub-edit{cursor:pointer;border-bottom:1px dotted var(--sub);display:inline;padding-bottom:1px}
+.rsub-edit:hover{opacity:.75}
+
 .app-header{
   background:var(--card);border-bottom:1px solid var(--border);
   position:sticky;top:0;z-index:100;
@@ -1263,6 +1278,19 @@ body.dark .confirm-delete{background:#dc2626}
       <button class="btn primary" onclick="buildRelatorio()" data-i18n="rep_update">Atualizar</button>
     </div>
     <div id="relatorioContent"></div>
+  </div>
+</div>
+
+<!-- DAY EDIT BOTTOM SHEET -->
+<div id="dayEditModal" style="display:none">
+  <div class="day-edit-overlay" onclick="closeDayEditModal()"></div>
+  <div class="day-edit-sheet">
+    <div class="day-edit-header">
+      <span class="day-edit-title" id="dayEditTitle">Editar agenda</span>
+      <button class="day-edit-close" onclick="closeDayEditModal()">✕</button>
+    </div>
+    <div id="dayEditBody" class="day-edit-body"></div>
+    <button class="day-edit-save" onclick="saveDayEdit()">Confirmar</button>
   </div>
 </div>
 
@@ -2202,7 +2230,7 @@ function makeRendaRow(r){
   row.innerHTML=`
     <div>
       <div class="rname" onclick="startInlineEdit(this,'renda','${r.id}')" title="${lang==='en'?'Click to edit name':'Clique para editar o nome'}" style="cursor:pointer">${r.name} <span class="badge ${bc}">${bl}</span></div>
-      <div class="rsub">${dl}</div>
+      <div class="rsub">${(!r.locked&&r.type!=='once')?`<span class="rsub-edit" onclick="openDayEditModal('renda','${r.id}')">${dl}</span>`:dl}</div>
     </div>
     <div class="rval" onclick="startInlineEditVal(this,'renda','${r.id}')" title="${lang==='en'?'Click to edit value':'Clique para editar o valor'}">${fmt(r.val)}</div>
     <div>
@@ -2308,7 +2336,7 @@ function makeBillRow(b){
   row.innerHTML=`
     <div>
       <div class="rname" onclick="startInlineEdit(this,'bill','${b.id}')" title="${lang==='en'?'Click to edit name':'Clique para editar o nome'}" style="cursor:pointer">${b.name} <span class="badge ${bc}">${bl}</span></div>
-      <div class="rsub">${dl} · ${cat.label}</div>
+      <div class="rsub">${(!b.locked&&b.type!=='once')?`<span class="rsub-edit" onclick="openDayEditModal('bill','${b.id}')">${dl}</span>`:dl} · ${cat.label}</div>
     </div>
     <div class="rval" onclick="startInlineEditVal(this,'bill','${b.id}')" title="${lang==='en'?'Click to edit value':'Clique para editar o valor'}">${fmt(b.val)}</div>
     <div>
@@ -2325,6 +2353,57 @@ function makeBillRow(b){
 }
 function toggleLock(id){const b=bills.find(x=>x.id===id);if(b){b.locked=!b.locked;saveBill(b);renderBills();}}
 function updateBill(id,f,v){const b=bills.find(x=>x.id===id);if(!b)return;if(f==='val')b.val=parseFloat(v)||0;if(f==='day')b.day=parseInt(v)||1;saveBill(b);rebuild();}
+
+// Day edit bottom sheet
+let _dayEdit=null;
+function openDayEditModal(itemType,id){
+  const item=itemType==='renda'?rendas.find(x=>x.id===id):bills.find(x=>x.id===id);
+  if(!item||item.locked)return;
+  _dayEdit={itemType,id,type:item.type};
+  const isEN=lang==='en';
+  document.getElementById('dayEditTitle').textContent=isEN?'Edit schedule':'Editar agenda';
+  let body='';
+  if(item.type==='weekly'){
+    const days=t('days_long');
+    const field=itemType==='renda'?item.dow:item.day;
+    body=`<label>${isEN?'Day of week':'Dia da semana'}</label>
+      <select id="dei0">${days.map((d,i)=>`<option value="${i}"${field===i?' selected':''}>${d}</option>`).join('')}</select>`;
+  } else if(item.type==='monthly'||item.type==='extra'){
+    body=`<label>${isEN?'Day of month (1–31)':'Dia do mês (1–31)'}</label>
+      <input id="dei0" type="number" min="1" max="31" value="${item.day}" inputmode="numeric">`;
+  } else if(item.type==='biweekly'){
+    body=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><label>${isEN?'1st payment':'1º pagamento'}</label><input id="dei0" type="number" min="1" max="31" value="${item.day}" inputmode="numeric"></div>
+      <div><label>${isEN?'2nd payment':'2º pagamento'}</label><input id="dei1" type="number" min="1" max="31" value="${item.day2||''}" inputmode="numeric"></div>
+    </div>`;
+  } else return;
+  document.getElementById('dayEditBody').innerHTML=body;
+  document.getElementById('dayEditModal').style.display='flex';
+}
+function saveDayEdit(){
+  if(!_dayEdit)return;
+  const{itemType,id,type}=_dayEdit;
+  const v0=document.getElementById('dei0');
+  if(!v0)return;
+  if(type==='weekly'){
+    const val=parseInt(v0.value);
+    if(itemType==='renda')updateRenda(id,'dow',val);
+    else updateBill(id,'day',val);
+  } else if(type==='monthly'||type==='extra'){
+    const val=parseInt(v0.value)||1;
+    if(itemType==='renda')updateRenda(id,'day',val);
+    else updateBill(id,'day',val);
+  } else if(type==='biweekly'){
+    const v1=document.getElementById('dei1');
+    updateRenda(id,'day',parseInt(v0.value)||1);
+    if(v1)updateRenda(id,'day2',parseInt(v1.value)||null);
+  }
+  closeDayEditModal();
+}
+function closeDayEditModal(){
+  document.getElementById('dayEditModal').style.display='none';
+  _dayEdit=null;
+}
 function removeBill(id){
   const b=bills.find(x=>x.id===id);
   if(b?.locked){alert(t('alert_unlock_before_remove'));return;}
