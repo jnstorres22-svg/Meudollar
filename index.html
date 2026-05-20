@@ -58,11 +58,11 @@ body.dark{
   --cal-pur-bg:#12091e;--cal-pur-bdr:#2a1a3a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg);padding:1.25rem;transition:background .2s,color .2s}
-.wrap{max-width:900px;margin:0 auto}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg);padding:0;transition:background .2s,color .2s}
+.wrap{max-width:1100px;margin:0 auto;padding:1.5rem 1.25rem 2rem}
 .header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 h1{font-size:20px;font-weight:700;letter-spacing:-.4px}
-.sub{color:var(--sub);font-size:12px;margin-bottom:1.25rem;letter-spacing:.01em}
+.sub{color:var(--sub);font-size:12px;margin-bottom:.75rem;letter-spacing:.01em}
 /* DARK TOGGLE */
 .theme-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
 .theme-toggle span{font-size:13px;color:var(--sub)}
@@ -71,17 +71,19 @@ body.dark .toggle-track{background:#22c55e}
 .toggle-dot{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s,background .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 body.dark .toggle-dot{transform:translateX(18px);background:#000}
 /* OVERVIEW */
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:1.25rem}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1rem}
 .card{background:var(--card);border-radius:8px;padding:1rem 1.1rem;border:1px solid var(--border);box-shadow:var(--shadow)}
-.card-label{font-size:11px;font-weight:500;color:var(--sub);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
-.card-val{font-size:24px;font-weight:700;margin-bottom:6px;letter-spacing:-.5px}
-.period-btns{display:flex;gap:4px;flex-wrap:wrap}
-.pbtn{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--sub);font-weight:500}
-.pbtn.on{background:var(--accent);color:#fff;border-color:transparent}
+.card-label{font-size:10px;font-weight:600;color:var(--sub);margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em}
+.card-val{font-size:26px;font-weight:700;letter-spacing:-.5px;line-height:1}
+.period-row{display:flex;gap:4px;align-items:center;margin-bottom:.75rem}
+.gp-btn{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--sub);font-weight:500;transition:all .15s}
+.gp-btn.on{background:var(--accent);color:#fff;border-color:transparent}
+.period-btns{display:none}
+.pbtn{display:none}
 /* TABS */
-.tabs{display:flex;gap:4px;margin-bottom:1.25rem;flex-wrap:wrap}
-.tab{padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--sub);transition:all .15s}
-.tab.on{background:var(--accent);color:#fff;border-color:transparent}
+.tabs{display:flex;gap:2px;flex:1}
+.tab{padding:6px 14px;border-radius:6px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--sub);transition:all .15s}
+.tab.on{color:var(--accent);background:var(--accent-dim);font-weight:600}
 .tab:hover:not(.on){background:var(--nav-btn-hover);color:var(--text)}
 .sec{display:none}.sec.on{display:block}
 .panel{background:var(--panel);border-radius:8px;padding:1rem;margin-bottom:1rem;border:1px solid var(--border)}
@@ -89,7 +91,7 @@ body.dark .toggle-dot{transform:translateX(18px);background:#000}
 .frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:10px;align-items:end}
 .frow label,.frow6 label{font-size:11px;font-weight:500;color:var(--label);display:block;margin-bottom:4px;letter-spacing:.01em}
 .frow6{display:grid;grid-template-columns:1.5fr 80px 60px 90px 110px 110px;gap:10px;margin-bottom:10px;align-items:end}
-input,select{font-size:13px;padding:7px 10px;border-radius:6px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);width:100%;outline:none;transition:border-color .15s}
+input,select{font-size:13px;padding:10px 12px;border-radius:8px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);width:100%;outline:none;transition:border-color .15s}
 input:focus,select:focus{border-color:var(--accent)}
 .btn{font-size:13px;font-weight:500;padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:var(--card);cursor:pointer;color:var(--text);transition:all .15s}
 .btn:hover{background:var(--nav-btn-hover)}
@@ -98,7 +100,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .btn.success{background:transparent;color:var(--green);border-color:var(--green)}
 body.dark .btn.success{color:#4ade80;border-color:#4ade80}
 /* ROWS */
-.row{display:grid;grid-template-columns:1fr 78px 90px 80px;gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid var(--row-border)}
+.row{display:grid;grid-template-columns:1fr 78px 90px 80px;gap:6px;align-items:center;padding:14px 0;border-bottom:1px solid var(--row-border)}
 .row:last-child{border-bottom:none}
 .rname{font-size:13px;font-weight:500}
 .rsub{font-size:11px;color:var(--sub);margin-top:1px}
@@ -120,7 +122,7 @@ body.dark .bg2{color:#4ade80;border-color:rgba(74,222,128,.25)}
 .icon-btn.lock-on{color:var(--accent)}
 .inp-sm{font-size:13px;padding:4px 8px;border-radius:5px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);width:76px}
 .sel-sm{font-size:12px;padding:4px 6px;border-radius:5px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);width:auto}
-.section-label{font-size:11px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 8px}
+.section-label{font-size:11px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 8px}
 /* CAL / WEEK */
 .nav-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .nav-title{font-size:15px;font-weight:500}
@@ -559,11 +561,29 @@ body.dark .confirm-delete{background:#dc2626}
 .drawer-theme{display:flex;align-items:center;justify-content:space-between}
 .drawer-theme span{font-size:13px;color:var(--text)}
 
+.app-header{
+  background:var(--card);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;
+}
+.app-header-inner{
+  max-width:1100px;margin:0 auto;padding:0 1.25rem;
+  height:56px;display:flex;align-items:center;gap:0;
+}
+.app-logo{
+  font-size:17px;font-weight:800;letter-spacing:-0.5px;
+  color:var(--accent);flex-shrink:0;margin-right:24px;
+}
+.header-actions{
+  display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0;
+}
+
 @media(max-width:640px){
   /* wrap padding */
   .wrap{padding:.75rem .75rem 80px}
 
   /* Header */
+  .app-header .tabs{display:none!important}
+  .app-header-inner{height:48px}
   .header-row{margin-bottom:4px}
   .desktop-user-bar{display:none!important}
   .hamburger{
@@ -966,9 +986,14 @@ body.dark .confirm-delete{background:#dc2626}
   </div>
   <div class="drawer-user">
     <div class="drawer-email" id="drawerEmail"></div>
-    <button class="drawer-logout" onclick="handleLogout()">Sair / Sign out</button>
-    <button onclick="obReset()" style="width:100%;margin-top:6px;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)">Refazer configuração inicial</button>
-    <button onclick="exportExcel();closeDrawer();" style="width:100%;margin-top:6px;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerExportBtn">Exportar Excel</button>
+  </div>
+  <div class="drawer-section">
+    <div class="drawer-section-label" data-i18n="drawer_initial_balance">Saldo inicial / Initial balance</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input id="drawerIB" type="number" placeholder="0" inputmode="decimal" style="flex:1;font-size:14px;padding:8px 10px;border-radius:8px;border:0.5px solid var(--input-border);background:var(--input-bg);color:var(--text)">
+      <button onclick="saveInitialBalance()" style="padding:8px 14px;border-radius:8px;border:none;background:#185FA5;color:#fff;font-size:13px;cursor:pointer">✓</button>
+    </div>
+    <div style="font-size:11px;color:var(--sub);margin-top:6px" id="drawerIBhint" data-i18n="drawer_ib_hint">Quanto você já tem guardado hoje?</div>
   </div>
   <div class="drawer-section">
     <div class="drawer-section-label" data-i18n="drawer_appearance">Aparência / Appearance</div>
@@ -990,19 +1015,28 @@ body.dark .confirm-delete{background:#dc2626}
     <!-- populated by updateDrawerPinSection() -->
   </div>
   <div class="drawer-section">
-    <div class="drawer-section-label" data-i18n="drawer_initial_balance">Saldo inicial / Initial balance</div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <input id="drawerIB" type="number" placeholder="0" inputmode="decimal" style="flex:1;font-size:14px;padding:8px 10px;border-radius:8px;border:0.5px solid var(--input-border);background:var(--input-bg);color:var(--text)">
-      <button onclick="saveInitialBalance()" style="padding:8px 14px;border-radius:8px;border:none;background:#185FA5;color:#fff;font-size:13px;cursor:pointer">✓</button>
-    </div>
-    <div style="font-size:11px;color:var(--sub);margin-top:6px" id="drawerIBhint" data-i18n="drawer_ib_hint">Quanto você já tem guardado hoje?</div>
+    <button onclick="exportExcel();closeDrawer();" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerExportBtn">Exportar Excel</button>
+  </div>
+  <div class="drawer-section">
+    <button onclick="obReset()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)">Refazer configuração inicial</button>
+  </div>
+  <div class="drawer-section">
+    <button class="drawer-logout" onclick="handleLogout()">Sair / Sign out</button>
   </div>
 </div>
 
-<div class="wrap">
-  <div class="header-row">
-    <h1 style="font-size:20px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Meudollar</h1>
-    <div style="display:flex;align-items:center;gap:10px">
+<header class="app-header">
+  <div class="app-header-inner">
+    <div class="app-logo">Meudollar</div>
+    <div class="tabs">
+      <button class="tab on" onclick="showTab('renda')" id="tab-btn-renda">Renda</button>
+      <button class="tab" onclick="showTab('bills')" id="tab-btn-bills">Despesas</button>
+      <button class="tab" onclick="showTab('semana')" id="tab-btn-semana">Semana</button>
+      <button class="tab" onclick="showTab('cal')" id="tab-btn-cal">Calendário</button>
+      <button class="tab" onclick="showTab('metas')" id="tab-btn-metas">Metas</button>
+      <button class="tab" onclick="showTab('relatorio')" id="tab-btn-relatorio">Relatório</button>
+    </div>
+    <div class="header-actions">
       <div class="user-bar desktop-user-bar"><span id="userEmail"></span><button class="logout-btn" onclick="handleLogout()">Sair</button></div>
       <div class="theme-toggle desktop-user-bar" onclick="toggleTheme()" title="Alternar tema">
         <span id="themeLabel">Light</span>
@@ -1011,6 +1045,9 @@ body.dark .confirm-delete{background:#dc2626}
       <button class="hamburger" onclick="openDrawer()">☰</button>
     </div>
   </div>
+</header>
+
+<div class="wrap">
   <div class="sub">May 11, 2026 — December 31, 2028 &nbsp;·&nbsp; Starting balance: $0</div>
 
   <!-- WEEK NOTIFICATIONS BANNER -->
@@ -1026,16 +1063,8 @@ body.dark .confirm-delete{background:#dc2626}
     </div>
   </div>
 
+  <div class="period-row" id="periodRow"></div>
   <div class="cards" id="topCards"></div>
-
-  <div class="tabs">
-    <button class="tab on" onclick="showTab('renda')" id="tab-btn-renda">Renda</button>
-    <button class="tab" onclick="showTab('bills')" id="tab-btn-bills">Despesas</button>
-    <button class="tab" onclick="showTab('semana')" id="tab-btn-semana">Semana</button>
-    <button class="tab" onclick="showTab('cal')" id="tab-btn-cal">Calendário</button>
-    <button class="tab" onclick="showTab('metas')" id="tab-btn-metas">Metas</button>
-    <button class="tab" onclick="showTab('relatorio')" id="tab-btn-relatorio">Relatório</button>
-  </div>
 
   <!-- BOTTOM NAV (mobile only) -->
   <nav class="bottom-nav">
@@ -2032,6 +2061,21 @@ function setPeriod(key,p){
   buildTopCards();
 }
 
+let globalPeriod='monthly';
+function setAllPeriods(p){
+  globalPeriod=p;
+  ['renda','desp','margem'].forEach(k=>overviewPeriod[k]=p);
+  overviewPeriod['semrenda']=p==='yearly'?'monthly':p;
+  buildTopCards();buildPeriodRow();
+}
+function buildPeriodRow(){
+  const row=document.getElementById('periodRow');
+  if(!row) return;
+  const periods=['weekly','monthly','yearly'];
+  const labels=[t('period_weekly'),t('period_monthly'),t('period_yearly')];
+  row.innerHTML=periods.map((pp,i)=>`<button class="gp-btn${globalPeriod===pp?' on':''}" onclick="setAllPeriods('${pp}')">${labels[i]}</button>`).join('');
+}
+
 function openPickerFor(cardKey,which){
   // close any open picker first
   document.querySelectorAll('[id^="inline-picker-"]').forEach(el=>el.style.display='none');
@@ -2772,7 +2816,7 @@ function buildRelatorio(){
   document.getElementById('extratoList').innerHTML=exHtml||`<div style="color:#888;padding:8px">${t('rep_empty')}</div>`;
 }
 
-function rebuild(){buildTopCards();buildNotifBanner();buildWeek();buildCal();buildMetas();buildRelatorio();}
+function rebuild(){buildTopCards();buildPeriodRow();buildNotifBanner();buildWeek();buildCal();buildMetas();buildRelatorio();}
 
 // DARK MODE
 let dark = false;
@@ -2856,7 +2900,7 @@ function initApp(){
   weekStart=new Date(START);
   calYear=START.getFullYear();calMonth=START.getMonth();
   ovFrom=new Date(START);ovTo=new Date(END);
-  buildRendaList();renderBills();buildTopCards();buildNotifBanner();buildWeek();buildCal();buildMetas();buildRelatorio();
+  buildRendaList();renderBills();buildTopCards();buildPeriodRow();buildNotifBanner();buildWeek();buildCal();buildMetas();buildRelatorio();
   // Show onboarding for first-time users
   obStart();
 }
