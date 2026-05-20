@@ -647,11 +647,6 @@ body.dark .confirm-delete{background:#dc2626}
 .debt-stat-label{font-size:9px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.04em}
 .debt-stat-val{font-size:13px;font-weight:600;margin-top:2px}
 .debt-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.sql-notice{background:var(--panel);border:0.5px solid var(--border);border-radius:8px;padding:12px;margin-bottom:1rem}
-.sql-notice h4{font-size:12px;font-weight:600;margin-bottom:6px}
-.sql-notice pre{background:var(--bg);border-radius:6px;padding:10px;font-size:10px;overflow-x:auto;white-space:pre;color:var(--text);border:0.5px solid var(--border);margin:6px 0;font-family:'Courier New',monospace;line-height:1.5}
-.sql-copy-btn{font-size:11px;padding:4px 11px;border-radius:6px;border:0.5px solid var(--border);background:transparent;cursor:pointer;color:var(--sub)}
-.sql-copy-btn:hover{border-color:var(--accent);color:var(--accent)}
 /* Debt payment modal */
 #debtPayModal{position:fixed;inset:0;z-index:1100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);padding:1rem}
 .debt-pay-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.4rem;width:100%;max-width:380px;box-shadow:var(--shadow-md)}
@@ -1302,30 +1297,7 @@ body.dark .confirm-delete{background:#dc2626}
 
   <!-- DÍVIDAS -->
   <div id="tab-dividas" class="sec">
-    <div class="sql-notice" id="dividasSqlNotice">
-      <h4 id="dividasSqlTitle">Configuração do banco de dados</h4>
-      <p style="font-size:11px;color:var(--sub);margin-bottom:4px" id="dividasSqlSub">Execute este SQL no painel do Supabase (SQL Editor) para ativar todas as novas funcionalidades:</p>
-      <pre id="dividasSqlCode">ALTER TABLE metas ADD COLUMN IF NOT EXISTS checkins jsonb DEFAULT '[]';
-ALTER TABLE bills ADD COLUMN IF NOT EXISTS pagamentos jsonb DEFAULT '[]';
-CREATE TABLE IF NOT EXISTS dividas (
-  id uuid default gen_random_uuid() primary key,
-  user_id uuid references auth.users,
-  name text, total numeric, remaining numeric,
-  juros numeric, min_payment numeric, target_date date,
-  payments jsonb default '[]'
-);
-GRANT ALL ON TABLE dividas TO authenticated;
-GRANT ALL ON TABLE dividas TO anon;
-ALTER TABLE dividas ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "dividas all" ON dividas
-  FOR ALL TO authenticated
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);</pre>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-        <button class="sql-copy-btn" onclick="copySql()" id="dividasCopyBtn">Copiar SQL</button>
-        <button class="btn" style="font-size:12px;padding:5px 14px;color:var(--green);border-color:var(--green)" onclick="markDividasSetupDone()" id="dividasDoneBtn">Já executei o SQL</button>
-      </div>
-    </div>
+
     <button class="form-toggle-btn" id="dividasToggleBtn" onclick="toggleForm('dividas')">
       <span class="ftb-icon">+</span>
       <span id="dividasToggleLabel">Nova dívida</span>
@@ -1623,9 +1595,6 @@ const TRANSLATIONS = {
     dividas_pay_interest:'Juros do mês:',dividas_pay_principal:'Amortização:',
     dividas_pay_new_remaining:'Saldo após pagamento:',
     dividas_pay_confirm:'Confirmar pagamento',
-    dividas_sql_title:'Configuração do banco de dados',
-    dividas_sql_sub:'Execute este SQL no painel do Supabase (SQL Editor):',
-    dividas_sql_copy:'Copiar SQL', dividas_sql_copied:'Copiado!', dividas_sql_done:'Já executei o SQL',
   },
   en: {
     tab_renda:'Income', tab_bills:'Expenses', tab_semana:'Week',
@@ -1764,9 +1733,6 @@ const TRANSLATIONS = {
     dividas_pay_interest:'Monthly interest:',dividas_pay_principal:'Principal:',
     dividas_pay_new_remaining:'Balance after payment:',
     dividas_pay_confirm:'Confirm payment',
-    dividas_sql_title:'Database setup',
-    dividas_sql_sub:'Run this SQL in your Supabase SQL Editor:',
-    dividas_sql_copy:'Copy SQL', dividas_sql_copied:'Copied!', dividas_sql_done:'I already ran the SQL',
   }
 };
 function t(key){ return TRANSLATIONS[lang][key] ?? TRANSLATIONS['pt'][key] ?? key; }
@@ -1852,11 +1818,6 @@ function applyLang(){
   _dfl.forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=t(key);});
   const dvAddBtn=document.getElementById('dv-add-btn');if(dvAddBtn)dvAddBtn.textContent=t('dividas_add_btn');
   const dvToggle=document.getElementById('dividasToggleLabel');if(dvToggle)dvToggle.textContent=t('dividas_form_title');
-  // sql notice
-  const sqTitle=document.getElementById('dividasSqlTitle');if(sqTitle)sqTitle.textContent=t('dividas_sql_title');
-  const sqSub=document.getElementById('dividasSqlSub');if(sqSub)sqSub.textContent=t('dividas_sql_sub');
-  const sqCopy=document.getElementById('dividasCopyBtn');if(sqCopy)sqCopy.textContent=t('dividas_sql_copy');
-  const sqDone=document.getElementById('dividasDoneBtn');if(sqDone)sqDone.textContent=t('dividas_sql_done');
   // Drawer
   const dl=document.getElementById('drawerThemeLabel');
   if(dl) dl.textContent=dark?t('theme_dark'):t('theme_light');
@@ -3242,7 +3203,6 @@ function initApp(){
   calYear=START.getFullYear();calMonth=START.getMonth();
   ovFrom=new Date(START);ovTo=new Date(END);
   buildRendaList();renderBills();buildTopCards();buildPeriodRow();buildNotifBanner();buildWeek();buildCal();buildMetas();buildDividas();buildRelatorio();
-  checkDividasSetup();
   // Show onboarding for first-time users
   obStart();
 }
@@ -4123,26 +4083,6 @@ function closeDebtPayModal(){
 }
 document.getElementById('debtPayModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeDebtPayModal();});
 
-function copySql(){
-  const sql=document.getElementById('dividasSqlCode').textContent;
-  navigator.clipboard.writeText(sql).then(()=>{
-    const btn=document.getElementById('dividasCopyBtn');
-    if(btn){btn.textContent=t('dividas_sql_copied');setTimeout(()=>{btn.textContent=t('dividas_sql_copy');},2000);}
-  }).catch(()=>{});
-}
-function checkDividasSetup(){
-  const notice=document.getElementById('dividasSqlNotice');
-  if(!notice) return;
-  const key=_user?'dividas_setup_done_'+_user.id:'dividas_setup_done';
-  if(localStorage.getItem(key)==='1') notice.style.display='none';
-  else notice.style.display='';
-}
-function markDividasSetupDone(){
-  const key=_user?'dividas_setup_done_'+_user.id:'dividas_setup_done';
-  localStorage.setItem(key,'1');
-  const notice=document.getElementById('dividasSqlNotice');
-  if(notice) notice.style.display='none';
-}
 
 bootApp();
 </script>
