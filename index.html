@@ -592,6 +592,36 @@ body.dark .confirm-delete{background:#c0392b}
 
   /* Report filters wrap */
   .report-filters{gap:6px}
+
+  /* ── Mobile form UX ───────────────────────────────────────────── */
+  /* Prevent iOS auto-zoom: all inputs/selects must be ≥ 16px */
+  input:not([type=checkbox]):not([type=radio]):not([type=range]),
+  select, textarea {
+    font-size:16px!important;
+  }
+
+  /* Form field spacing */
+  .frow6{gap:12px!important}
+  .frow{gap:12px!important}
+  .panel .frow6 > div{margin-bottom:2px}
+
+  /* Inline row inputs: slightly bigger touch target */
+  .inp-sm{font-size:16px!important;padding:6px 6px!important;height:36px}
+  .sel-sm{font-size:16px!important;padding:5px 4px!important}
+
+  /* Wizard field spacing */
+  .ob-field{margin-bottom:20px!important}
+
+  /* Wizard nav buttons: large enough for fat thumbs */
+  .ob-next{padding:16px!important;font-size:15px!important;min-height:52px!important}
+  .ob-skip{padding:12px 18px!important;font-size:14px!important;min-height:44px!important;border-radius:10px}
+  .ob-actions{gap:10px!important;margin-top:2rem!important}
+
+  /* Wizard add-item buttons */
+  #ob-add-renda-btn,#ob-add-bill-btn{
+    padding:14px!important;font-size:15px!important;
+    border-radius:10px!important;min-height:48px!important;
+  }
 }
 </style>
 </head>
@@ -772,7 +802,7 @@ body.dark .confirm-delete{background:#c0392b}
       <div class="ob-sub" id="ob-sub-1">Quanto você já tem guardado hoje? Conta, poupança ou carteira.</div>
       <div class="ob-field">
         <label id="ob-bal-label">VALOR ($)</label>
-        <input id="ob-balance" type="number" placeholder="0.00" min="0">
+        <input id="ob-balance" type="number" placeholder="0.00" min="0" inputmode="decimal">
       </div>
       <div class="ob-actions">
         <button class="ob-next" onclick="obNext(1)"><span id="ob-btn-1">Continuar →</span></button>
@@ -798,7 +828,7 @@ body.dark .confirm-delete{background:#c0392b}
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
           <div class="ob-field" style="margin-bottom:0">
             <label id="ob-rval-label">VALOR ($)</label>
-            <input id="ob-rval" type="number" placeholder="0.00" min="0">
+            <input id="ob-rval" type="number" placeholder="0.00" min="0" inputmode="decimal">
           </div>
           <div class="ob-field" style="margin-bottom:0">
             <label id="ob-rtype-label">TIPO</label>
@@ -837,7 +867,7 @@ body.dark .confirm-delete{background:#c0392b}
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
           <div class="ob-field" style="margin-bottom:0">
             <label id="ob-bval-label">VALOR ($)</label>
-            <input id="ob-bval" type="number" placeholder="0.00" min="0">
+            <input id="ob-bval" type="number" placeholder="0.00" min="0" inputmode="decimal">
           </div>
           <div class="ob-field" style="margin-bottom:0">
             <label id="ob-btype-label">TIPO</label>
@@ -941,7 +971,7 @@ body.dark .confirm-delete{background:#c0392b}
   <div class="drawer-section">
     <div class="drawer-section-label" data-i18n="drawer_initial_balance">Saldo inicial / Initial balance</div>
     <div style="display:flex;gap:8px;align-items:center">
-      <input id="drawerIB" type="number" placeholder="0" style="flex:1;font-size:14px;padding:8px 10px;border-radius:8px;border:0.5px solid var(--input-border);background:var(--input-bg);color:var(--text)">
+      <input id="drawerIB" type="number" placeholder="0" inputmode="decimal" style="flex:1;font-size:14px;padding:8px 10px;border-radius:8px;border:0.5px solid var(--input-border);background:var(--input-bg);color:var(--text)">
       <button onclick="saveInitialBalance()" style="padding:8px 14px;border-radius:8px;border:none;background:#185FA5;color:#fff;font-size:13px;cursor:pointer">✓</button>
     </div>
     <div style="font-size:11px;color:var(--sub);margin-top:6px" id="drawerIBhint" data-i18n="drawer_ib_hint">Quanto você já tem guardado hoje?</div>
@@ -1018,13 +1048,13 @@ body.dark .confirm-delete{background:#c0392b}
       <div class="panel">
         <div class="frow6">
           <div><label data-i18n="renda_desc_label">Descrição</label><input id="re-name" placeholder="ex: Freelance"></div>
-          <div><label data-i18n="renda_val_label">Valor ($)</label><input id="re-val" type="number" placeholder="0"></div>
+          <div><label data-i18n="renda_val_label">Valor ($)</label><input id="re-val" type="number" placeholder="0" inputmode="decimal"></div>
           <div>
             <label id="re-day-label" data-i18n="renda_day_label">Dia</label>
-            <input id="re-day" type="number" min="1" max="31" placeholder="1–31">
+            <input id="re-day" type="number" min="1" max="31" placeholder="1–31" inputmode="numeric">
             <div id="re-day2-wrap" style="display:none;margin-top:4px">
               <label style="font-size:11px;color:var(--sub)">${lang==='en'?'2nd payment':'2º pagamento'}</label>
-              <input id="re-day2" type="number" min="1" max="31" placeholder="1–31">
+              <input id="re-day2" type="number" min="1" max="31" placeholder="1–31" inputmode="numeric">
             </div>
           </div>
           <div><label data-i18n="renda_monthyear_label">Mês/Ano (única)</label><input id="re-monthyear" type="month" value="2026-05"></div>
@@ -1056,8 +1086,8 @@ body.dark .confirm-delete{background:#c0392b}
       <div class="panel">
         <div class="frow6">
           <div><label data-i18n="bills_name_label">Nome</label><input id="f-name" placeholder="ex: Academia"></div>
-          <div><label data-i18n="bills_val_label">Valor ($)</label><input id="f-val" type="number" placeholder="0"></div>
-          <div><label data-i18n="bills_day_label">Dia</label><input id="f-day" type="number" min="1" max="31" placeholder="1–31"></div>
+          <div><label data-i18n="bills_val_label">Valor ($)</label><input id="f-val" type="number" placeholder="0" inputmode="decimal"></div>
+          <div><label data-i18n="bills_day_label">Dia</label><input id="f-day" type="number" min="1" max="31" placeholder="1–31" inputmode="numeric"></div>
           <div><label data-i18n="bills_monthyear_label">Mês/Ano (única)</label><input id="f-monthyear" type="month" value="2026-05"></div>
           <div><label data-i18n="bills_type_label">Tipo</label>
             <select id="f-type">
@@ -1134,7 +1164,7 @@ body.dark .confirm-delete{background:#c0392b}
       <div class="panel">
         <div class="frow">
           <div><label data-i18n="meta_name_label">Nome</label><input id="m-name" placeholder="ex: Viagem para o Brasil"></div>
-          <div><label data-i18n="meta_val_label">Valor ($)</label><input id="m-val" type="number" placeholder="0"></div>
+          <div><label data-i18n="meta_val_label">Valor ($)</label><input id="m-val" type="number" placeholder="0" inputmode="decimal"></div>
           <div><label data-i18n="meta_date_label">Data alvo</label><input id="m-month" type="date"></div>
           <div><label data-i18n="meta_desc_label">Descrição</label><input id="m-desc" placeholder="opcional"></div>
           <div style="display:flex;align-items:flex-end"><button class="btn primary" style="width:100%" onclick="addMeta()" data-i18n="meta_add_btn">+ Criar meta</button></div>
@@ -3144,7 +3174,7 @@ function startInlineEditVal(el, type, id){
   if(!item) return;
   const originalHTML = el.innerHTML;
   const inp = document.createElement('input');
-  inp.type='number'; inp.value=item.val; inp.min='0'; inp.step='0.01';
+  inp.type='number'; inp.value=item.val; inp.min='0'; inp.step='0.01'; inp.setAttribute('inputmode','decimal');
   inp.style.cssText='font-size:13px;font-weight:500;padding:2px 6px;border-radius:6px;border:0.5px solid var(--blue);background:var(--input-bg);color:var(--text);width:80px;outline:none';
   el.innerHTML='';
   el.appendChild(inp);
