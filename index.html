@@ -7,53 +7,62 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f5f5f2;--card:#fff;--border:#e0e0e0;--panel:#f0efeb;
-  --text:#1a1a1a;--sub:#888;--label:#888;
-  --green:#3B6D11;--red:#A32D2D;--blue:#185FA5;--amber:#854F0B;--purple:#7B3BB5;
-  --tab-on-bg:#E6F1FB;--tab-on-color:#185FA5;
-  --input-bg:#fff;--input-border:#ccc;
-  --nav-btn-bg:#fff;--nav-btn-hover:#f0efeb;
-  --row-border:#e0e0e0;--summary-bg:#f0efeb;
-  --weekbills-bg:#fff;--weekbills-border:#e0e0e0;
-  --goal-bg:#fff;--goal-border:#e0e0e0;
-  --report-bg:#fff;--report-border:#e0e0e0;
+  --bg:#f8f8f8;--card:#ffffff;--border:#e8e8e8;--panel:#f2f2f2;
+  --text:#111111;--sub:#6b6b6b;--label:#6b6b6b;
+  --accent:#7c3aed;--accent-dim:rgba(124,58,237,0.08);
+  --green:#16a34a;--red:#dc2626;--blue:#7c3aed;--amber:#d97706;--purple:#7c3aed;
+  --tab-on-bg:rgba(124,58,237,0.08);--tab-on-color:#7c3aed;
+  --input-bg:#ffffff;--input-border:#e8e8e8;
+  --nav-btn-bg:#ffffff;--nav-btn-hover:#f2f2f2;
+  --row-border:#f0f0f0;--summary-bg:#f8f8f8;
+  --weekbills-bg:#ffffff;--weekbills-border:#e8e8e8;
+  --goal-bg:#ffffff;--goal-border:#e8e8e8;
+  --report-bg:#ffffff;--report-border:#e8e8e8;
   --extrato-border:#f0f0f0;--wb-border:#f0f0f0;
-  --dc-bg:#fff;--dc-border:#e0e0e0;--dc-neu:#f8f8f6;
-  --icon-btn-hover:#e8e8e8;
-  --picker-bg:#f5f5f2;
-  --cal-inc-bg:#EAF3DE;--cal-inc-bdr:#C0DD97;
-  --cal-exp-bg:#FCEBEB;--cal-exp-bdr:#F7C1C1;
-  --cal-bth-bg:#FAEEDA;--cal-bth-bdr:#FAC775;
-  --cal-pur-bg:#F3EAFB;--cal-pur-bdr:#D4AFF5;
+  --dc-bg:#ffffff;--dc-border:#e8e8e8;--dc-neu:#f4f4f4;
+  --icon-btn-hover:#f0f0f0;
+  --picker-bg:#f8f8f8;
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.08);
+  --cal-inc-bg:#f0fdf4;--cal-inc-bdr:#bbf7d0;
+  --cal-exp-bg:#fef2f2;--cal-exp-bdr:#fecaca;
+  --cal-bth-bg:#fffbeb;--cal-bth-bdr:#fde68a;
+  --cal-pur-bg:#faf5ff;--cal-pur-bdr:#e9d5ff;
 }
 body.dark{
-  --bg:#0d0d0d;--card:#1a1a1a;--border:#2a2a2a;--panel:#111;
-  --text:#f9fafb;--sub:#6b7280;--label:#6b7280;
-  --green:#4ade80;--red:#f87171;--blue:#60a5fa;--amber:#fbbf24;--purple:#c084fc;
-  --tab-on-bg:#1e3a5f;--tab-on-color:#60a5fa;
-  --input-bg:#1a1a1a;--input-border:#2a2a2a;
-  --nav-btn-bg:#1a1a1a;--nav-btn-hover:#222;
-  --row-border:#2a2a2a;--summary-bg:#111;
-  --weekbills-bg:#1a1a1a;--weekbills-border:#2a2a2a;
-  --goal-bg:#1a1a1a;--goal-border:#2a2a2a;
-  --report-bg:#1a1a1a;--report-border:#2a2a2a;
-  --extrato-border:#222;--wb-border:#222;
-  --dc-bg:#1a1a1a;--dc-border:#2a2a2a;--dc-neu:#141414;
-  --icon-btn-hover:#222;
-  --picker-bg:#111;
-  --cal-inc-bg:#1a2e1a;--cal-inc-bdr:#2d5a2d;
-  --cal-exp-bg:#2e1a1a;--cal-exp-bdr:#5a2d2d;
-  --cal-bth-bg:#2e2a1a;--cal-bth-bdr:#5a4a1a;
-  --cal-pur-bg:#251a2e;--cal-pur-bdr:#4a2d5a;
+  --bg:#0a0a0a;--card:#111111;--border:#1e1e1e;--panel:#161616;
+  --text:#f0f0f0;--sub:#666666;--label:#666666;
+  --accent:#8b5cf6;--accent-dim:rgba(139,92,246,0.12);
+  --green:#4ade80;--red:#f87171;--blue:#8b5cf6;--amber:#fbbf24;--purple:#8b5cf6;
+  --tab-on-bg:rgba(139,92,246,0.12);--tab-on-color:#8b5cf6;
+  --input-bg:#161616;--input-border:#1e1e1e;
+  --nav-btn-bg:#161616;--nav-btn-hover:#1e1e1e;
+  --row-border:#1e1e1e;--summary-bg:#0d0d0d;
+  --weekbills-bg:#111111;--weekbills-border:#1e1e1e;
+  --goal-bg:#111111;--goal-border:#1e1e1e;
+  --report-bg:#111111;--report-border:#1e1e1e;
+  --extrato-border:#1a1a1a;--wb-border:#1a1a1a;
+  --dc-bg:#111111;--dc-border:#1e1e1e;--dc-neu:#0d0d0d;
+  --icon-btn-hover:#1e1e1e;
+  --picker-bg:#111111;
+  --shadow:0 1px 3px rgba(0,0,0,0.4),0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.5);
+  --cal-inc-bg:#0a1a0a;--cal-inc-bdr:#1a3a1a;
+  --cal-exp-bg:#1a0a0a;--cal-exp-bdr:#3a1a1a;
+  --cal-bth-bg:#1a160a;--cal-bth-bdr:#3a2d0a;
+  --cal-pur-bg:#12091e;--cal-pur-bdr:#2a1a3a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg);padding:1rem;transition:background .2s,color .2s}
-.wrap{max-width:880px;margin:0 auto}
-.header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
-h1{font-size:22px;font-weight:500}
-.sub{color:var(--sub);font-size:13px;margin-bottom:1rem}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg);padding:1.25rem;transition:background .2s,color .2s}
+.wrap{max-width:900px;margin:0 auto}
+.header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+h1{font-size:20px;font-weight:700;letter-spacing:-.4px}
+.sub{color:var(--sub);font-size:12px;margin-bottom:1.25rem;letter-spacing:.01em}
 /* DARK TOGGLE */
 .theme-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
 .theme-toggle span{font-size:13px;color:var(--sub)}
@@ -62,51 +71,56 @@ body.dark .toggle-track{background:#22c55e}
 .toggle-dot{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s,background .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 body.dark .toggle-dot{transform:translateX(18px);background:#000}
 /* OVERVIEW */
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1rem}
-.card{background:var(--card);border-radius:10px;padding:.85rem 1rem;border:0.5px solid var(--border)}
-.card-label{font-size:11px;color:var(--label);margin-bottom:4px}
-.card-val{font-size:20px;font-weight:500;margin-bottom:6px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:1.25rem}
+.card{background:var(--card);border-radius:8px;padding:1rem 1.1rem;border:1px solid var(--border);box-shadow:var(--shadow)}
+.card-label{font-size:11px;font-weight:500;color:var(--sub);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.card-val{font-size:24px;font-weight:700;margin-bottom:6px;letter-spacing:-.5px}
 .period-btns{display:flex;gap:4px;flex-wrap:wrap}
-.pbtn{font-size:10px;padding:2px 8px;border-radius:20px;border:0.5px solid var(--border);background:transparent;cursor:pointer;color:var(--sub)}
-.pbtn.on{background:#185FA5;color:#fff;border-color:transparent}
+.pbtn{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--sub);font-weight:500}
+.pbtn.on{background:var(--accent);color:#fff;border-color:transparent}
 /* TABS */
-.tabs{display:flex;gap:6px;margin-bottom:1.2rem;flex-wrap:wrap}
-.tab{padding:5px 14px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:13px;color:var(--sub)}
-.tab.on{background:var(--tab-on-bg);color:var(--tab-on-color);border-color:transparent}
+.tabs{display:flex;gap:4px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--sub);transition:all .15s}
+.tab.on{background:var(--accent);color:#fff;border-color:transparent}
+.tab:hover:not(.on){background:var(--nav-btn-hover);color:var(--text)}
 .sec{display:none}.sec.on{display:block}
-.panel{background:var(--panel);border-radius:12px;padding:1rem;margin-bottom:1rem}
-.panel h3{font-size:13px;font-weight:500;margin-bottom:10px;color:var(--sub)}
-.frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:8px;align-items:end}
-.frow label,.frow6 label{font-size:11px;color:var(--label);display:block;margin-bottom:3px}
-.frow6{display:grid;grid-template-columns:1.5fr 80px 60px 90px 110px 110px;gap:8px;margin-bottom:8px;align-items:end}
-input,select{font-size:13px;padding:6px 8px;border-radius:8px;border:0.5px solid var(--input-border);background:var(--input-bg);color:var(--text);width:100%}
-.btn{font-size:13px;padding:7px 14px;border-radius:8px;border:0.5px solid var(--border);background:var(--card);cursor:pointer;color:var(--text)}
+.panel{background:var(--panel);border-radius:8px;padding:1rem;margin-bottom:1rem;border:1px solid var(--border)}
+.panel h3{font-size:12px;font-weight:600;margin-bottom:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.04em}
+.frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:10px;align-items:end}
+.frow label,.frow6 label{font-size:11px;font-weight:500;color:var(--label);display:block;margin-bottom:4px;letter-spacing:.01em}
+.frow6{display:grid;grid-template-columns:1.5fr 80px 60px 90px 110px 110px;gap:10px;margin-bottom:10px;align-items:end}
+input,select{font-size:13px;padding:7px 10px;border-radius:6px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);width:100%;outline:none;transition:border-color .15s}
+input:focus,select:focus{border-color:var(--accent)}
+.btn{font-size:13px;font-weight:500;padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:var(--card);cursor:pointer;color:var(--text);transition:all .15s}
 .btn:hover{background:var(--nav-btn-hover)}
-.btn.primary{background:var(--tab-on-bg);color:var(--tab-on-color);border-color:transparent}
-.btn.success{background:#EAF3DE;color:#3B6D11;border-color:transparent}
-body.dark .btn.success{background:#1a2e1a;color:#4ade80}
+.btn.primary{background:var(--accent);color:#fff;border-color:transparent}
+.btn.primary:hover{opacity:.88}
+.btn.success{background:transparent;color:var(--green);border-color:var(--green)}
+body.dark .btn.success{color:#4ade80;border-color:#4ade80}
 /* ROWS */
-.row{display:grid;grid-template-columns:1fr 78px 90px 80px;gap:6px;align-items:center;padding:7px 0;border-bottom:0.5px solid var(--row-border)}
+.row{display:grid;grid-template-columns:1fr 78px 90px 80px;gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid var(--row-border)}
 .row:last-child{border-bottom:none}
 .rname{font-size:13px;font-weight:500}
-.rsub{font-size:11px;color:var(--sub)}
-.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500}
-.bm{background:#E6F1FB;color:#0C447C}.bw{background:#FAEEDA;color:#633806}
-.be{background:#F3EAFB;color:#3C3489}.bu{background:#FCEBEB;color:#8B1A1A}
-.bg2{background:#EAF3DE;color:#1A5C1A}
-body.dark .bm{background:#1e3a5f;color:#60a5fa}
-body.dark .bw{background:#2e2a1a;color:#fbbf24}
-body.dark .be{background:#251a2e;color:#c084fc}
-body.dark .bu{background:#2e1a1a;color:#f87171}
-body.dark .bg2{background:#1a2e1a;color:#4ade80}
+.rsub{font-size:11px;color:var(--sub);margin-top:1px}
+.badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;border:1px solid}
+.bm{color:#7c3aed;border-color:rgba(124,58,237,.25);background:transparent}
+.bw{color:#d97706;border-color:rgba(217,119,6,.25);background:transparent}
+.be{color:#6b6b6b;border-color:rgba(107,107,107,.25);background:transparent}
+.bu{color:#6b6b6b;border-color:rgba(107,107,107,.2);background:transparent}
+.bg2{color:#16a34a;border-color:rgba(22,163,74,.25);background:transparent}
+body.dark .bm{color:#a78bfa;border-color:rgba(167,139,250,.25)}
+body.dark .bw{color:#fbbf24;border-color:rgba(251,191,36,.25)}
+body.dark .be{color:#9ca3af;border-color:rgba(156,163,175,.2)}
+body.dark .bu{color:#9ca3af;border-color:rgba(156,163,175,.2)}
+body.dark .bg2{color:#4ade80;border-color:rgba(74,222,128,.25)}
 .row-act{display:flex;gap:3px;justify-content:flex-end;align-items:center}
-.icon-btn{background:transparent;border:none;cursor:pointer;font-size:15px;padding:3px 5px;border-radius:6px;color:#bbb}
+.icon-btn{background:transparent;border:none;cursor:pointer;font-size:14px;padding:4px 6px;border-radius:5px;color:var(--sub);transition:all .15s}
 .icon-btn:hover{background:var(--icon-btn-hover);color:var(--text)}
 .icon-btn.del:hover{color:var(--red);background:var(--cal-exp-bg)}
-.icon-btn.lock-on{color:var(--blue)}
-.inp-sm{font-size:13px;padding:4px 6px;border-radius:6px;border:0.5px solid var(--input-border);background:var(--input-bg);color:var(--text);width:76px}
-.sel-sm{font-size:11px;padding:3px 5px;border-radius:6px;border:0.5px solid var(--input-border);background:var(--input-bg);color:var(--text);width:auto}
-.section-label{font-size:11px;font-weight:500;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 6px;opacity:.6}
+.icon-btn.lock-on{color:var(--accent)}
+.inp-sm{font-size:13px;padding:4px 8px;border-radius:5px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);width:76px}
+.sel-sm{font-size:12px;padding:4px 6px;border-radius:5px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);width:auto}
+.section-label{font-size:11px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 8px}
 /* CAL / WEEK */
 .nav-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .nav-title{font-size:15px;font-weight:500}
@@ -137,22 +151,24 @@ body.dark .bg2{background:#1a2e1a;color:#4ade80}
 .wb-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid var(--wb-border);font-size:12px}
 .wb-row:last-child{border-bottom:none}
 /* METAS */
-.goal-card{background:var(--goal-bg);border:0.5px solid var(--goal-border);border-radius:12px;padding:1rem;margin-bottom:10px}
-.goal-card.done{opacity:.65;border-color:var(--cal-inc-bdr)}
+.goal-card{background:var(--goal-bg);border:1px solid var(--goal-border);border-radius:8px;padding:1rem;margin-bottom:10px;box-shadow:var(--shadow)}
+.goal-card.done{opacity:.6;border-color:var(--cal-inc-bdr)}
 .goal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;flex-wrap:wrap}
-.goal-status{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
-.gs-ok{background:#EAF3DE;color:#3B6D11}.gs-warn{background:#FAEEDA;color:#633806}
-.gs-risk{background:#FCEBEB;color:#8B1A1A}.gs-done{background:#E6F1FB;color:#185FA5}
-body.dark .gs-ok{background:#1a2e1a;color:#4ade80}
-body.dark .gs-warn{background:#2e2a1a;color:#fbbf24}
-body.dark .gs-risk{background:#2e1a1a;color:#f87171}
-body.dark .gs-done{background:#1e3a5f;color:#60a5fa}
-.bar-bg{background:var(--summary-bg);border-radius:4px;height:8px;margin:6px 0 4px}
-.bar-fill{height:8px;border-radius:4px;transition:width .3s}
+.goal-status{font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px;white-space:nowrap;border:1px solid}
+.gs-ok{color:#16a34a;border-color:rgba(22,163,74,.3);background:transparent}
+.gs-warn{color:#d97706;border-color:rgba(217,119,6,.3);background:transparent}
+.gs-risk{color:#dc2626;border-color:rgba(220,38,38,.3);background:transparent}
+.gs-done{color:#7c3aed;border-color:rgba(124,58,237,.3);background:transparent}
+body.dark .gs-ok{color:#4ade80;border-color:rgba(74,222,128,.3)}
+body.dark .gs-warn{color:#fbbf24;border-color:rgba(251,191,36,.3)}
+body.dark .gs-risk{color:#f87171;border-color:rgba(248,113,113,.3)}
+body.dark .gs-done{color:#a78bfa;border-color:rgba(167,139,250,.3)}
+.bar-bg{background:var(--border);border-radius:3px;height:4px;margin:8px 0 4px}
+.bar-fill{height:4px;border-radius:3px;transition:width .4s ease}
 /* RELATORIO */
 .report-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
-.report-section{background:var(--report-bg);border:0.5px solid var(--report-border);border-radius:12px;padding:1rem;margin-bottom:1rem}
-.report-section h3{font-size:14px;font-weight:500;margin-bottom:12px;color:var(--text)}
+.report-section{background:var(--report-bg);border:1px solid var(--report-border);border-radius:8px;padding:1rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.report-section h3{font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text);letter-spacing:.01em}
 .chart-wrap{position:relative;max-height:280px}
 .cat-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .cat-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--sub)}
@@ -213,9 +229,9 @@ body.dark .gs-done{background:#1e3a5f;color:#60a5fa}
   background:rgba(255,255,255,0.1);
   transition:background .3s;
 }
-.ob-step-dot.done{background:#185FA5;}
-.ob-step-dot.active{background:#60a5fa;}
-.ob-emoji{font-size:36px;margin-bottom:10px;display:block}
+.ob-step-dot.done{background:#7c3aed;}
+.ob-step-dot.active{background:#a78bfa;}
+.ob-emoji{font-size:28px;margin-bottom:8px;display:block;filter:grayscale(.4)}
 .ob-title{font-size:20px;font-weight:700;color:#f9fafb;margin-bottom:6px;letter-spacing:-.3px}
 .ob-sub{font-size:13px;color:#6b7280;margin-bottom:1.5rem;line-height:1.6}
 .ob-field{margin-bottom:14px}
@@ -231,18 +247,18 @@ body.dark .gs-done{background:#1e3a5f;color:#60a5fa}
 .ob-field select option{background:#1a1a1a;color:#f9fafb}
 .ob-actions{display:flex;gap:8px;margin-top:1.5rem;align-items:center}
 .ob-next{
-  flex:1;padding:12px;border-radius:10px;border:none;
-  background:linear-gradient(135deg,#185FA5,#7B3BB5);
+  flex:1;padding:12px;border-radius:8px;border:none;
+  background:#7c3aed;
   color:#fff;font-size:14px;font-weight:600;cursor:pointer;
-  transition:opacity .2s;letter-spacing:.3px;
+  transition:opacity .2s;letter-spacing:.01em;
 }
 .ob-next:hover{opacity:.88}
 .ob-skip{
-  font-size:12px;color:#4b5563;cursor:pointer;
+  font-size:12px;color:#6b6b6b;cursor:pointer;
   background:none;border:none;padding:8px;
-  transition:color .2s;
+  transition:color .15s;font-weight:500;
 }
-.ob-skip:hover{color:#6b7280}
+.ob-skip:hover{color:#f0f0f0}
 .ob-summary{
   background:rgba(255,255,255,0.04);border-radius:12px;
   padding:1rem;margin-bottom:1rem;
@@ -257,43 +273,43 @@ body.dark .gs-done{background:#1e3a5f;color:#60a5fa}
 
 /* ── WEEK NOTIFICATIONS BANNER ─────────────────────────────────── */
 .notif-banner{
-  background:linear-gradient(135deg,var(--tab-on-bg),rgba(123,59,181,0.12));
-  border:0.5px solid var(--blue);
-  border-radius:12px;padding:.8rem 1rem;
-  margin-bottom:1rem;display:none;
+  background:var(--accent-dim);
+  border:1px solid rgba(124,58,237,.2);
+  border-radius:8px;padding:.8rem 1rem;
+  margin-bottom:1.25rem;display:none;
   position:relative;overflow:hidden;
 }
 .notif-banner.show{display:block}
 .notif-banner-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.notif-banner-title{font-size:13px;font-weight:600;color:var(--blue)}
+.notif-banner-title{font-size:13px;font-weight:600;color:var(--accent)}
 .notif-banner-close{background:none;border:none;cursor:pointer;color:var(--sub);font-size:16px;padding:0 2px;line-height:1}
 .notif-items{display:flex;flex-direction:column;gap:4px}
-.notif-item{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:3px 0;border-bottom:0.5px solid rgba(24,95,165,0.12)}
+.notif-item{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:3px 0;border-bottom:1px solid var(--border)}
 .notif-item:last-child{border-bottom:none}
 .notif-item-name{color:var(--text);display:flex;align-items:center;gap:5px}
 .notif-item-day{font-size:10px;color:var(--sub);margin-left:4px}
 .notif-item-val{font-weight:600;color:var(--red)}
-.notif-total{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border);font-size:12px;font-weight:600}
+.notif-total{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:12px;font-weight:600}
 .notif-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:50%;width:16px;height:16px;position:absolute;top:-4px;right:-4px}
 
 .rname[onclick]:hover{text-decoration:underline dotted;text-underline-offset:2px;opacity:.85;}
 .rval{font-size:13px;font-weight:500;cursor:pointer}
 .rval:hover{text-decoration:underline dotted;text-underline-offset:2px;opacity:.85;}
 .form-toggle-btn{
-  display:flex;align-items:center;gap:8px;
-  padding:9px 16px;border-radius:10px;
-  border:0.5px dashed var(--border);
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;border-radius:8px;
+  border:1px dashed var(--border);
   background:transparent;cursor:pointer;
-  font-size:13px;color:var(--sub);
+  font-size:13px;font-weight:500;color:var(--sub);
   width:100%;margin-bottom:1rem;
-  transition:background .15s,color .15s,border-color .15s;
+  transition:all .15s;
 }
-.form-toggle-btn:hover{background:var(--panel);color:var(--text);border-color:var(--text)}
+.form-toggle-btn:hover{background:var(--panel);color:var(--text);border-color:var(--accent);border-style:solid}
 .form-toggle-btn .ftb-icon{
-  width:24px;height:24px;border-radius:50%;
-  background:var(--tab-on-bg);color:var(--tab-on-color);
+  width:22px;height:22px;border-radius:50%;
+  background:var(--accent-dim);color:var(--accent);
   display:flex;align-items:center;justify-content:center;
-  font-size:16px;font-weight:300;line-height:1;
+  font-size:15px;font-weight:400;line-height:1;
   transition:transform .25s;flex-shrink:0;
 }
 .form-toggle-btn.open .ftb-icon{transform:rotate(45deg)}
@@ -319,38 +335,38 @@ body.dark .gs-done{background:#1e3a5f;color:#60a5fa}
 }
 #confirmModal.open{opacity:1;pointer-events:all}
 .confirm-card{
-  background:var(--card);border:0.5px solid var(--border);
-  border-radius:16px;padding:1.5rem;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:1.5rem;
   width:100%;max-width:340px;
-  box-shadow:0 24px 60px rgba(0,0,0,.25);
-  transform:translateY(12px) scale(.97);
+  box-shadow:var(--shadow-md);
+  transform:translateY(10px) scale(.98);
   transition:transform .2s;
 }
 #confirmModal.open .confirm-card{transform:translateY(0) scale(1)}
-.confirm-icon{font-size:32px;margin-bottom:10px}
+.confirm-icon{font-size:28px;margin-bottom:10px}
 .confirm-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px}
 .confirm-sub{font-size:12px;color:var(--sub);line-height:1.5;margin-bottom:1.2rem}
 .confirm-actions{display:flex;gap:8px;justify-content:flex-end}
 .confirm-cancel{
-  padding:8px 18px;border-radius:8px;
-  border:0.5px solid var(--border);background:transparent;
-  font-size:13px;color:var(--sub);cursor:pointer;
+  padding:8px 18px;border-radius:6px;
+  border:1px solid var(--border);background:transparent;
+  font-size:13px;font-weight:500;color:var(--sub);cursor:pointer;transition:background .15s;
 }
 .confirm-cancel:hover{background:var(--panel)}
 .confirm-delete{
-  padding:8px 18px;border-radius:8px;border:none;
-  background:#A32D2D;color:#fff;
+  padding:8px 18px;border-radius:6px;border:none;
+  background:var(--red);color:#fff;
   font-size:13px;font-weight:500;cursor:pointer;
-  transition:background .15s;
+  transition:opacity .15s;
 }
-.confirm-delete:hover{background:#8B1A1A}
-body.dark .confirm-delete{background:#c0392b}
+.confirm-delete:hover{opacity:.85}
+body.dark .confirm-delete{background:#dc2626}
 
 #homeScreen,#loginScreen,#resetScreen{
   position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
   z-index:999;padding:1rem;
   background:#080808;
-  background-image:radial-gradient(ellipse 80% 60% at 50% -10%, rgba(24,95,165,0.18) 0%, transparent 70%);
+  background-image:radial-gradient(ellipse 70% 50% at 50% -5%, rgba(124,58,237,0.15) 0%, transparent 65%);
 }
 #homeScreen{flex-direction:column;gap:0;text-align:center}
 /* shared card */
@@ -372,11 +388,11 @@ body.dark .confirm-delete{background:#c0392b}
 .home-tagline{font-size:13px;color:#6b7280;margin-bottom:2.5rem;letter-spacing:.5px}
 .home-enter-btn{
   display:inline-flex;align-items:center;gap:8px;
-  padding:13px 36px;border-radius:50px;border:none;
-  background:linear-gradient(135deg,#185FA5,#7B3BB5);
+  padding:13px 36px;border-radius:8px;border:none;
+  background:#7c3aed;
   color:#fff;font-size:15px;font-weight:600;cursor:pointer;
-  letter-spacing:.3px;transition:opacity .2s,transform .15s;
-  box-shadow:0 8px 32px rgba(24,95,165,0.4);
+  letter-spacing:.01em;transition:opacity .2s,transform .15s;
+  box-shadow:0 4px 24px rgba(124,58,237,0.35);
 }
 .home-enter-btn:hover{opacity:.88;transform:translateY(-1px)}
 .home-badge{
@@ -403,10 +419,10 @@ body.dark .confirm-delete{background:#c0392b}
 .login-field input:focus{border-color:rgba(96,165,250,0.5);background:rgba(96,165,250,0.05)}
 .login-field input::placeholder{color:#4b5563}
 .login-btn{
-  width:100%;padding:12px;border-radius:10px;border:none;
-  background:linear-gradient(135deg,#185FA5,#7B3BB5);
+  width:100%;padding:12px;border-radius:8px;border:none;
+  background:#7c3aed;
   color:#fff;font-size:14px;font-weight:600;cursor:pointer;
-  margin-top:4px;transition:opacity .2s;letter-spacing:.3px;
+  margin-top:4px;transition:opacity .2s;letter-spacing:.01em;
 }
 .login-btn:hover{opacity:.88}
 .login-btn:disabled{opacity:.5;cursor:not-allowed}
@@ -573,9 +589,9 @@ body.dark .confirm-delete{background:#c0392b}
     border:none;background:transparent;
     font-size:9px;color:var(--sub);transition:color .15s;
   }
-  .bn-item .bn-icon{font-size:20px;line-height:1}
+  .bn-item .bn-icon{display:flex;align-items:center;justify-content:center;line-height:1}
   .bn-item.on{color:var(--blue)}
-  .bn-item.on .bn-icon{transform:scale(1.1)}
+  .bn-item.on .bn-icon svg{transform:scale(1.1)}
 
   /* Content padding */
   .sec{padding-top:4px}
@@ -641,11 +657,11 @@ body.dark .confirm-delete{background:#c0392b}
       <span style="font-size:18px">→</span>
     </button>
     <div class="home-badge">
-      <span>🔒 Secure</span>
+      <span>Secure</span>
       <span style="color:#1f2937">·</span>
-      <span>☁️ Cloud sync</span>
+      <span>Cloud sync</span>
       <span style="color:#1f2937">·</span>
-      <span>📱 Works anywhere</span>
+      <span>Works anywhere</span>
     </div>
 
     <!-- Language + Theme toggles -->
@@ -659,7 +675,7 @@ body.dark .confirm-delete{background:#c0392b}
 
       <!-- Theme toggle -->
       <div onclick="toggleTheme()" style="display:flex;align-items:center;gap:7px;cursor:pointer;background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.12);border-radius:50px;padding:5px 14px">
-        <span id="homeThemeIcon" style="font-size:14px">☀️</span>
+        <span id="homeThemeIcon" style="font-size:14px;line-height:1;display:flex;align-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
         <span id="homeThemeLabel" style="font-size:12px;color:#9ca3af">Light</span>
       </div>
 
@@ -729,7 +745,7 @@ body.dark .confirm-delete{background:#c0392b}
       <button class="pin-key" onclick="pinKey('0')">0</button>
       <button class="pin-key del" onclick="pinKey('del')">⌫</button>
     </div>
-    <div class="pin-link" id="pinEmailLink" onclick="pinUseEmail()">✉️ Entrar com email</div>
+    <div class="pin-link" id="pinEmailLink" onclick="pinUseEmail()">Entrar com email</div>
   </div>
 </div>
 
@@ -764,11 +780,11 @@ body.dark .confirm-delete{background:#c0392b}
 <!-- PIN OFFER MODAL -->
 <div id="pinOfferModal">
   <div class="pin-offer-card">
-    <div class="pin-offer-icon">🔐</div>
+    <div class="pin-offer-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg></div>
     <div class="pin-offer-title" id="pinOfferTitle">Criar um PIN de acesso rápido?</div>
     <div class="pin-offer-sub" id="pinOfferSub">Nas próximas visitas, acesse o app sem precisar digitar seu email e senha.</div>
     <div class="pin-offer-actions">
-      <button class="login-btn" onclick="startPinSetup('create')" id="pinOfferCreateBtn">🔐 Criar PIN</button>
+      <button class="login-btn" onclick="startPinSetup('create')" id="pinOfferCreateBtn">Criar PIN</button>
       <button onclick="dismissPinOffer()" style="width:100%;padding:10px;border-radius:10px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:13px;color:var(--sub)" id="pinOfferLaterBtn">Agora não</button>
     </div>
   </div>
@@ -787,7 +803,7 @@ body.dark .confirm-delete{background:#c0392b}
 
     <!-- Step 0: Welcome -->
     <div id="ob-step-0">
-      <span class="ob-emoji">👋</span>
+      <span class="ob-emoji"></span>
       <div class="ob-title" id="ob-title-0">Bem-vindo ao Meudollar!</div>
       <div class="ob-sub" id="ob-sub-0">Vamos configurar tudo rapidinho para você começar a controlar seu dinheiro.</div>
       <div class="ob-field">
@@ -802,7 +818,7 @@ body.dark .confirm-delete{background:#c0392b}
 
     <!-- Step 1: Saldo inicial -->
     <div id="ob-step-1" style="display:none">
-      <span class="ob-emoji">💰</span>
+      <span class="ob-emoji"></span>
       <div class="ob-title" id="ob-title-1">Saldo inicial</div>
       <div class="ob-sub" id="ob-sub-1">Quanto você já tem guardado hoje? Conta, poupança ou carteira.</div>
       <div class="ob-field">
@@ -817,7 +833,7 @@ body.dark .confirm-delete{background:#c0392b}
 
     <!-- Step 2: Rendas -->
     <div id="ob-step-2" style="display:none">
-      <span class="ob-emoji">💵</span>
+      <span class="ob-emoji"></span>
       <div class="ob-title" id="ob-title-2">Suas rendas</div>
       <div class="ob-sub" id="ob-sub-2">Adicione quantas rendas quiser. Salário, freelance, aluguel...</div>
 
@@ -856,7 +872,7 @@ body.dark .confirm-delete{background:#c0392b}
 
     <!-- Step 3: Despesas -->
     <div id="ob-step-3" style="display:none">
-      <span class="ob-emoji">📋</span>
+      <span class="ob-emoji"></span>
       <div class="ob-title" id="ob-title-3">Suas despesas</div>
       <div class="ob-sub" id="ob-sub-3">Adicione quantas despesas quiser. Aluguel, mercado, assinaturas...</div>
 
@@ -887,17 +903,17 @@ body.dark .confirm-delete{background:#c0392b}
         <div class="ob-field" style="margin-top:8px;margin-bottom:0">
           <label id="ob-bcat-label">CATEGORIA</label>
           <select id="ob-bcat">
-            <option value="moradia">🏠 Moradia</option>
-            <option value="alimentacao">🛒 Alimentação</option>
-            <option value="transporte">🚗 Transporte</option>
-            <option value="saude">💊 Saúde</option>
-            <option value="educacao">📚 Educação</option>
-            <option value="lazer">🎉 Lazer</option>
-            <option value="assinaturas">🎯 Assinaturas</option>
-            <option value="vestuario">👕 Vestuário</option>
-            <option value="viagem">✈️ Viagem</option>
-            <option value="generosidade">🤲 Generosidade</option>
-            <option value="outros">📦 Outros</option>
+            <option value="moradia">Moradia</option>
+            <option value="alimentacao">Alimentação</option>
+            <option value="transporte">Transporte</option>
+            <option value="saude">Saúde</option>
+            <option value="educacao">Educação</option>
+            <option value="lazer">Lazer</option>
+            <option value="assinaturas">Assinaturas</option>
+            <option value="vestuario">Vestuário</option>
+            <option value="viagem">Viagem</option>
+            <option value="generosidade">Generosidade</option>
+            <option value="outros">Outros</option>
           </select>
         </div>
         <button onclick="obAddBill()" style="width:100%;margin-top:10px;padding:9px;border-radius:8px;border:0.5px dashed rgba(255,255,255,0.15);background:transparent;color:#9ca3af;cursor:pointer;font-size:13px;transition:all .2s" id="ob-add-bill-btn">+ Adicionar despesa</button>
@@ -911,7 +927,7 @@ body.dark .confirm-delete{background:#c0392b}
 
     <!-- Step 4: Pronto! -->
     <div id="ob-step-4" style="display:none">
-      <span class="ob-emoji">🎉</span>
+      <span class="ob-emoji"></span>
       <div class="ob-title" id="ob-title-4">Tudo pronto!</div>
       <div class="ob-sub" id="ob-sub-4">Veja o resumo do que configuramos:</div>
       <div class="ob-summary" id="ob-summary"></div>
@@ -950,14 +966,14 @@ body.dark .confirm-delete{background:#c0392b}
   </div>
   <div class="drawer-user">
     <div class="drawer-email" id="drawerEmail"></div>
-    <button class="drawer-logout" onclick="handleLogout()">🚪 Sair / Sign out</button>
-    <button onclick="obReset()" style="width:100%;margin-top:6px;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)">🧭 Refazer configuração inicial</button>
-    <button onclick="exportExcel();closeDrawer();" style="width:100%;margin-top:6px;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerExportBtn">📊 Exportar Excel</button>
+    <button class="drawer-logout" onclick="handleLogout()">Sair / Sign out</button>
+    <button onclick="obReset()" style="width:100%;margin-top:6px;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)">Refazer configuração inicial</button>
+    <button onclick="exportExcel();closeDrawer();" style="width:100%;margin-top:6px;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerExportBtn">Exportar Excel</button>
   </div>
   <div class="drawer-section">
     <div class="drawer-section-label" data-i18n="drawer_appearance">Aparência / Appearance</div>
     <div class="drawer-theme">
-      <span id="drawerThemeLabel">☀️ Light mode</span>
+      <span id="drawerThemeLabel">Light mode</span>
       <div class="theme-toggle" onclick="toggleTheme()" style="margin:0">
         <div class="toggle-track"><div class="toggle-dot"></div></div>
       </div>
@@ -989,7 +1005,7 @@ body.dark .confirm-delete{background:#c0392b}
     <div style="display:flex;align-items:center;gap:10px">
       <div class="user-bar desktop-user-bar"><span id="userEmail"></span><button class="logout-btn" onclick="handleLogout()">Sair</button></div>
       <div class="theme-toggle desktop-user-bar" onclick="toggleTheme()" title="Alternar tema">
-        <span id="themeLabel">☀️ Light</span>
+        <span id="themeLabel">Light</span>
         <div class="toggle-track"><div class="toggle-dot"></div></div>
       </div>
       <button class="hamburger" onclick="openDrawer()">☰</button>
@@ -1000,7 +1016,7 @@ body.dark .confirm-delete{background:#c0392b}
   <!-- WEEK NOTIFICATIONS BANNER -->
   <div class="notif-banner" id="notifBanner">
     <div class="notif-banner-header">
-      <span class="notif-banner-title" id="notifTitle">🔔 Contas nos próximos 7 dias</span>
+      <span class="notif-banner-title" id="notifTitle">Contas nos próximos 7 dias</span>
       <button class="notif-banner-close" onclick="closeNotifBanner()" title="Fechar">✕</button>
     </div>
     <div class="notif-items" id="notifItems"></div>
@@ -1013,33 +1029,33 @@ body.dark .confirm-delete{background:#c0392b}
   <div class="cards" id="topCards"></div>
 
   <div class="tabs">
-    <button class="tab on" onclick="showTab('renda')">💵 Renda</button>
-    <button class="tab" onclick="showTab('bills')">📋 Despesas</button>
-    <button class="tab" onclick="showTab('semana')">📅 Semana</button>
-    <button class="tab" onclick="showTab('cal')">🗓 Calendário</button>
-    <button class="tab" onclick="showTab('metas')">🎯 Metas</button>
-    <button class="tab" onclick="showTab('relatorio')">📊 Relatório</button>
+    <button class="tab on" onclick="showTab('renda')" id="tab-btn-renda">Renda</button>
+    <button class="tab" onclick="showTab('bills')" id="tab-btn-bills">Despesas</button>
+    <button class="tab" onclick="showTab('semana')" id="tab-btn-semana">Semana</button>
+    <button class="tab" onclick="showTab('cal')" id="tab-btn-cal">Calendário</button>
+    <button class="tab" onclick="showTab('metas')" id="tab-btn-metas">Metas</button>
+    <button class="tab" onclick="showTab('relatorio')" id="tab-btn-relatorio">Relatório</button>
   </div>
 
   <!-- BOTTOM NAV (mobile only) -->
   <nav class="bottom-nav">
     <button class="bn-item on" id="bn-renda" onclick="showTab('renda')">
-      <span class="bn-icon">💵</span><span>Renda</span>
+      <span class="bn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span><span>Renda</span>
     </button>
     <button class="bn-item" id="bn-bills" onclick="showTab('bills')">
-      <span class="bn-icon">📋</span><span>Despesas</span>
+      <span class="bn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg></span><span>Despesas</span>
     </button>
     <button class="bn-item" id="bn-semana" onclick="showTab('semana')">
-      <span class="bn-icon">📅</span><span>Semana</span>
+      <span class="bn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/></svg></span><span>Semana</span>
     </button>
     <button class="bn-item" id="bn-cal" onclick="showTab('cal')">
-      <span class="bn-icon">🗓</span><span>Calendário</span>
+      <span class="bn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span>Calendário</span>
     </button>
     <button class="bn-item" id="bn-metas" onclick="showTab('metas')">
-      <span class="bn-icon">🎯</span><span>Metas</span>
+      <span class="bn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><span>Metas</span>
     </button>
     <button class="bn-item" id="bn-relatorio" onclick="showTab('relatorio')">
-      <span class="bn-icon">📊</span><span>Relatório</span>
+      <span class="bn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span>Relatório</span>
     </button>
   </nav>
 
@@ -1078,7 +1094,7 @@ body.dark .confirm-delete{background:#c0392b}
       </div>
     </div>
     <div id="rendaList"></div>
-    <p style="font-size:11px;color:#888;margin-top:8px" data-i18n="renda_lock_hint">🔒 = protegida. Clique no cadeado para bloquear/desbloquear.</p>
+    <p style="font-size:11px;color:#888;margin-top:8px" data-i18n="renda_lock_hint">Cadeado = protegida. Clique para bloquear/desbloquear.</p>
   </div>
 
   <!-- DESPESAS -->
@@ -1122,7 +1138,7 @@ body.dark .confirm-delete{background:#c0392b}
       </div>
     </div>
     <div id="billsList"></div>
-    <p style="font-size:11px;color:#888;margin-top:8px" data-i18n="bills_lock_hint">🔒 = protegida. Clique no cadeado para bloquear/desbloquear.</p>
+    <p style="font-size:11px;color:#888;margin-top:8px" data-i18n="bills_lock_hint">Cadeado = protegida. Clique para bloquear/desbloquear.</p>
   </div>
 
   <!-- SEMANA -->
@@ -1199,7 +1215,7 @@ body.dark .confirm-delete{background:#c0392b}
 <!-- CONFIRM MODAL -->
 <div id="confirmModal">
   <div class="confirm-card">
-    <div class="confirm-icon" id="confirmIcon">🗑</div>
+    <div class="confirm-icon" id="confirmIcon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></div>
     <div class="confirm-title" id="confirmTitle">Tem certeza?</div>
     <div class="confirm-sub" id="confirmSub">Essa ação não pode ser desfeita.</div>
     <div class="confirm-actions">
@@ -1215,17 +1231,17 @@ let lang = localStorage.getItem('lang') || 'pt';
 const TRANSLATIONS = {
   pt: {
     // Nav tabs
-    tab_renda:'💵 Renda', tab_bills:'📋 Despesas', tab_semana:'📅 Semana',
-    tab_cal:'🗓 Calendário', tab_metas:'🎯 Metas', tab_relatorio:'📊 Relatório',
+    tab_renda:'Renda', tab_bills:'Despesas', tab_semana:'Semana',
+    tab_cal:'Calendário', tab_metas:'Metas', tab_relatorio:'Relatório',
     // Bottom nav
     bn_renda:'Renda', bn_bills:'Despesas', bn_semana:'Semana',
     bn_cal:'Calendário', bn_metas:'Metas', bn_relatorio:'Relatório',
     // Header / drawer
-    theme_light:'☀️ Light', theme_dark:'🌙 Dark',
+    theme_light:'Light', theme_dark:'Dark',
     drawer_appearance:'Aparência / Appearance',
     drawer_initial_balance:'Saldo inicial / Initial balance',
     drawer_ib_hint:'Quanto você já tem guardado hoje?',
-    drawer_logout:'🚪 Sair / Sign out',
+    drawer_logout:'Sair / Sign out',
     drawer_lang:'Idioma / Language',
     logout_btn:'Sair',
     // Overview cards
@@ -1239,8 +1255,8 @@ const TRANSLATIONS = {
     renda_val_label:'Valor ($)', renda_day_label:'Dia',
     renda_monthyear_label:'Mês/Ano (única)', renda_type_label:'Tipo',
     renda_add_btn:'+ Adicionar',
-    renda_lock_hint:'🔒 = protegida. Clique no cadeado para bloquear/desbloquear.',
-    renda_empty:'Nenhuma renda cadastrada ainda.<br>Use o formulário acima para adicionar. 👆',
+    renda_lock_hint:'Cadeado = protegida. Clique para bloquear/desbloquear.',
+    renda_empty:'Nenhuma renda cadastrada ainda.<br>Use o formulário acima para adicionar.',
     renda_recurring:'Rendas recorrentes', renda_unique:'Rendas únicas',
     type_weekly:'Semanal', type_monthly:'Mensal', type_once:'Única vez', type_biweekly:'Quinzenal',
     day_label:'Todo dia', dow_label:'Todo',
@@ -1251,8 +1267,8 @@ const TRANSLATIONS = {
     bills_monthyear_label:'Mês/Ano (única)', bills_type_label:'Tipo',
     bills_cat_label:'Categoria',
     bills_add_btn:'+ Adicionar despesa',
-    bills_lock_hint:'🔒 = protegida. Clique no cadeado para bloquear/desbloquear.',
-    bills_empty:'Nenhuma despesa cadastrada ainda.<br>Use o formulário acima para adicionar. 👆',
+    bills_lock_hint:'Cadeado = protegida. Clique para bloquear/desbloquear.',
+    bills_empty:'Nenhuma despesa cadastrada ainda.<br>Use o formulário acima para adicionar.',
     bills_recurring:'Despesas recorrentes', bills_unique:'Despesas únicas', bills_meta:'Saques de metas',
     type_extra:'Parcela',
     // Categories
@@ -1265,7 +1281,7 @@ const TRANSLATIONS = {
     cal_prev:'← Anterior', cal_next:'Próximo →',
     legend_income:'Entrada', legend_expense:'Saída', legend_both:'Entrada+Saída', legend_installment:'Parcela/única',
     week_summary_in:'Entradas', week_summary_out:'Saídas', week_summary_margin:'Margem', week_summary_balance:'Saldo acumulado',
-    week_bills_title:'💸 Contas desta semana',
+    week_bills_title:'Contas desta semana',
     cal_summary_in:'Entradas do mês', cal_summary_out:'Saídas do mês',
     days_short:['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
     days_long:['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
@@ -1278,33 +1294,33 @@ const TRANSLATIONS = {
     meta_desc_label:'Descrição', meta_desc_ph:'opcional',
     meta_add_btn:'+ Criar meta',
     meta_empty:'Nenhuma meta criada. Adicione sua primeira meta acima!',
-    meta_done_label:'✅ Concluída', meta_reached:'✅ Meta atingida!',
-    meta_ok:'✅ Viável', meta_warn:'⚠ Apertado', meta_risk:'🔴 Em risco',
-    meta_saved:'💰 Já guardado', meta_left:'🎯 Falta guardar',
-    meta_weeks:'📅 Semanas restantes', meta_per_week:'💵 Guardar/semana',
+    meta_done_label:'Concluída', meta_reached:'Meta atingida!',
+    meta_ok:'Viável', meta_warn:'Apertado', meta_risk:'Em risco',
+    meta_saved:'Já guardado', meta_left:'Falta guardar',
+    meta_weeks:'Semanas restantes', meta_per_week:'Guardar/semana',
     meta_pct_done:'% concluído', meta_missing:'Falta',
-    meta_schedule_title:'📋 Cronograma de saques',
+    meta_schedule_title:'Cronograma de saques',
     meta_sched_week:'#', meta_sched_date:'Data do saque', meta_sched_deposit:'Sacar', meta_sched_acc:'Acumulado',
-    meta_today_badge:'hoje', meta_goal_badge:'✅ Meta!',
-    meta_complete_btn:'✅ Marcar concluída', meta_remove_btn:'🗑 Remover',
+    meta_today_badge:'hoje', meta_goal_badge:'Meta!',
+    meta_complete_btn:'Marcar concluída', meta_remove_btn:'Remover',
     meta_warn_ok_msg:(sob,need)=>`Sua sobra semanal (${sob}) cobre o necessário.`,
     meta_warn_tight_msg:(sob,need,diff)=>`Vai ficar justo. Tente cortar ${diff}/sem em despesas.`,
     meta_warn_risk_msg:(sob,altMonth,altYear,altVal)=>`Sobra insuficiente. Sugestão: adiar para ${altMonth} ${altYear} ou reduzir a meta para ${altVal}.`,
     // Relatorio
     rep_period_label:'Período:', rep_period_all:'Todo período', rep_period_m:'Mês atual', rep_update:'Atualizar',
-    rep_summary_title:'📊 Resumo do período',
+    rep_summary_title:'Resumo do período',
     rep_total_in:'Total entrou', rep_total_out:'Total saiu', rep_balance:'Saldo',
-    rep_cat_title:'🍕 Despesas por categoria',
-    rep_bar_title:'📈 Receita vs Despesa por mês',
-    rep_renda_title:'💰 Fontes de renda',
-    rep_saldo_title:'🏦 Evolução do saldo',
-    rep_extrato_title:'📋 Extrato',
+    rep_cat_title:'Despesas por categoria',
+    rep_bar_title:'Receita vs Despesa por mês',
+    rep_renda_title:'Fontes de renda',
+    rep_saldo_title:'Evolução do saldo',
+    rep_extrato_title:'Extrato',
     rep_bar_in:'Entradas', rep_bar_out:'Saídas', rep_saldo_label:'Saldo',
     rep_empty:'Nenhuma movimentação no período.',
     // Auth
     home_tagline:'Your money. Your control.',
     home_enter:'Entrar / Enter',
-    home_secure:'🔒 Secure', home_cloud:'☁️ Cloud sync', home_mobile:'📱 Works anywhere',
+    home_secure:'Secure', home_cloud:'Cloud sync', home_mobile:'Works anywhere',
     login_subtitle:'Entre na sua conta / Sign in',
     login_email_label:'Email', login_pwd_label:'Senha / Password',
     login_forgot:'Esqueci minha senha / Forgot password',
@@ -1319,11 +1335,11 @@ const TRANSLATIONS = {
     login_wait:'Aguarde... / Please wait...',
     login_err_fill:'Preencha email e senha. / Please fill email and password.',
     login_err_invite:'Acesso por convite apenas. Entre em contato para obter acesso. / Invite only. Contact us to get access.',
-    login_ok_signup:'✅ Conta criada! Verifique seu email. / Account created! Check your email.',
+    login_ok_signup:'Conta criada! Verifique seu email. / Account created! Check your email.',
     reset_subtitle:'Redefinir senha / Reset password',
     reset_btn:'Enviar link / Send link',
     reset_err_email:'Digite seu email.',
-    reset_ok:'✅ Link enviado! Verifique seu email. / Link sent! Check your email.',
+    reset_ok:'Link enviado! Verifique seu email. / Link sent! Check your email.',
     // Misc alerts
     alert_fill_name_val:'Preencha descrição e valor.',
     alert_fill_all:'Preencha nome, valor e data.',
@@ -1337,15 +1353,15 @@ const TRANSLATIONS = {
     starting_balance_label:'Starting balance:',
   },
   en: {
-    tab_renda:'💵 Income', tab_bills:'📋 Expenses', tab_semana:'📅 Week',
-    tab_cal:'🗓 Calendar', tab_metas:'🎯 Goals', tab_relatorio:'📊 Report',
+    tab_renda:'Income', tab_bills:'Expenses', tab_semana:'Week',
+    tab_cal:'Calendar', tab_metas:'Goals', tab_relatorio:'Report',
     bn_renda:'Income', bn_bills:'Expenses', bn_semana:'Week',
     bn_cal:'Calendar', bn_metas:'Goals', bn_relatorio:'Report',
-    theme_light:'☀️ Light', theme_dark:'🌙 Dark',
+    theme_light:'Light', theme_dark:'Dark',
     drawer_appearance:'Appearance',
     drawer_initial_balance:'Initial balance',
     drawer_ib_hint:'How much do you already have saved today?',
-    drawer_logout:'🚪 Sign out',
+    drawer_logout:'Sign out',
     drawer_lang:'Language / Idioma',
     logout_btn:'Sign out',
     card_renda:'Projected total income', card_desp:'Estimated expenses',
@@ -1357,8 +1373,8 @@ const TRANSLATIONS = {
     renda_val_label:'Amount ($)', renda_day_label:'Day',
     renda_monthyear_label:'Month/Year (one-time)', renda_type_label:'Type',
     renda_add_btn:'+ Add',
-    renda_lock_hint:'🔒 = protected. Click the lock to lock/unlock.',
-    renda_empty:'No income added yet.<br>Use the form above to add one. 👆',
+    renda_lock_hint:'Lock = protected. Click to lock/unlock.',
+    renda_empty:'No income added yet.<br>Use the form above to add one.',
     renda_recurring:'Recurring income', renda_unique:'One-time income',
     type_weekly:'Weekly', type_monthly:'Monthly', type_once:'One-time', type_biweekly:'Biweekly',
     day_label:'Every day', dow_label:'Every',
@@ -1368,8 +1384,8 @@ const TRANSLATIONS = {
     bills_monthyear_label:'Month/Year (one-time)', bills_type_label:'Type',
     bills_cat_label:'Category',
     bills_add_btn:'+ Add expense',
-    bills_lock_hint:'🔒 = protected. Click the lock to lock/unlock.',
-    bills_empty:'No expenses added yet.<br>Use the form above to add one. 👆',
+    bills_lock_hint:'Lock = protected. Click to lock/unlock.',
+    bills_empty:'No expenses added yet.<br>Use the form above to add one.',
     bills_recurring:'Recurring expenses', bills_unique:'One-time expenses', bills_meta:'Goal withdrawals',
     type_extra:'Installment',
     cat_moradia:'Housing', cat_transporte:'Transport', cat_alimentacao:'Groceries',
@@ -1380,7 +1396,7 @@ const TRANSLATIONS = {
     cal_prev:'← Previous', cal_next:'Next →',
     legend_income:'Income', legend_expense:'Expense', legend_both:'Income+Expense', legend_installment:'Installment/one-time',
     week_summary_in:'Income', week_summary_out:'Expenses', week_summary_margin:'Margin', week_summary_balance:'Running balance',
-    week_bills_title:'💸 Bills this week',
+    week_bills_title:'Bills this week',
     cal_summary_in:'Month income', cal_summary_out:'Month expenses',
     days_short:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
     days_long:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
@@ -1392,31 +1408,31 @@ const TRANSLATIONS = {
     meta_desc_label:'Description', meta_desc_ph:'optional',
     meta_add_btn:'+ Create goal',
     meta_empty:'No goals yet. Add your first goal above!',
-    meta_done_label:'✅ Completed', meta_reached:'✅ Goal reached!',
-    meta_ok:'✅ On track', meta_warn:'⚠ Tight', meta_risk:'🔴 At risk',
-    meta_saved:'💰 Saved so far', meta_left:'🎯 Still needed',
-    meta_weeks:'📅 Weeks left', meta_per_week:'💵 Save/week',
+    meta_done_label:'Completed', meta_reached:'Goal reached!',
+    meta_ok:'On track', meta_warn:'Tight', meta_risk:'At risk',
+    meta_saved:'Saved so far', meta_left:'Still needed',
+    meta_weeks:'Weeks left', meta_per_week:'Save/week',
     meta_pct_done:'% done', meta_missing:'Missing',
-    meta_schedule_title:'📋 Withdrawal schedule',
+    meta_schedule_title:'Withdrawal schedule',
     meta_sched_week:'#', meta_sched_date:'Withdrawal date', meta_sched_deposit:'Save', meta_sched_acc:'Accumulated',
-    meta_today_badge:'today', meta_goal_badge:'✅ Goal!',
-    meta_complete_btn:'✅ Mark as done', meta_remove_btn:'🗑 Remove',
+    meta_today_badge:'today', meta_goal_badge:'Goal!',
+    meta_complete_btn:'Mark as done', meta_remove_btn:'Remove',
     meta_warn_ok_msg:(sob,need)=>`Your weekly surplus (${sob}) covers what's needed.`,
     meta_warn_tight_msg:(sob,need,diff)=>`It will be tight. Try cutting ${diff}/week in expenses.`,
     meta_warn_risk_msg:(sob,altMonth,altYear,altVal)=>`Surplus insufficient. Suggestion: postpone to ${altMonth} ${altYear} or reduce goal to ${altVal}.`,
     rep_period_label:'Period:', rep_period_all:'All time', rep_period_m:'Current month', rep_update:'Update',
-    rep_summary_title:'📊 Period summary',
+    rep_summary_title:'Period summary',
     rep_total_in:'Total in', rep_total_out:'Total out', rep_balance:'Balance',
-    rep_cat_title:'🍕 Expenses by category',
-    rep_bar_title:'📈 Income vs Expenses by month',
-    rep_renda_title:'💰 Income sources',
-    rep_saldo_title:'🏦 Balance over time',
-    rep_extrato_title:'📋 Statement',
+    rep_cat_title:'Expenses by category',
+    rep_bar_title:'Income vs Expenses by month',
+    rep_renda_title:'Income sources',
+    rep_saldo_title:'Balance over time',
+    rep_extrato_title:'Statement',
     rep_bar_in:'Income', rep_bar_out:'Expenses', rep_saldo_label:'Balance',
     rep_empty:'No transactions in this period.',
     home_tagline:'Your money. Your control.',
     home_enter:'Enter',
-    home_secure:'🔒 Secure', home_cloud:'☁️ Cloud sync', home_mobile:'📱 Works anywhere',
+    home_secure:'Secure', home_cloud:'Cloud sync', home_mobile:'Works anywhere',
     login_subtitle:'Sign in to your account',
     login_email_label:'Email', login_pwd_label:'Password',
     login_forgot:'Forgot password',
@@ -1431,11 +1447,11 @@ const TRANSLATIONS = {
     login_wait:'Please wait...',
     login_err_fill:'Please fill email and password.',
     login_err_invite:'Invite only. Contact us to get access.',
-    login_ok_signup:'✅ Account created! Check your email.',
+    login_ok_signup:'Account created! Check your email.',
     reset_subtitle:'Reset password',
     reset_btn:'Send link',
     reset_err_email:'Please enter your email.',
-    reset_ok:'✅ Link sent! Check your email.',
+    reset_ok:'Link sent! Check your email.',
     alert_fill_name_val:'Please fill in description and amount.',
     alert_fill_all:'Please fill in name, amount and date.',
     alert_unlock_before_remove:'Unlock before removing.',
@@ -1478,7 +1494,7 @@ function applyLang(){
   // Home theme toggle
   const hti=document.getElementById('homeThemeIcon');
   const htl=document.getElementById('homeThemeLabel');
-  if(hti) hti.textContent=dark?'🌙':'☀️';
+  if(hti) hti.innerHTML=dark?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
   if(htl) htl.textContent=dark?(lang==='en'?'Dark':'Escuro'):(lang==='en'?'Light':'Claro');
 
   // ── Login screen ──
@@ -1579,17 +1595,17 @@ function MS(i){ return t('months_short')[i]; }
 function DAYS_PT(i){ return t('days_long')[i]; }
 function DAYS_SHORT(i){ return t('days_short')[i]; }
 const CATS = {
-  moradia:{get label(){return t('cat_moradia')},icon:'🏠',color:'#378ADD'},
-  transporte:{get label(){return t('cat_transporte')},icon:'🚗',color:'#EF9F27'},
-  alimentacao:{get label(){return t('cat_alimentacao')},icon:'🛒',color:'#3B6D11'},
-  educacao:{get label(){return t('cat_educacao')},icon:'📚',color:'#7B3BB5'},
-  viagem:{get label(){return t('cat_viagem')},icon:'✈️',color:'#1D9E75'},
-  assinaturas:{get label(){return t('cat_assinaturas')},icon:'🎯',color:'#185FA5'},
-  lazer:{get label(){return t('cat_lazer')},icon:'🎉',color:'#D4537E'},
-  saude:{get label(){return t('cat_saude')},icon:'💊',color:'#E24B4A'},
-  vestuario:{get label(){return t('cat_vestuario')},icon:'👕',color:'#854F0B'},
-  outros:{get label(){return t('cat_outros')},icon:'📦',color:'#888780'},
-  generosidade:{get label(){return t('cat_generosidade')},icon:'🤲',color:'#D4537E'},
+  moradia:{get label(){return t('cat_moradia')},icon:'',color:'#378ADD'},
+  transporte:{get label(){return t('cat_transporte')},icon:'',color:'#EF9F27'},
+  alimentacao:{get label(){return t('cat_alimentacao')},icon:'',color:'#3B6D11'},
+  educacao:{get label(){return t('cat_educacao')},icon:'',color:'#7B3BB5'},
+  viagem:{get label(){return t('cat_viagem')},icon:'',color:'#1D9E75'},
+  assinaturas:{get label(){return t('cat_assinaturas')},icon:'',color:'#185FA5'},
+  lazer:{get label(){return t('cat_lazer')},icon:'',color:'#D4537E'},
+  saude:{get label(){return t('cat_saude')},icon:'',color:'#E24B4A'},
+  vestuario:{get label(){return t('cat_vestuario')},icon:'',color:'#854F0B'},
+  outros:{get label(){return t('cat_outros')},icon:'',color:'#888780'},
+  generosidade:{get label(){return t('cat_generosidade')},icon:'',color:'#D4537E'},
 };
 
 // ── Supabase setup ────────────────────────────────────────────────
@@ -1936,7 +1952,7 @@ function buildNotifBanner(){
   const isEN=lang==='en';
   const days=isEN?['Sun','Mon','Tue','Wed','Thu','Fri','Sat']:['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
   document.getElementById('notifTitle').textContent=
-    isEN?`🔔 Bills in the next 7 days (${items.length})`:`🔔 Contas nos próximos 7 dias (${items.length})`;
+    isEN?`Bills in the next 7 days (${items.length})`:`Contas nos próximos 7 dias (${items.length})`;
   document.getElementById('notifTotalLabel').textContent=isEN?'Week total:':'Total da semana:';
   document.getElementById('notifTotalVal').textContent='-'+fmt(total);
   document.getElementById('notifItems').innerHTML=items.map(x=>{
@@ -2136,8 +2152,8 @@ function makeRendaRow(r){
       }
     </div>
     <div class="row-act">
-      <button class="icon-btn${r.locked?' lock-on':''}" onclick="toggleRendaLock('${r.id}')">${r.locked?'🔒':'🔓'}</button>
-      ${!r.locked?`<button class="icon-btn del" onclick="removeRenda('${r.id}')">🗑</button>`:''}
+      <button class="icon-btn${r.locked?' lock-on':''}" onclick="toggleRendaLock('${r.id}')" title="${r.locked?'Desbloquear':'Bloquear'}">${r.locked?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`}</button>
+      ${!r.locked?`<button class="icon-btn del" onclick="removeRenda('${r.id}')" title="Remover"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>`:''}
     </div>`;
   return row;
 }
@@ -2222,7 +2238,7 @@ function makeBillRow(b){
   const cat=CATS[b.cat||'outros'];
   row.innerHTML=`
     <div>
-      <div class="rname" onclick="startInlineEdit(this,'bill','${b.id}')" title="${lang==='en'?'Click to edit name':'Clique para editar o nome'}" style="cursor:pointer">${b.name} <span class="badge ${bc}">${bl}</span> <span style="font-size:10px">${cat.icon}</span></div>
+      <div class="rname" onclick="startInlineEdit(this,'bill','${b.id}')" title="${lang==='en'?'Click to edit name':'Clique para editar o nome'}" style="cursor:pointer">${b.name} <span class="badge ${bc}">${bl}</span></div>
       <div class="rsub">${dl} · ${cat.label}</div>
     </div>
     <div class="rval" onclick="startInlineEditVal(this,'bill','${b.id}')" title="${lang==='en'?'Click to edit value':'Clique para editar o valor'}">${fmt(b.val)}</div>
@@ -2233,8 +2249,8 @@ function makeBillRow(b){
       }
     </div>
     <div class="row-act">
-      <button class="icon-btn${b.locked?' lock-on':''}" onclick="toggleLock('${b.id}')">${b.locked?'🔒':'🔓'}</button>
-      ${!b.locked?`<button class="icon-btn del" onclick="removeBill('${b.id}')">🗑</button>`:''}
+      <button class="icon-btn${b.locked?' lock-on':''}" onclick="toggleLock('${b.id}')" title="${b.locked?'Desbloquear':'Bloquear'}">${b.locked?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`}</button>
+      ${!b.locked?`<button class="icon-btn del" onclick="removeBill('${b.id}')" title="Remover"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>`:''}
     </div>`;
   return row;
 }
@@ -2468,7 +2484,7 @@ function buildMetas(){
         <div>
           <div style="font-size:15px;font-weight:500">${meta.name}</div>
           ${meta.desc?`<div style="font-size:11px;color:#888;margin-top:1px">${meta.desc}</div>`:''}
-          <div style="font-size:11px;color:#888;margin-top:3px">📅 ${meta.month+1}/${meta.day}/${meta.year}</div>
+          <div style="font-size:11px;color:#888;margin-top:3px">${meta.month+1}/${meta.day}/${meta.year}</div>
         </div>
         <div style="text-align:right">
           <span class="goal-status ${sc}">${status}</span>
@@ -2560,7 +2576,7 @@ function addMeta(){
   const needPerWeek=Math.ceil(val/weeksLeft);
   const metaId=newId();
   const billId=newId();
-  const nb={id:billId,name:'💰 Guardar — '+name,val:needPerWeek,day:5,type:'weekly',locked:false,cat:'outros',metaId,metaEnd:targetDate,note:`Save every Friday until ${mo}/${dy}/${yr}`};
+  const nb={id:billId,name:'Guardar — '+name,val:needPerWeek,day:5,type:'weekly',locked:false,cat:'outros',metaId,metaEnd:targetDate,note:`Save every Friday until ${mo}/${dy}/${yr}`};
   bills.push(nb);
   saveBill(nb);
   const nm={id:metaId,name,val,day:dy,month:mo-1,year:yr,desc,done:false,billId,needPerWeek,weeksLeft};
@@ -2704,7 +2720,7 @@ function buildRelatorio(){
     data:{labels:catKeys.map(k=>(CATS[k]?.icon||'')+(CATS[k]?.label||k)),datasets:[{data:catKeys.map(k=>Math.round(catTotals[k])),backgroundColor:pieColors,borderWidth:2,borderColor:cc.border}]},
     options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:8,color:cc.text}}}}
   });
-  const legHtml=catKeys.map(k=>`<div class="cat-item"><div class="cat-dot" style="background:${CATS[k]?.color}"></div>${CATS[k]?.icon} ${CATS[k]?.label}: <strong>${fmt(catTotals[k])}</strong></div>`).join('');
+  const legHtml=catKeys.map(k=>`<div class="cat-item"><div class="cat-dot" style="background:${CATS[k]?.color}"></div>${CATS[k]?.label}: <strong>${fmt(catTotals[k])}</strong></div>`).join('');
   document.getElementById('catLegend').innerHTML=legHtml;
 
   // BAR
@@ -2770,7 +2786,7 @@ function toggleTheme(){
   // Home screen theme toggle
   const hti=document.getElementById('homeThemeIcon');
   const htl=document.getElementById('homeThemeLabel');
-  if(hti) hti.textContent=dark?'🌙':'☀️';
+  if(hti) hti.innerHTML=dark?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
   if(htl) htl.textContent=dark?(lang==='en'?'Dark':'Escuro'):(lang==='en'?'Light':'Claro');
   localStorage.setItem('theme',dark?'dark':'light');
   rebuild();
@@ -2823,7 +2839,7 @@ if(savedTheme==='dark'){
   if(dl) dl.textContent=t('theme_dark');
   const hti=document.getElementById('homeThemeIcon');
   const htl=document.getElementById('homeThemeLabel');
-  if(hti) hti.textContent='🌙';
+  if(hti) hti.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
   if(htl) htl.textContent=lang==='en'?'Dark':'Escuro';
 }
 // Apply saved language immediately
@@ -3213,7 +3229,7 @@ function showPinScreen(){
   pinUpdateDots('pd',0);
   document.getElementById('pinErr').textContent='';
   document.getElementById('pinTitle').textContent=lang==='en'?'Enter your PIN':'Digite seu PIN';
-  document.getElementById('pinEmailLink').textContent=lang==='en'?'✉️ Sign in with email':'✉️ Entrar com email';
+  document.getElementById('pinEmailLink').textContent=lang==='en'?'Sign in with email':'Entrar com email';
 }
 
 function pinUpdateDots(prefix,count,err){
@@ -3256,7 +3272,7 @@ function showPinOffer(){
   const isEN=lang==='en';
   document.getElementById('pinOfferTitle').textContent=isEN?'Set up a quick access PIN?':'Criar um PIN de acesso rápido?';
   document.getElementById('pinOfferSub').textContent=isEN?'On future visits, open the app without typing your email and password.':'Nas próximas visitas, acesse sem digitar email e senha.';
-  document.getElementById('pinOfferCreateBtn').textContent=isEN?'🔐 Create PIN':'🔐 Criar PIN';
+  document.getElementById('pinOfferCreateBtn').textContent=isEN?'Create PIN':'Criar PIN';
   document.getElementById('pinOfferLaterBtn').textContent=isEN?'Not now':'Agora não';
   document.getElementById('pinOfferModal').classList.add('open');
 }
@@ -3328,9 +3344,9 @@ function updateDrawerPinSection(){
   sec.innerHTML=`
     <div class="drawer-section-label">${isEN?'Quick Access PIN':'PIN de acesso rápido'}</div>
     ${hasPin
-      ?`<button onclick="startPinSetup('change')" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--sub);margin-bottom:6px">${isEN?'🔑 Change PIN':'🔑 Alterar PIN'}</button>
-        <button onclick="removePIN()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--red)">${isEN?'🗑 Remove PIN':'🗑 Remover PIN'}</button>`
-      :`<button onclick="startPinSetup('create')" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--blue)">${isEN?'🔐 Create PIN':'🔐 Criar PIN'}</button>`
+      ?`<button onclick="startPinSetup('change')" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--sub);margin-bottom:6px">${isEN?'Change PIN':'Alterar PIN'}</button>
+        <button onclick="removePIN()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--red)">${isEN?'Remove PIN':'Remover PIN'}</button>`
+      :`<button onclick="startPinSetup('create')" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--blue)">${isEN?'Create PIN':'Criar PIN'}</button>`
     }`;
 }
 
