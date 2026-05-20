@@ -425,6 +425,66 @@ body.dark .confirm-delete{background:#c0392b}
 .login-divider{display:flex;align-items:center;gap:10px;margin:16px 0}
 .login-divider hr{flex:1;border:none;border-top:0.5px solid rgba(255,255,255,0.08)}
 .login-divider span{font-size:11px;color:#4b5563}
+/* PIN SCREENS */
+#pinScreen,#pinSetupScreen{
+  position:fixed;inset:0;flex-direction:column;align-items:center;justify-content:center;
+  z-index:999;padding:1rem;
+  background:#080808;
+  background-image:radial-gradient(ellipse 80% 60% at 50% -10%, rgba(24,95,165,0.18) 0%, transparent 70%);
+}
+.pin-card{
+  background:rgba(18,18,18,0.95);border:0.5px solid rgba(255,255,255,0.08);
+  border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:340px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.6);backdrop-filter:blur(20px);
+  display:flex;flex-direction:column;align-items:center;
+}
+.pin-logo{
+  font-size:28px;font-weight:800;letter-spacing:-1px;
+  background:linear-gradient(135deg,#60a5fa,#a78bfa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;
+}
+.pin-title{font-size:14px;color:#9ca3af;margin-bottom:2rem;text-align:center}
+.pin-dots{display:flex;gap:16px;margin-bottom:2rem}
+.pin-dot{
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid rgba(255,255,255,0.2);background:transparent;
+  transition:background .15s,border-color .15s;
+}
+.pin-dot.filled{background:#60a5fa;border-color:#60a5fa}
+.pin-dot.error{background:#f87171;border-color:#f87171}
+.pin-err{font-size:12px;color:#f87171;min-height:18px;margin-bottom:.8rem;text-align:center}
+.pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:240px}
+.pin-key{
+  height:60px;border-radius:14px;border:0.5px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.06);color:#f9fafb;font-size:22px;font-weight:500;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .1s,transform .1s;user-select:none;-webkit-tap-highlight-color:transparent;
+}
+.pin-key:hover{background:rgba(255,255,255,0.12)}
+.pin-key:active{transform:scale(.93);background:rgba(255,255,255,0.18)}
+.pin-key.del{font-size:18px;color:#9ca3af}
+.pin-key.empty{background:transparent;border-color:transparent;pointer-events:none}
+.pin-link{font-size:12px;color:#6b7280;cursor:pointer;margin-top:1.4rem;text-align:center}
+.pin-link:hover{color:#60a5fa}
+@keyframes pin-shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.pin-dots.shake{animation:pin-shake .35s ease}
+/* PIN OFFER MODAL */
+#pinOfferModal{
+  position:fixed;inset:0;z-index:1200;
+  display:none;align-items:flex-end;justify-content:center;
+  padding:1rem;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
+}
+#pinOfferModal.open{display:flex}
+.pin-offer-card{
+  background:var(--card);border:0.5px solid var(--border);
+  border-radius:20px;padding:1.8rem;width:100%;max-width:400px;
+  box-shadow:0 -8px 40px rgba(0,0,0,.2);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.pin-offer-icon{font-size:36px;margin-bottom:2px}
+.pin-offer-title{font-size:16px;font-weight:700;color:var(--text);text-align:center}
+.pin-offer-sub{font-size:12px;color:var(--sub);text-align:center;margin-bottom:8px;line-height:1.5}
+.pin-offer-actions{display:flex;flex-direction:column;gap:8px;width:100%}
 /* user bar */
 .user-bar{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sub)}
 .user-bar span{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -606,6 +666,75 @@ body.dark .confirm-delete{background:#c0392b}
     <button class="login-btn" id="resetBtn" onclick="handleReset()">Enviar link</button>
     <div style="text-align:center;margin-top:14px">
       <a onclick="showLogin()" style="font-size:11px;color:#4b5563;cursor:pointer" id="resetBackLink">← Voltar</a>
+    </div>
+  </div>
+</div>
+
+<!-- PIN ENTRY SCREEN -->
+<div id="pinScreen" style="display:none">
+  <div class="pin-card">
+    <div class="pin-logo">Meudollar</div>
+    <div class="pin-title" id="pinTitle">Digite seu PIN</div>
+    <div class="pin-dots" id="pinDots">
+      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-err" id="pinErr"></div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key empty"></button>
+      <button class="pin-key" onclick="pinKey('0')">0</button>
+      <button class="pin-key del" onclick="pinKey('del')">⌫</button>
+    </div>
+    <div class="pin-link" id="pinEmailLink" onclick="pinUseEmail()">✉️ Entrar com email</div>
+  </div>
+</div>
+
+<!-- PIN SETUP SCREEN -->
+<div id="pinSetupScreen" style="display:none">
+  <div class="pin-card">
+    <div class="pin-logo">Meudollar</div>
+    <div class="pin-title" id="pinSetupTitle">Digite um PIN de 4 dígitos</div>
+    <div class="pin-dots" id="pinSetupDots">
+      <div class="pin-dot" id="psd0"></div><div class="pin-dot" id="psd1"></div>
+      <div class="pin-dot" id="psd2"></div><div class="pin-dot" id="psd3"></div>
+    </div>
+    <div class="pin-err" id="pinSetupErr"></div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinSetupKey('1')">1</button>
+      <button class="pin-key" onclick="pinSetupKey('2')">2</button>
+      <button class="pin-key" onclick="pinSetupKey('3')">3</button>
+      <button class="pin-key" onclick="pinSetupKey('4')">4</button>
+      <button class="pin-key" onclick="pinSetupKey('5')">5</button>
+      <button class="pin-key" onclick="pinSetupKey('6')">6</button>
+      <button class="pin-key" onclick="pinSetupKey('7')">7</button>
+      <button class="pin-key" onclick="pinSetupKey('8')">8</button>
+      <button class="pin-key" onclick="pinSetupKey('9')">9</button>
+      <button class="pin-key empty"></button>
+      <button class="pin-key" onclick="pinSetupKey('0')">0</button>
+      <button class="pin-key del" onclick="pinSetupKey('del')">⌫</button>
+    </div>
+    <div class="pin-link" onclick="cancelPinSetup()">✕ Cancelar</div>
+  </div>
+</div>
+
+<!-- PIN OFFER MODAL -->
+<div id="pinOfferModal">
+  <div class="pin-offer-card">
+    <div class="pin-offer-icon">🔐</div>
+    <div class="pin-offer-title" id="pinOfferTitle">Criar um PIN de acesso rápido?</div>
+    <div class="pin-offer-sub" id="pinOfferSub">Nas próximas visitas, acesse o app sem precisar digitar seu email e senha.</div>
+    <div class="pin-offer-actions">
+      <button class="login-btn" onclick="startPinSetup('create')" id="pinOfferCreateBtn">🔐 Criar PIN</button>
+      <button onclick="dismissPinOffer()" style="width:100%;padding:10px;border-radius:10px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:13px;color:var(--sub)" id="pinOfferLaterBtn">Agora não</button>
     </div>
   </div>
 </div>
@@ -805,6 +934,9 @@ body.dark .confirm-delete{background:#c0392b}
       <button id="langBtnPT" onclick="setLang('pt')" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:13px;color:var(--sub);font-weight:700;color:var(--blue)">🇧🇷 PT</button>
       <button id="langBtnEN" onclick="setLang('en')" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:13px;color:var(--sub)">🇺🇸 EN</button>
     </div>
+  </div>
+  <div class="drawer-section" id="drawerPinSection">
+    <!-- populated by updateDrawerPinSection() -->
   </div>
   <div class="drawer-section">
     <div class="drawer-section-label" data-i18n="drawer_initial_balance">Saldo inicial / Initial balance</div>
@@ -2682,10 +2814,9 @@ function setUserUI(user){
   document.getElementById('userEmail').textContent=user.email;
   const de=document.getElementById('drawerEmail');
   if(de) de.textContent=user.email;
-  document.getElementById('homeScreen').style.display='none';
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('resetScreen').style.display='none';
-  document.getElementById('onboardingScreen').style.display='none';
+  ['homeScreen','loginScreen','resetScreen','onboardingScreen','pinScreen','pinSetupScreen']
+    .forEach(id=>document.getElementById(id).style.display='none');
+  updateDrawerPinSection();
 }
 
 let _booted = false;
@@ -2698,6 +2829,7 @@ _supa.auth.onAuthStateChange(async (event, session)=>{
     setUserUI(_user);
     await loadFromSupabase();
     initApp();
+    if(!localStorage.getItem('pin_'+_user.id)) setTimeout(showPinOffer,800);
   } else if(event==='SIGNED_OUT'){
     _user=null;
     rendas=[];bills=[];metas=[];
@@ -2710,9 +2842,13 @@ async function bootApp(){
   _booted=true;
   if(session?.user){
     _user=session.user;
-    setUserUI(_user);
-    await loadFromSupabase();
-    initApp();
+    if(localStorage.getItem('pin_'+_user.id)){
+      showPinScreen();
+    } else {
+      setUserUI(_user);
+      await loadFromSupabase();
+      initApp();
+    }
   } else {
     showHome();
   }
@@ -3029,6 +3165,150 @@ function startInlineEditVal(el, type, id){
     if(e.key==='Escape'){e.preventDefault();el.innerHTML=originalHTML;}
   });
 }
+
+// ── PIN SYSTEM ────────────────────────────────────────────────────
+let _pinBuf=[], _pinSetupStep=1, _pinSetupFirst=null, _pinSetupMode='create';
+
+function getStoredPin(){ return _user ? localStorage.getItem('pin_'+_user.id) : null; }
+
+function showPinScreen(){
+  ['homeScreen','loginScreen','resetScreen','pinSetupScreen'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('pinScreen').style.display='flex';
+  _pinBuf=[];
+  pinUpdateDots('pd',0);
+  document.getElementById('pinErr').textContent='';
+  document.getElementById('pinTitle').textContent=lang==='en'?'Enter your PIN':'Digite seu PIN';
+  document.getElementById('pinEmailLink').textContent=lang==='en'?'✉️ Sign in with email':'✉️ Entrar com email';
+}
+
+function pinUpdateDots(prefix,count,err){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById(prefix+i);
+    d.className='pin-dot'+(i<count?' filled':'')+(err?' error':'');
+  }
+}
+
+function pinKey(k){
+  document.getElementById('pinErr').textContent='';
+  if(k==='del'){if(_pinBuf.length>0){_pinBuf.pop();pinUpdateDots('pd',_pinBuf.length);}return;}
+  if(_pinBuf.length>=4) return;
+  _pinBuf.push(k); pinUpdateDots('pd',_pinBuf.length);
+  if(_pinBuf.length===4) setTimeout(pinSubmit,120);
+}
+
+async function pinSubmit(){
+  const entered=_pinBuf.join(''), stored=getStoredPin();
+  if(entered===stored){
+    document.getElementById('pinScreen').style.display='none';
+    setUserUI(_user);
+    await loadFromSupabase();
+    initApp();
+  } else {
+    const dots=document.getElementById('pinDots');
+    pinUpdateDots('pd',4,true);
+    dots.classList.add('shake');
+    setTimeout(()=>{dots.classList.remove('shake');_pinBuf=[];pinUpdateDots('pd',0);},400);
+    document.getElementById('pinErr').textContent=lang==='en'?'Incorrect PIN. Try again.':'PIN incorreto. Tente novamente.';
+  }
+}
+
+function pinUseEmail(){
+  document.getElementById('pinScreen').style.display='none';
+  _supa.auth.signOut().then(()=>showLogin());
+}
+
+function showPinOffer(){
+  const isEN=lang==='en';
+  document.getElementById('pinOfferTitle').textContent=isEN?'Set up a quick access PIN?':'Criar um PIN de acesso rápido?';
+  document.getElementById('pinOfferSub').textContent=isEN?'On future visits, open the app without typing your email and password.':'Nas próximas visitas, acesse sem digitar email e senha.';
+  document.getElementById('pinOfferCreateBtn').textContent=isEN?'🔐 Create PIN':'🔐 Criar PIN';
+  document.getElementById('pinOfferLaterBtn').textContent=isEN?'Not now':'Agora não';
+  document.getElementById('pinOfferModal').classList.add('open');
+}
+
+function dismissPinOffer(){
+  document.getElementById('pinOfferModal').classList.remove('open');
+}
+
+function startPinSetup(mode){
+  _pinSetupMode=mode||'create';
+  _pinSetupStep=1; _pinSetupFirst=null; _pinBuf=[];
+  dismissPinOffer(); if(typeof closeDrawer==='function') closeDrawer();
+  ['homeScreen','loginScreen','resetScreen','pinScreen'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('pinSetupScreen').style.display='flex';
+  pinSetupUpdateUI();
+}
+
+function pinSetupUpdateUI(){
+  _pinBuf=[]; pinUpdateDots('psd',0);
+  document.getElementById('pinSetupErr').textContent='';
+  const isEN=lang==='en';
+  document.getElementById('pinSetupTitle').textContent=
+    _pinSetupStep===1?(isEN?'Enter a 4-digit PIN':'Digite um PIN de 4 dígitos'):(isEN?'Confirm your PIN':'Confirme seu PIN');
+}
+
+function pinSetupKey(k){
+  document.getElementById('pinSetupErr').textContent='';
+  if(k==='del'){if(_pinBuf.length>0){_pinBuf.pop();pinUpdateDots('psd',_pinBuf.length);}return;}
+  if(_pinBuf.length>=4) return;
+  _pinBuf.push(k); pinUpdateDots('psd',_pinBuf.length);
+  if(_pinBuf.length===4) setTimeout(pinSetupSubmit,120);
+}
+
+function pinSetupSubmit(){
+  if(_pinSetupStep===1){
+    _pinSetupFirst=_pinBuf.join('');
+    _pinSetupStep=2; pinSetupUpdateUI();
+  } else {
+    const confirm=_pinBuf.join('');
+    if(confirm===_pinSetupFirst){
+      if(_user) localStorage.setItem('pin_'+_user.id,confirm);
+      document.getElementById('pinSetupScreen').style.display='none';
+      updateDrawerPinSection();
+    } else {
+      const dots=document.getElementById('pinSetupDots');
+      pinUpdateDots('psd',4,true);
+      dots.classList.add('shake');
+      setTimeout(()=>{dots.classList.remove('shake');_pinSetupStep=1;pinSetupUpdateUI();},400);
+      document.getElementById('pinSetupErr').textContent=lang==='en'?'PINs do not match. Try again.':'Os PINs não coincidem. Tente novamente.';
+    }
+  }
+}
+
+function cancelPinSetup(){
+  document.getElementById('pinSetupScreen').style.display='none';
+}
+
+function removePIN(){
+  if(!_user) return;
+  localStorage.removeItem('pin_'+_user.id);
+  updateDrawerPinSection();
+  if(typeof closeDrawer==='function') closeDrawer();
+}
+
+function updateDrawerPinSection(){
+  const sec=document.getElementById('drawerPinSection');
+  if(!sec) return;
+  const hasPin=!!getStoredPin(), isEN=lang==='en';
+  sec.innerHTML=`
+    <div class="drawer-section-label">${isEN?'Quick Access PIN':'PIN de acesso rápido'}</div>
+    ${hasPin
+      ?`<button onclick="startPinSetup('change')" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--sub);margin-bottom:6px">${isEN?'🔑 Change PIN':'🔑 Alterar PIN'}</button>
+        <button onclick="removePIN()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--red)">${isEN?'🗑 Remove PIN':'🗑 Remover PIN'}</button>`
+      :`<button onclick="startPinSetup('create')" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--blue)">${isEN?'🔐 Create PIN':'🔐 Criar PIN'}</button>`
+    }`;
+}
+
+document.addEventListener('keydown',e=>{
+  const ps=document.getElementById('pinScreen'), pss=document.getElementById('pinSetupScreen');
+  if(ps&&ps.style.display!=='none'){
+    if(e.key>='0'&&e.key<='9') pinKey(e.key);
+    else if(e.key==='Backspace') pinKey('del');
+  } else if(pss&&pss.style.display!=='none'){
+    if(e.key>='0'&&e.key<='9') pinSetupKey(e.key);
+    else if(e.key==='Backspace') pinSetupKey('del');
+  }
+});
 
 // ── EXPORT EXCEL ─────────────────────────────────────────────────
 function exportExcel(){
