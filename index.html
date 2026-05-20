@@ -627,11 +627,25 @@ body.dark .confirm-delete{background:#dc2626}
 
   /* Forms full width */
   .frow6{grid-template-columns:1fr 1fr!important}
-  /* Row: 4 cols, all shrunk to fit mobile screen */
-  .row{grid-template-columns:1fr 60px 36px 60px!important;gap:3px}
-  .row > *{min-width:0}
-  .rval{font-size:12px!important}
-  .row-act{gap:2px!important}
+
+  /* Row: 2-row layout on mobile
+     Line 1: [name+badge]  [value]
+     Line 2: [day control] [action buttons]            */
+  .row{
+    grid-template-columns:1fr auto!important;
+    grid-template-rows:auto auto;
+    grid-template-areas:"rn rv" "rd ra"!important;
+    gap:4px 8px!important;
+  }
+  .row > :nth-child(1){grid-area:rn;min-width:0}
+  .row > :nth-child(2){grid-area:rv;text-align:right;align-self:center}
+  .row > :nth-child(3){grid-area:rd;min-width:0}
+  .row > :nth-child(3) .sel-sm,
+  .row > :nth-child(3) .inp-sm,
+  .row > :nth-child(3) input{width:100%!important;min-width:0}
+  .row > :nth-child(3) > div{display:flex;gap:4px}
+  .row > :nth-child(3) > div .inp-sm{width:100%!important;min-width:0}
+  .row > :nth-child(4){grid-area:ra;display:flex;align-items:center;justify-content:flex-end;gap:4px}
 
   /* Calendar smaller cells */
   .dc{min-height:52px;padding:3px 3px}
