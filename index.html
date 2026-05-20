@@ -493,7 +493,12 @@ body.dark .confirm-delete{background:#c0392b}
 /* ── MOBILE LAYOUT ─────────────────────────────────────────────── */
 /* Hide desktop tabs on mobile, show bottom nav */
 .bottom-nav{display:none}
-.hamburger{display:none}
+.hamburger{
+  display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:10px;
+  border:0.5px solid var(--border);background:var(--card);
+  cursor:pointer;font-size:18px;flex-shrink:0;
+}
 
 /* Side drawer */
 #drawer{
