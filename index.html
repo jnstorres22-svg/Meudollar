@@ -1321,7 +1321,10 @@ CREATE POLICY "dividas all" ON dividas
   FOR ALL TO authenticated
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);</pre>
-      <button class="sql-copy-btn" onclick="copySql()" id="dividasCopyBtn">Copiar SQL</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <button class="sql-copy-btn" onclick="copySql()" id="dividasCopyBtn">Copiar SQL</button>
+        <button class="btn" style="font-size:12px;padding:5px 14px;color:var(--green);border-color:var(--green)" onclick="markDividasSetupDone()" id="dividasDoneBtn">Já executei o SQL</button>
+      </div>
     </div>
     <button class="form-toggle-btn" id="dividasToggleBtn" onclick="toggleForm('dividas')">
       <span class="ftb-icon">+</span>
@@ -1622,7 +1625,7 @@ const TRANSLATIONS = {
     dividas_pay_confirm:'Confirmar pagamento',
     dividas_sql_title:'Configuração do banco de dados',
     dividas_sql_sub:'Execute este SQL no painel do Supabase (SQL Editor):',
-    dividas_sql_copy:'Copiar SQL', dividas_sql_copied:'Copiado!',
+    dividas_sql_copy:'Copiar SQL', dividas_sql_copied:'Copiado!', dividas_sql_done:'Já executei o SQL',
   },
   en: {
     tab_renda:'Income', tab_bills:'Expenses', tab_semana:'Week',
@@ -1763,7 +1766,7 @@ const TRANSLATIONS = {
     dividas_pay_confirm:'Confirm payment',
     dividas_sql_title:'Database setup',
     dividas_sql_sub:'Run this SQL in your Supabase SQL Editor:',
-    dividas_sql_copy:'Copy SQL', dividas_sql_copied:'Copied!',
+    dividas_sql_copy:'Copy SQL', dividas_sql_copied:'Copied!', dividas_sql_done:'I already ran the SQL',
   }
 };
 function t(key){ return TRANSLATIONS[lang][key] ?? TRANSLATIONS['pt'][key] ?? key; }
@@ -1853,6 +1856,7 @@ function applyLang(){
   const sqTitle=document.getElementById('dividasSqlTitle');if(sqTitle)sqTitle.textContent=t('dividas_sql_title');
   const sqSub=document.getElementById('dividasSqlSub');if(sqSub)sqSub.textContent=t('dividas_sql_sub');
   const sqCopy=document.getElementById('dividasCopyBtn');if(sqCopy)sqCopy.textContent=t('dividas_sql_copy');
+  const sqDone=document.getElementById('dividasDoneBtn');if(sqDone)sqDone.textContent=t('dividas_sql_done');
   // Drawer
   const dl=document.getElementById('drawerThemeLabel');
   if(dl) dl.textContent=dark?t('theme_dark'):t('theme_light');
@@ -3238,6 +3242,7 @@ function initApp(){
   calYear=START.getFullYear();calMonth=START.getMonth();
   ovFrom=new Date(START);ovTo=new Date(END);
   buildRendaList();renderBills();buildTopCards();buildPeriodRow();buildNotifBanner();buildWeek();buildCal();buildMetas();buildDividas();buildRelatorio();
+  checkDividasSetup();
   // Show onboarding for first-time users
   obStart();
 }
@@ -4124,6 +4129,19 @@ function copySql(){
     const btn=document.getElementById('dividasCopyBtn');
     if(btn){btn.textContent=t('dividas_sql_copied');setTimeout(()=>{btn.textContent=t('dividas_sql_copy');},2000);}
   }).catch(()=>{});
+}
+function checkDividasSetup(){
+  const notice=document.getElementById('dividasSqlNotice');
+  if(!notice) return;
+  const key=_user?'dividas_setup_done_'+_user.id:'dividas_setup_done';
+  if(localStorage.getItem(key)==='1') notice.style.display='none';
+  else notice.style.display='';
+}
+function markDividasSetupDone(){
+  const key=_user?'dividas_setup_done_'+_user.id:'dividas_setup_done';
+  localStorage.setItem(key,'1');
+  const notice=document.getElementById('dividasSqlNotice');
+  if(notice) notice.style.display='none';
 }
 
 bootApp();
