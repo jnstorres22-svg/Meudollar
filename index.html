@@ -3905,7 +3905,7 @@ function buildMetaCheckinsHTML(meta){
     const fs=`${pad(ws.getDate())}/${pad(ws.getMonth()+1)}`;
     const fe=`${pad(we.getDate())}/${pad(we.getMonth()+1)}`;
     return `<div class="checkin-row${c.done?' done':''}">
-      <input type="checkbox" class="checkin-check" ${c.done?'checked':''} onchange="toggleMetaCheckin('${meta.id}',${i})">
+      <input type="checkbox" class="checkin-check" ${c.done?'checked':''} onclick="event.stopPropagation()" onchange="toggleMetaCheckin('${meta.id}',${i})">
       <span class="checkin-label" style="flex:1">${t('meta_checkin_week')} ${c.week} <span style="color:var(--sub);font-size:10px">${fs}–${fe}</span></span>
       <span style="color:var(--accent);font-weight:500;font-size:11px">${fmt(c.val)}</span>
     </div>`;
@@ -3937,7 +3937,14 @@ function toggleMetaCheckin(metaId,weekIdx){
   if(!meta.checkins||!meta.checkins.length) meta.checkins=generateMetaCheckins(meta);
   if(meta.checkins[weekIdx]===undefined) return;
   meta.checkins[weekIdx].done=!meta.checkins[weekIdx].done;
+  const openIds=metas.filter(m=>document.getElementById('checkin-body-'+m.id)?.classList.contains('open')).map(m=>m.id);
   saveMeta(meta);buildMetas();
+  openIds.forEach(id=>{
+    const el=document.getElementById('checkin-body-'+id);
+    const btn=document.getElementById('checkin-toggle-'+id);
+    if(el) el.classList.add('open');
+    if(btn) btn.textContent=lang==='en'?'Hide ▲':'Ocultar ▲';
+  });
 }
 
 // ── DÍVIDAS ───────────────────────────────────────────────────────
