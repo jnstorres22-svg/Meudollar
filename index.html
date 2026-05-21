@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meudollar</title>
+<title>TryFreed</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%235b21b6'/><stop offset='100%25' stop-color='%23c084fc'/></linearGradient></defs><circle cx='50' cy='50' r='50' fill='url(%23g)'/><text x='50' y='68' font-family='Inter,sans-serif' font-size='52' font-weight='800' fill='white' text-anchor='middle'>F</text></svg>">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -871,7 +872,7 @@ body.dark .confirm-delete{background:#dc2626}
 <!-- HOME SCREEN -->
 <div id="homeScreen">
   <div style="text-align:center">
-    <div class="home-logo">Meudollar</div>
+    <div class="home-logo">TryFreed</div>
     <div class="home-tagline" id="homeTagline">Your money. Your control.</div>
     <button class="home-enter-btn" onclick="showLoginFromHome()">
       <span id="homeEnterLabel">Entrar</span>
@@ -907,7 +908,7 @@ body.dark .confirm-delete{background:#dc2626}
 <!-- LOGIN SCREEN -->
 <div id="loginScreen" style="display:none">
   <div class="auth-card">
-    <div class="login-logo">Meudollar</div>
+    <div class="login-logo">TryFreed</div>
     <div class="login-sub" id="loginSubtitle">Entre na sua conta</div>
     <div class="login-error" id="loginError"></div>
     <div class="login-field"><label id="loginEmailLabel">Email</label><input id="authEmail" type="email" placeholder="seu@email.com" autocomplete="email"></div>
@@ -931,7 +932,7 @@ body.dark .confirm-delete{background:#dc2626}
 <!-- RESET PASSWORD SCREEN -->
 <div id="resetScreen" style="display:none">
   <div class="auth-card">
-    <div class="login-logo">Meudollar</div>
+    <div class="login-logo">TryFreed</div>
     <div class="login-sub" id="resetSubtitle">Redefinir senha</div>
     <div class="login-error" id="resetError"></div>
     <div class="login-field"><label id="resetEmailLabel">Email</label><input id="resetEmail" type="email" placeholder="seu@email.com"></div>
@@ -945,7 +946,7 @@ body.dark .confirm-delete{background:#dc2626}
 <!-- PIN ENTRY SCREEN -->
 <div id="pinScreen" style="display:none">
   <div class="pin-card">
-    <div class="pin-logo">Meudollar</div>
+    <div class="pin-logo">TryFreed</div>
     <div class="pin-title" id="pinTitle">Digite seu PIN</div>
     <div class="pin-dots" id="pinDots">
       <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
@@ -973,7 +974,7 @@ body.dark .confirm-delete{background:#dc2626}
 <!-- PIN SETUP SCREEN -->
 <div id="pinSetupScreen" style="display:none">
   <div class="pin-card">
-    <div class="pin-logo">Meudollar</div>
+    <div class="pin-logo">TryFreed</div>
     <div class="pin-title" id="pinSetupTitle">Digite um PIN de 4 dígitos</div>
     <div class="pin-dots" id="pinSetupDots">
       <div class="pin-dot" id="psd0"></div><div class="pin-dot" id="psd1"></div>
@@ -1025,7 +1026,7 @@ body.dark .confirm-delete{background:#dc2626}
     <!-- Step 0: Welcome -->
     <div id="ob-step-0">
       <span class="ob-emoji"></span>
-      <div class="ob-title" id="ob-title-0">Bem-vindo ao Meudollar!</div>
+      <div class="ob-title" id="ob-title-0">Bem-vindo ao TryFreed!</div>
       <div class="ob-sub" id="ob-sub-0">Vamos configurar tudo rapidinho para você começar a controlar seu dinheiro.</div>
       <div class="ob-field">
         <label id="ob-name-label">COMO POSSO TE CHAMAR?</label>
@@ -1182,7 +1183,7 @@ body.dark .confirm-delete{background:#dc2626}
 <div id="drawerOverlay" onclick="closeDrawer()"></div>
 <div id="drawer">
   <div class="drawer-header">
-    <div class="drawer-logo">Meudollar</div>
+    <div class="drawer-logo">TryFreed</div>
     <button class="drawer-close" onclick="closeDrawer()">✕</button>
   </div>
   <div class="drawer-user">
@@ -1228,7 +1229,7 @@ body.dark .confirm-delete{background:#dc2626}
 
 <header class="app-header">
   <div class="app-header-inner">
-    <div class="app-logo">Meudollar</div>
+    <div class="app-logo">TryFreed</div>
     <div class="tabs">
       <button class="tab on" onclick="showTab('renda')" id="tab-btn-renda">Renda</button>
       <button class="tab" onclick="showTab('bills')" id="tab-btn-bills">Despesas</button>
@@ -3382,7 +3383,7 @@ function obStart(){
 
 function obApplyLang(){
   const isEN=lang==='en';
-  document.getElementById('ob-title-0').textContent=isEN?'Welcome to Meudollar!':'Bem-vindo ao Meudollar!';
+  document.getElementById('ob-title-0').textContent=isEN?'Welcome to TryFreed!':'Bem-vindo ao TryFreed!';
   document.getElementById('ob-sub-0').textContent=isEN?"Let\'s set things up so you can start controlling your money.":'Vamos configurar tudo rapidinho para você começar a controlar seu dinheiro.';
   document.getElementById('ob-name-label').textContent=isEN?'WHAT SHOULD I CALL YOU?':'COMO POSSO TE CHAMAR?';
   document.getElementById('ob-name').placeholder=isEN?'Your name':'Seu nome';
@@ -3862,7 +3863,7 @@ function exportExcel(){
   }
 
   const now=new Date();
-  const fname=`Meudollar_${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}.xlsx`;
+  const fname=`TryFreed_${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}.xlsx`;
   XLSX.writeFile(wb,fname);
 }
 
