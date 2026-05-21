@@ -174,6 +174,10 @@ body.dark .bg2{color:#4ade80;border-color:rgba(74,222,128,.25)}
 .dn{font-size:11px;font-weight:500}
 .ev{font-size:9px;line-height:1.35;color:var(--sub)}
 .ev.i{color:var(--green)}.ev.o{color:var(--red)}.ev.pp{color:var(--purple)}.ev.ex{color:var(--blue)}.ev.u{color:var(--red)}
+.ev-extra{max-height:0;overflow:hidden;transition:max-height .28s ease}
+.dc.dc-open .ev-extra{max-height:300px}
+.ev-more{color:var(--accent);font-size:9px;line-height:1.35;display:block;cursor:pointer}
+.dc.dc-open .ev-more{display:none}
 .db{position:absolute;bottom:3px;right:4px;font-size:9px;font-weight:500;color:var(--sub)}
 .db.neg{color:var(--red)}
 .summary-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-top:10px;padding:10px;background:var(--summary-bg);border-radius:10px}
@@ -2778,7 +2782,14 @@ function buildWeek(){
     cell.appendChild(dn);
     const evc=document.createElement('div');
     evs.slice(0,3).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
-    if(evs.length>3){const m=document.createElement('div');m.className='ev';m.textContent='+'+(evs.length-3)+' mais';evc.appendChild(m);}
+    if(evs.length>3){
+      const extra=document.createElement('div');extra.className='ev-extra';
+      evs.slice(3).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;extra.appendChild(s);});
+      evc.appendChild(extra);
+      const m=document.createElement('div');m.className='ev-more';m.textContent='+'+(evs.length-3)+' mais';evc.appendChild(m);
+      cell.style.cursor='pointer';
+      cell.addEventListener('click',()=>cell.classList.toggle('dc-open'));
+    }
     cell.appendChild(evc);
     const db=document.createElement('div');db.className='db'+(bal<0?' neg':'');db.textContent=fmt(bal);cell.appendChild(db);
     cg.appendChild(cell);
@@ -2854,7 +2865,14 @@ function buildCal(){
     const dn=document.createElement('div');dn.className='dn';dn.textContent=d;cell.appendChild(dn);
     const evc=document.createElement('div');
     evs.slice(0,3).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
-    if(evs.length>3){const m2=document.createElement('div');m2.className='ev';m2.textContent='+'+(evs.length-3)+' mais';evc.appendChild(m2);}
+    if(evs.length>3){
+      const extra=document.createElement('div');extra.className='ev-extra';
+      evs.slice(3).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;extra.appendChild(s);});
+      evc.appendChild(extra);
+      const m2=document.createElement('div');m2.className='ev-more';m2.textContent='+'+(evs.length-3)+' mais';evc.appendChild(m2);
+      cell.style.cursor='pointer';
+      cell.addEventListener('click',()=>cell.classList.toggle('dc-open'));
+    }
     cell.appendChild(evc);
     const db=document.createElement('div');db.className='db'+(bal<0?' neg':'');db.textContent=fmt(bal);cell.appendChild(db);
     if(inRange){
