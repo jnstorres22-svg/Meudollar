@@ -161,9 +161,9 @@ body.dark .bg2{color:#4ade80;border-color:rgba(74,222,128,.25)}
 .nav-title{font-size:15px;font-weight:500}
 .nav-btn{background:var(--nav-btn-bg);border:0.5px solid var(--border);border-radius:8px;padding:5px 14px;cursor:pointer;font-size:13px;color:var(--text)}
 .nav-btn:hover{background:var(--nav-btn-hover)}
-.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;align-items:start}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 .dh{text-align:center;font-size:10px;color:var(--sub);padding:2px 0;font-weight:500}
-.dc{min-height:68px;max-height:68px;overflow:hidden;border-radius:5px;padding:4px 5px;border:0.5px solid var(--dc-border);background:var(--dc-bg);position:relative;transition:max-height .22s ease}
+.dc{min-height:68px;border-radius:5px;padding:4px 5px;border:0.5px solid var(--dc-border);background:var(--dc-bg);position:relative;overflow:hidden}
 .dc.emp{background:transparent;border-color:transparent}
 .dc.inc{background:var(--cal-inc-bg);border-color:var(--cal-inc-bdr)}
 .dc.exp{background:var(--cal-exp-bg);border-color:var(--cal-exp-bdr)}
@@ -174,11 +174,6 @@ body.dark .bg2{color:#4ade80;border-color:rgba(74,222,128,.25)}
 .dn{font-size:11px;font-weight:500}
 .ev{font-size:9px;line-height:1.35;color:var(--sub)}
 .ev.i{color:var(--green)}.ev.o{color:var(--red)}.ev.pp{color:var(--purple)}.ev.ex{color:var(--blue)}.ev.u{color:var(--red)}
-.ev-extra{display:none}
-.dc.dc-open .ev-extra{display:block}
-.dc.dc-open{max-height:600px}
-.ev-more{position:absolute;bottom:3px;left:4px;color:var(--accent);font-size:8px;line-height:1;cursor:pointer}
-.dc.dc-open .ev-more{display:none}
 .db{position:absolute;bottom:3px;right:4px;font-size:9px;font-weight:500;color:var(--sub)}
 .db.neg{color:var(--red)}
 .summary-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-top:10px;padding:10px;background:var(--summary-bg);border-radius:10px}
@@ -831,7 +826,7 @@ body.dark .confirm-delete{background:#dc2626}
   .row .row-act{grid-area:ra;display:flex;align-items:center;justify-content:flex-end;gap:4px;align-self:end}
 
   /* Calendar smaller cells */
-  .dc{min-height:52px;max-height:52px;padding:3px 3px}
+  .dc{min-height:52px;padding:3px 3px}
   .dn{font-size:10px}
   .ev{font-size:8px}
   .db{font-size:8px}
@@ -2782,17 +2777,10 @@ function buildWeek(){
     dn.innerHTML=`${date.getDate()} <span style="font-size:9px;color:#aaa">${DAYS_SHORT(date.getDay())}</span>`;
     cell.appendChild(dn);
     const evc=document.createElement('div');
-    evs.slice(0,2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
-    if(evs.length>2){
-      const extra=document.createElement('div');extra.className='ev-extra';
-      evs.slice(2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;extra.appendChild(s);});
-      evc.appendChild(extra);
-      const m=document.createElement('div');m.className='ev-more';m.textContent='+'+(evs.length-2)+' mais';evc.appendChild(m);
-      cell.style.cursor='pointer';
-      cell.addEventListener('click',()=>cell.classList.toggle('dc-open'));
-    }
+    evs.forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
     cell.appendChild(evc);
     const db=document.createElement('div');db.className='db'+(bal<0?' neg':'');db.textContent=fmt(bal);cell.appendChild(db);
+    if(inRange&&evs.length){cell.style.cursor='pointer';const yr=date.getFullYear(),mo=date.getMonth(),dy=date.getDate();cell.addEventListener('click',((y,m,d)=>()=>openCalDayPanel(y,m,d))(yr,mo,dy));}
     cg.appendChild(cell);
   }
   grid.appendChild(cg);
@@ -2865,15 +2853,7 @@ function buildCal(){
     cell.className=cls;
     const dn=document.createElement('div');dn.className='dn';dn.textContent=d;cell.appendChild(dn);
     const evc=document.createElement('div');
-    evs.slice(0,2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
-    if(evs.length>2){
-      const extra=document.createElement('div');extra.className='ev-extra';
-      evs.slice(2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;extra.appendChild(s);});
-      evc.appendChild(extra);
-      const m2=document.createElement('div');m2.className='ev-more';m2.textContent='+'+(evs.length-2)+' mais';evc.appendChild(m2);
-      cell.style.cursor='pointer';
-      cell.addEventListener('click',()=>cell.classList.toggle('dc-open'));
-    }
+    evs.forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
     cell.appendChild(evc);
     const db=document.createElement('div');db.className='db'+(bal<0?' neg':'');db.textContent=fmt(bal);cell.appendChild(db);
     if(inRange){
@@ -2886,9 +2866,8 @@ function buildCal(){
           dotsEl.appendChild(dot);
         });
         cell.appendChild(dotsEl);
-        cell.style.cursor='pointer';
-        cell.addEventListener('click',((yr,mo,dy)=>()=>openCalDayPanel(yr,mo,dy))(calYear,calMonth,d));
       }
+      if(evs.length){cell.style.cursor='pointer';cell.addEventListener('click',((yr,mo,dy)=>()=>openCalDayPanel(yr,mo,dy))(calYear,calMonth,d));}
     }
     cg.appendChild(cell);
   }
