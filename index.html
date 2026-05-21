@@ -3315,6 +3315,11 @@ _supa.auth.onAuthStateChange(async (event, session)=>{
   if(event==='SIGNED_IN'&&session?.user){
     _user=session.user;
     setUserUI(_user);
+    if(!localStorage.getItem('ob_done_'+_user.id)){
+      obStart();          // show wizard immediately, no waiting for network
+      loadFromSupabase(); // fire-and-forget: loads empty data for new user
+      return;
+    }
     await loadFromSupabase();
     initApp();
     if(!localStorage.getItem('pin_'+_user.id)) setTimeout(showPinOffer,800);
