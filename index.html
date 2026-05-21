@@ -2778,7 +2778,7 @@ function buildWeek(){
     dn.innerHTML=`${date.getDate()} <span style="font-size:9px;color:#aaa">${DAYS_SHORT(date.getDay())}</span>`;
     cell.appendChild(dn);
     const evc=document.createElement('div');
-    evs.slice(0,2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
+    evs.slice(0,2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l.split(' ')[0];evc.appendChild(s);});
     cell.appendChild(evc);
     const db=document.createElement('div');db.className='db'+(bal<0?' neg':'');db.textContent=fmt(bal);cell.appendChild(db);
     if(evs.length>2){const mn=document.createElement('div');mn.className='ev-more';mn.textContent='+'+(evs.length-2);cell.appendChild(mn);}
@@ -2855,7 +2855,7 @@ function buildCal(){
     cell.className=cls;
     const dn=document.createElement('div');dn.className='dn';dn.textContent=d;cell.appendChild(dn);
     const evc=document.createElement('div');
-    evs.slice(0,2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
+    evs.slice(0,2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l.split(' ')[0];evc.appendChild(s);});
     cell.appendChild(evc);
     const db=document.createElement('div');db.className='db'+(bal<0?' neg':'');db.textContent=fmt(bal);cell.appendChild(db);
     if(evs.length>2){const mn2=document.createElement('div');mn2.className='ev-more';mn2.textContent='+'+(evs.length-2);cell.appendChild(mn2);}
@@ -3918,11 +3918,25 @@ function closeCalDayPanel(){
 function renderCalDayPanel(year,month,day){
   const body=document.getElementById('calDayPanelBody');
   if(!body) return;
-  const billsDue=getBillsDueOnDay(year,month,day);
   const dateD=new Date(year,month,day);
   const isFirst=dateD.getTime()===new Date(2026,4,11).getTime()||dateD.getTime()===new Date(2026,4,12).getTime();
   const incomeEvs=getEventsForDate(dateD,isFirst).filter(e=>e.a>0);
-  if(!billsDue.length&&!incomeEvs.length){
+  const billsDue=getBillsDueOnDay(year,month,day);
+  // meta-linked bills (savings for goals) excluded from getBillsDueOnDay
+  const dow=dateD.getDay();
+  const dim=new Date(year,month+1,0).getDate();
+  const metaBillsDue=bills.filter(b=>{
+    if(!b.metaId) return false;
+    if(b.type==='monthly'||b.type==='extra'){const bd=b.day===99?dim:b.day;return day===bd;}
+    if(b.type==='weekly'){return dow===b.day&&(!b.metaEnd||dateD<=new Date(b.metaEnd));}
+    if(b.type==='once') return b.year===year&&b.month===month&&b.day===day;
+    return false;
+  });
+  // debt installments due on this day
+  const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  const debtInsts=[];
+  dividas.forEach(d=>{const inst=(d.parcelas||[]).find(p=>p.due===dateStr);if(inst)debtInsts.push({d,inst});});
+  if(!incomeEvs.length&&!billsDue.length&&!metaBillsDue.length&&!debtInsts.length){
     body.innerHTML=`<div class="cal-panel-empty">${t('cal_no_bills')}</div>`;
     return;
   }
@@ -3933,9 +3947,7 @@ function renderCalDayPanel(year,month,day){
       <span class="cal-pay-icon" style="color:var(--green)">↑</span>
       <div><div class="cal-pay-name">${e.src||e.l.replace(/^\+\$[\d.]+ /,'')}</div></div>
     </div>
-    <div class="cal-pay-right">
-      <span style="font-size:12px;font-weight:500;color:var(--green)">+${fmt(e.a)}</span>
-    </div>
+    <div class="cal-pay-right"><span style="font-size:12px;font-weight:500;color:var(--green)">+${fmt(e.a)}</span></div>
   </div>`).join('');
   const billsHtml=billsDue.map(b=>{
     const paid=isBillPaidOnDay(b,year,month,day);
@@ -3959,7 +3971,27 @@ function renderCalDayPanel(year,month,day){
       </div>
     </div>`;
   }).join('');
-  body.innerHTML=incHtml+billsHtml;
+  const metaHtml=metaBillsDue.map(b=>{
+    const metaName=(metas.find(m=>m.id===b.metaId)||{name:b.name}).name;
+    return `<div class="cal-pay-row">
+      <div class="cal-pay-left">
+        <span class="cal-pay-icon" style="color:var(--purple)">◈</span>
+        <div><div class="cal-pay-name">${metaName}</div></div>
+      </div>
+      <div class="cal-pay-right"><span style="font-size:12px;font-weight:500;color:var(--purple)">-${fmt(b.val)}</span></div>
+    </div>`;
+  }).join('');
+  const debtHtml=debtInsts.map(({d,inst})=>`<div class="cal-pay-row">
+    <div class="cal-pay-left">
+      <span class="cal-pay-icon" style="color:var(--red)">◷</span>
+      <div>
+        <div class="cal-pay-name">${d.name}</div>
+        <div class="cal-pay-status" style="color:var(--sub)">Parcela #${inst.num}</div>
+      </div>
+    </div>
+    <div class="cal-pay-right"><span style="font-size:12px;font-weight:500;color:var(--red)">-${fmt(inst.amount)}</span></div>
+  </div>`).join('');
+  body.innerHTML=incHtml+billsHtml+metaHtml+debtHtml;
 }
 
 // ── META CHECKINS ─────────────────────────────────────────────────
