@@ -2113,7 +2113,7 @@ async function loadFromSupabase(){
   ]);
   rendas = (r.data||[]).map(x=>({
     id:x.id, name:x.name, val:x.val, type:x.type,
-    dow:x.dow, day:x.day, month:x.month, year:x.year, locked:x.locked
+    dow:x.dow, day:x.day, day2:x.day2??null, month:x.month, year:x.year, locked:x.locked
   }));
   bills = (b.data||[]).map(x=>({
     id:x.id, name:x.name, val:x.val, type:x.type,
@@ -2145,7 +2145,7 @@ async function saveRenda(r){
   if(!_user) return;
   const {error}=await _supa.from('rendas').upsert({
     id:r.id, user_id:_user.id, name:r.name, val:r.val,
-    type:r.type, dow:r.dow, day:r.day, month:r.month, year:r.year, locked:r.locked
+    type:r.type, dow:r.dow, day:r.day, day2:r.day2??null, month:r.month, year:r.year, locked:r.locked
   },{onConflict:'id'});
   if(error) console.error('saveRenda error:',error);
 }
@@ -2158,7 +2158,7 @@ async function saveBill(b){
   if(!_user) return;
   const {error}=await _supa.from('bills').upsert({
     id:b.id, user_id:_user.id, name:b.name, val:b.val,
-    type:b.type, day:b.day, month:b.month, year:b.year,
+    type:b.type, day:b.day, month:b.month??null, year:b.year??null,
     cat:b.cat, note:b.note||null, locked:b.locked,
     meta_id:b.metaId||null, meta_end:b.metaEnd||null,
     pagamentos:b.pagamentos||[]
