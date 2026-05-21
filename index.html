@@ -2781,12 +2781,12 @@ function buildWeek(){
     dn.innerHTML=`${date.getDate()} <span style="font-size:9px;color:#aaa">${DAYS_SHORT(date.getDay())}</span>`;
     cell.appendChild(dn);
     const evc=document.createElement('div');
-    evs.slice(0,3).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
-    if(evs.length>3){
+    evs.slice(0,2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
+    if(evs.length>2){
       const extra=document.createElement('div');extra.className='ev-extra';
-      evs.slice(3).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;extra.appendChild(s);});
+      evs.slice(2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;extra.appendChild(s);});
       evc.appendChild(extra);
-      const m=document.createElement('div');m.className='ev-more';m.textContent='+'+(evs.length-3)+' mais';evc.appendChild(m);
+      const m=document.createElement('div');m.className='ev-more';m.textContent='+'+(evs.length-2)+' mais';evc.appendChild(m);
       cell.style.cursor='pointer';
       cell.addEventListener('click',()=>cell.classList.toggle('dc-open'));
     }
@@ -2864,12 +2864,12 @@ function buildCal(){
     cell.className=cls;
     const dn=document.createElement('div');dn.className='dn';dn.textContent=d;cell.appendChild(dn);
     const evc=document.createElement('div');
-    evs.slice(0,3).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
-    if(evs.length>3){
+    evs.slice(0,2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
+    if(evs.length>2){
       const extra=document.createElement('div');extra.className='ev-extra';
-      evs.slice(3).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;extra.appendChild(s);});
+      evs.slice(2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;extra.appendChild(s);});
       evc.appendChild(extra);
-      const m2=document.createElement('div');m2.className='ev-more';m2.textContent='+'+(evs.length-3)+' mais';evc.appendChild(m2);
+      const m2=document.createElement('div');m2.className='ev-more';m2.textContent='+'+(evs.length-2)+' mais';evc.appendChild(m2);
       cell.style.cursor='pointer';
       cell.addEventListener('click',()=>cell.classList.toggle('dc-open'));
     }
