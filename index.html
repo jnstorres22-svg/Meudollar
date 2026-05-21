@@ -176,6 +176,7 @@ body.dark .bg2{color:#4ade80;border-color:rgba(74,222,128,.25)}
 .ev.i{color:var(--green)}.ev.o{color:var(--red)}.ev.pp{color:var(--purple)}.ev.ex{color:var(--blue)}.ev.u{color:var(--red)}
 .db{position:absolute;bottom:3px;right:4px;font-size:9px;font-weight:500;color:var(--sub)}
 .db.neg{color:var(--red)}
+.ev-more{position:absolute;bottom:3px;left:4px;color:var(--accent);font-size:8px;line-height:1;font-weight:600}
 .summary-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-top:10px;padding:10px;background:var(--summary-bg);border-radius:10px}
 .sb-label{font-size:10px;color:var(--label)}
 .sb-val{font-size:13px;font-weight:500}
@@ -2777,9 +2778,10 @@ function buildWeek(){
     dn.innerHTML=`${date.getDate()} <span style="font-size:9px;color:#aaa">${DAYS_SHORT(date.getDay())}</span>`;
     cell.appendChild(dn);
     const evc=document.createElement('div');
-    evs.forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
+    evs.slice(0,2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
     cell.appendChild(evc);
     const db=document.createElement('div');db.className='db'+(bal<0?' neg':'');db.textContent=fmt(bal);cell.appendChild(db);
+    if(evs.length>2){const mn=document.createElement('div');mn.className='ev-more';mn.textContent='+'+(evs.length-2);cell.appendChild(mn);}
     if(inRange&&evs.length){cell.style.cursor='pointer';const yr=date.getFullYear(),mo=date.getMonth(),dy=date.getDate();cell.addEventListener('click',((y,m,d)=>()=>openCalDayPanel(y,m,d))(yr,mo,dy));}
     cg.appendChild(cell);
   }
@@ -2853,9 +2855,10 @@ function buildCal(){
     cell.className=cls;
     const dn=document.createElement('div');dn.className='dn';dn.textContent=d;cell.appendChild(dn);
     const evc=document.createElement('div');
-    evs.forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
+    evs.slice(0,2).forEach(e=>{const s=document.createElement('div');s.className='ev '+e.t;s.textContent=e.l;evc.appendChild(s);});
     cell.appendChild(evc);
     const db=document.createElement('div');db.className='db'+(bal<0?' neg':'');db.textContent=fmt(bal);cell.appendChild(db);
+    if(evs.length>2){const mn2=document.createElement('div');mn2.className='ev-more';mn2.textContent='+'+(evs.length-2);cell.appendChild(mn2);}
     if(inRange){
       const billsDue=getBillsDueOnDay(calYear,calMonth,d);
       if(billsDue.length){
@@ -3916,14 +3919,25 @@ function renderCalDayPanel(year,month,day){
   const body=document.getElementById('calDayPanelBody');
   if(!body) return;
   const billsDue=getBillsDueOnDay(year,month,day);
-  if(!billsDue.length){
+  const dateD=new Date(year,month,day);
+  const isFirst=dateD.getTime()===new Date(2026,4,11).getTime()||dateD.getTime()===new Date(2026,4,12).getTime();
+  const incomeEvs=getEventsForDate(dateD,isFirst).filter(e=>e.a>0);
+  if(!billsDue.length&&!incomeEvs.length){
     body.innerHTML=`<div class="cal-panel-empty">${t('cal_no_bills')}</div>`;
     return;
   }
   const today=new Date();today.setHours(0,0,0,0);
-  const dateD=new Date(year,month,day);
   const isOverdue=dateD<today;
-  body.innerHTML=billsDue.map(b=>{
+  const incHtml=incomeEvs.map(e=>`<div class="cal-pay-row">
+    <div class="cal-pay-left">
+      <span class="cal-pay-icon" style="color:var(--green)">↑</span>
+      <div><div class="cal-pay-name">${e.src||e.l.replace(/^\+\$[\d.]+ /,'')}</div></div>
+    </div>
+    <div class="cal-pay-right">
+      <span style="font-size:12px;font-weight:500;color:var(--green)">+${fmt(e.a)}</span>
+    </div>
+  </div>`).join('');
+  const billsHtml=billsDue.map(b=>{
     const paid=isBillPaidOnDay(b,year,month,day);
     const paidEntry=paid?(b.pagamentos||[]).find(p=>p.year===year&&p.month===month&&p.day===day):null;
     const paidDateStr=paidEntry&&paidEntry.paid_date?new Date(paidEntry.paid_date).toLocaleDateString('pt-BR'):'';
@@ -3945,6 +3959,7 @@ function renderCalDayPanel(year,month,day){
       </div>
     </div>`;
   }).join('');
+  body.innerHTML=incHtml+billsHtml;
 }
 
 // ── META CHECKINS ─────────────────────────────────────────────────
