@@ -1149,7 +1149,7 @@ body.dark .confirm-delete{background:#dc2626}
     <button onclick="exportExcel();closeDrawer();" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerExportBtn">Exportar Excel</button>
   </div>
   <div class="drawer-section">
-    <button onclick="Object.keys(localStorage).forEach(k=>{if(k.startsWith('ob_done_'))localStorage.removeItem(k)});localStorage.removeItem('tryfreed_onboarding_done');location.reload();" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)">Ver introdução novamente</button>
+    <button onclick="Object.keys(localStorage).forEach(k=>{if(k.startsWith('ob_done_'))localStorage.removeItem(k)});location.reload();" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)">Ver introdução novamente</button>
   </div>
   <div class="drawer-section">
     <button class="drawer-logout" onclick="handleLogout()">Sair / Sign out</button>
@@ -1452,8 +1452,6 @@ body.dark .confirm-delete{background:#dc2626}
 </div>
 
 <script>
-// TEMP: limpar ob_done_ para testar onboarding
-Object.keys(localStorage).forEach(k=>{if(k.startsWith('ob_done_'))localStorage.removeItem(k);});localStorage.removeItem('tryfreed_onboarding_done');
 // ── i18n ─────────────────────────────────────────────────────────
 let lang = localStorage.getItem('lang') || 'pt';
 const TRANSLATIONS = {
@@ -3281,7 +3279,8 @@ async function bootApp(){
 
 // ── ONBOARDING SLIDES ─────────────────────────────────────────────
 function obIsFirstTime(){
-  return !localStorage.getItem('tryfreed_onboarding_done');
+  if(!_user) return false;
+  return !localStorage.getItem('ob_done_v2_'+_user.id);
 }
 
 function obStart(){
@@ -3329,13 +3328,14 @@ function obApplyLang(){
 }
 
 function obReset(){
-  localStorage.removeItem('tryfreed_onboarding_done');
+  if(!_user) return;
+  localStorage.removeItem('ob_done_v2_'+_user.id);
   closeDrawer();
   obStart();
 }
 
 function obFinish(){
-  localStorage.setItem('tryfreed_onboarding_done','1');
+  if(_user) localStorage.setItem('ob_done_v2_'+_user.id,'1');
   document.getElementById('onboardingScreen').style.display='none';
   initApp();
 }
@@ -3360,9 +3360,27 @@ function tourStart(){
 
 function tourShow(){
   const step=TOUR_STEPS[_tourStep];
-  const tabMap={'#tab-renda':'renda','#tab-bills':'bills','#tab-semana':'semana','#tab-metas':'metas','#tab-relatorio':'relatorio'};
+  const isMobile=window.innerWidth<=640;
+
+  // Map desktop tab selectors → tab id for showTab()
+  const tabMap={
+    '#tab-renda':'renda','#tab-bills':'bills','#tab-semana':'semana',
+    '#tab-metas':'metas','#tab-relatorio':'relatorio','#tab-dividas':'dividas','#tab-cal':'cal'
+  };
+  // On mobile, .tabs is hidden; map to bottom-nav equivalents
+  const mobileSelMap={
+    '.tabs':'.bottom-nav',
+    '#tab-renda':'#bn-renda','#tab-bills':'#bn-bills','#tab-semana':'#bn-semana',
+    '#tab-metas':'#bn-metas','#tab-relatorio':'#bn-relatorio',
+    '#tab-dividas':'#bn-dividas','#tab-cal':'#bn-cal'
+  };
+
+  // Navigate to the correct tab first
   if(tabMap[step.sel]) showTab(tabMap[step.sel]);
-  const el=document.querySelector(step.sel);
+
+  // Pick the right DOM element to highlight
+  const sel=isMobile&&mobileSelMap[step.sel]?mobileSelMap[step.sel]:step.sel;
+  const el=document.querySelector(sel);
   const hl=document.getElementById('tourHighlight');
   const tt=document.getElementById('tourTooltip');
   if(el){
