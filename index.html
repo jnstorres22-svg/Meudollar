@@ -1149,7 +1149,7 @@ body.dark .confirm-delete{background:#dc2626}
     <button onclick="exportExcel();closeDrawer();" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerExportBtn">Exportar Excel</button>
   </div>
   <div class="drawer-section">
-    <button onclick="obReset()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)">Ver apresentação do app</button>
+    <button onclick="Object.keys(localStorage).forEach(k=>{if(k.startsWith('ob_done_'))localStorage.removeItem(k)});localStorage.removeItem('tryfreed_onboarding_done');location.reload();" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)">Ver introdução novamente</button>
   </div>
   <div class="drawer-section">
     <button class="drawer-logout" onclick="handleLogout()">Sair / Sign out</button>
