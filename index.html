@@ -217,22 +217,49 @@ body.dark .gs-done{color:#a78bfa;border-color:rgba(167,139,250,.3)}
 .leg{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem}
 .li{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--sub)}
 .ls{width:12px;height:12px;border-radius:3px}
-/* ── ONBOARDING WIZARD ─────────────────────────────────────────── */
+/* ── ONBOARDING SLIDES ─────────────────────────────────────────── */
 #onboardingScreen{
   position:fixed;inset:0;z-index:1200;
   display:flex;align-items:center;justify-content:center;
-  padding:1rem;
-  background:#080808;
-  background-image:radial-gradient(ellipse 80% 60% at 50% -10%, rgba(24,95,165,0.18) 0%, transparent 70%);
+  background:#1a1025;
+  background-image:radial-gradient(ellipse 70% 50% at 50% 0%, rgba(124,58,237,0.25) 0%, transparent 70%);
 }
-.ob-card{
-  background:rgba(18,18,18,0.97);
-  border:0.5px solid rgba(255,255,255,0.08);
-  border-radius:20px;padding:2rem;
-  width:100%;max-width:420px;
-  max-height:90vh;overflow-y:auto;
-  box-shadow:0 24px 80px rgba(0,0,0,0.6);
+.ob-slides{
+  width:100%;max-width:420px;height:100%;max-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:2rem;text-align:center;position:relative;
 }
+.ob-slide{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%}
+.ob-slide.active{display:flex}
+.ob-badge{
+  font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:#a78bfa;background:rgba(124,58,237,0.15);
+  border:0.5px solid rgba(124,58,237,0.3);
+  border-radius:20px;padding:4px 12px;margin-bottom:1.5rem;
+}
+.ob-slide-title{font-size:26px;font-weight:800;color:#f9fafb;margin-bottom:.75rem;letter-spacing:-.5px;line-height:1.2}
+.ob-slide-sub{font-size:14px;color:#9ca3af;line-height:1.7;margin-bottom:2rem;max-width:320px}
+.ob-quote{font-size:16px;font-style:italic;color:#e9d5ff;line-height:1.7;margin-bottom:.5rem;max-width:300px}
+.ob-quote-ref{font-size:12px;color:#a78bfa;font-weight:600;margin-bottom:2rem;letter-spacing:.05em}
+.ob-cta-btn{
+  padding:14px 28px;border-radius:12px;border:none;background:#7c3aed;color:#fff;
+  font-size:16px;font-weight:700;cursor:pointer;width:100%;max-width:300px;
+  transition:opacity .2s,transform .1s;letter-spacing:.01em;
+}
+.ob-cta-btn:hover{opacity:.88}.ob-cta-btn:active{transform:scale(.98)}
+.ob-nav{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:2.5rem;gap:12px}
+.ob-nav-btn{
+  padding:11px 20px;border-radius:10px;border:0.5px solid rgba(255,255,255,0.12);
+  background:transparent;color:#9ca3af;font-size:14px;font-weight:500;cursor:pointer;
+  transition:color .15s,border-color .15s;flex:1;
+}
+.ob-nav-btn:hover{color:#f9fafb;border-color:rgba(255,255,255,0.25)}
+.ob-nav-btn.primary{background:#7c3aed;border-color:#7c3aed;color:#fff;font-weight:600}
+.ob-nav-btn.primary:hover{opacity:.88}
+.ob-dots{display:flex;gap:6px;margin-top:2rem;justify-content:center}
+.ob-dot{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,0.15);transition:all .3s}
+.ob-dot.active{background:#7c3aed;width:18px}
+.ob-dot.done{background:rgba(124,58,237,0.4)}
 
 /* ── TOUR ──────────────────────────────────────────────────────── */
 #tourOverlay{
@@ -258,55 +285,6 @@ body.dark .gs-done{color:#a78bfa;border-color:rgba(167,139,250,.3)}
   transition:all .35s cubic-bezier(.4,0,.2,1);
 }
 
-.ob-progress{
-  display:flex;gap:6px;margin-bottom:1.8rem;
-}
-.ob-step-dot{
-  flex:1;height:3px;border-radius:2px;
-  background:rgba(255,255,255,0.1);
-  transition:background .3s;
-}
-.ob-step-dot.done{background:#7c3aed;}
-.ob-step-dot.active{background:#a78bfa;}
-.ob-emoji{font-size:28px;margin-bottom:8px;display:block;filter:grayscale(.4)}
-.ob-title{font-size:20px;font-weight:700;color:#f9fafb;margin-bottom:6px;letter-spacing:-.3px}
-.ob-sub{font-size:13px;color:#6b7280;margin-bottom:1.5rem;line-height:1.6}
-.ob-field{margin-bottom:14px}
-.ob-field label{font-size:11px;color:#9ca3af;display:block;margin-bottom:5px;letter-spacing:.3px;text-transform:uppercase}
-.ob-field input,.ob-field select{
-  width:100%;font-size:14px;padding:11px 14px;
-  border-radius:10px;border:0.5px solid rgba(255,255,255,0.1);
-  background:rgba(255,255,255,0.05);color:#f9fafb;
-  transition:border-color .2s;outline:none;
-}
-.ob-field input:focus,.ob-field select:focus{border-color:rgba(96,165,250,0.5);background:rgba(96,165,250,0.05)}
-.ob-field input::placeholder{color:#4b5563}
-.ob-field select option{background:#1a1a1a;color:#f9fafb}
-.ob-actions{display:flex;gap:8px;margin-top:1.5rem;align-items:center}
-.ob-next{
-  flex:1;padding:12px;border-radius:8px;border:none;
-  background:#7c3aed;
-  color:#fff;font-size:14px;font-weight:600;cursor:pointer;
-  transition:opacity .2s;letter-spacing:.01em;
-}
-.ob-next:hover{opacity:.88}
-.ob-skip{
-  font-size:12px;color:#6b6b6b;cursor:pointer;
-  background:none;border:none;padding:8px;
-  transition:color .15s;font-weight:500;
-}
-.ob-skip:hover{color:#f0f0f0}
-.ob-summary{
-  background:rgba(255,255,255,0.04);border-radius:12px;
-  padding:1rem;margin-bottom:1rem;
-}
-.ob-summary-row{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.06);
-  font-size:13px;color:#9ca3af;
-}
-.ob-summary-row:last-child{border-bottom:none}
-.ob-summary-row span:last-child{color:#f9fafb;font-weight:500}
 
 /* ── WEEK NOTIFICATIONS BANNER ─────────────────────────────────── */
 .notif-banner{
@@ -1012,150 +990,101 @@ body.dark .confirm-delete{background:#dc2626}
   </div>
 </div>
 
-<!-- ONBOARDING WIZARD -->
+<!-- ONBOARDING SLIDES -->
 <div id="onboardingScreen" style="display:none">
-  <div class="ob-card">
-    <div class="ob-progress">
-      <div class="ob-step-dot active" id="ob-dot-0"></div>
-      <div class="ob-step-dot" id="ob-dot-1"></div>
-      <div class="ob-step-dot" id="ob-dot-2"></div>
-      <div class="ob-step-dot" id="ob-dot-3"></div>
-      <div class="ob-step-dot" id="ob-dot-4"></div>
-    </div>
+  <div class="ob-slides">
 
-    <!-- Step 0: Welcome -->
-    <div id="ob-step-0">
-      <span class="ob-emoji"></span>
-      <div class="ob-title" id="ob-title-0">Bem-vindo ao TryFreed!</div>
-      <div class="ob-sub" id="ob-sub-0">Vamos configurar tudo rapidinho para você começar a controlar seu dinheiro.</div>
-      <div class="ob-field">
-        <label id="ob-name-label">COMO POSSO TE CHAMAR?</label>
-        <input id="ob-name" type="text" placeholder="Seu nome">
+    <!-- Slide 0: Splash -->
+    <div class="ob-slide active" id="ob-slide-0">
+      <svg width="72" height="72" viewBox="0 0 100 100" style="margin-bottom:1.5rem" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="og" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#5b21b6"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
+        <circle cx="50" cy="50" r="50" fill="url(#og)"/>
+        <text x="50" y="68" font-family="Inter,sans-serif" font-size="52" font-weight="800" fill="white" text-anchor="middle">F</text>
+      </svg>
+      <div style="font-size:28px;font-weight:800;color:#f9fafb;letter-spacing:-.5px;margin-bottom:.5rem">tryfreed</div>
+      <div class="ob-slide-sub" id="ob-tagline">Seu dinheiro com propósito.</div>
+      <div class="ob-nav" style="justify-content:center;margin-top:1.5rem">
+        <button class="ob-nav-btn primary" onclick="obGoSlide(1)" id="ob-s0-next">Começar →</button>
       </div>
-      <div class="ob-actions">
-        <button class="ob-next" onclick="obNext(0)"><span id="ob-btn-0">Continuar →</span></button>
-        <button class="ob-skip" onclick="obSkip()"><span id="ob-skip-0">Pular tudo</span></button>
-      </div>
-    </div>
-
-    <!-- Step 1: Saldo inicial -->
-    <div id="ob-step-1" style="display:none">
-      <span class="ob-emoji"></span>
-      <div class="ob-title" id="ob-title-1">Saldo inicial</div>
-      <div class="ob-sub" id="ob-sub-1">Quanto você já tem guardado hoje? Conta, poupança ou carteira.</div>
-      <div class="ob-field">
-        <label id="ob-bal-label">VALOR ($)</label>
-        <input id="ob-balance" type="number" placeholder="0.00" min="0" inputmode="decimal">
-      </div>
-      <div class="ob-actions">
-        <button class="ob-next" onclick="obNext(1)"><span id="ob-btn-1">Continuar →</span></button>
-        <button class="ob-skip" onclick="obStep(2)"><span id="ob-skip-1">Pular</span></button>
+      <div class="ob-dots">
+        <div class="ob-dot active"></div>
+        <div class="ob-dot"></div>
+        <div class="ob-dot"></div>
+        <div class="ob-dot"></div>
+        <div class="ob-dot"></div>
       </div>
     </div>
 
-    <!-- Step 2: Rendas -->
-    <div id="ob-step-2" style="display:none">
-      <span class="ob-emoji"></span>
-      <div class="ob-title" id="ob-title-2">Suas rendas</div>
-      <div class="ob-sub" id="ob-sub-2">Adicione quantas rendas quiser. Salário, freelance, aluguel...</div>
-
-      <!-- Lista de rendas adicionadas -->
-      <div id="ob-rendas-list" style="margin-bottom:10px"></div>
-
-      <!-- Mini form -->
-      <div id="ob-renda-form" style="background:rgba(255,255,255,0.04);border-radius:12px;padding:12px;margin-bottom:10px">
-        <div class="ob-field" style="margin-bottom:8px">
-          <label id="ob-rname-label">DESCRIÇÃO</label>
-          <input id="ob-rname" type="text" placeholder="ex: Salário">
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <div class="ob-field" style="margin-bottom:0">
-            <label id="ob-rval-label">VALOR ($)</label>
-            <input id="ob-rval" type="number" placeholder="0.00" min="0" inputmode="decimal">
-          </div>
-          <div class="ob-field" style="margin-bottom:0">
-            <label id="ob-rtype-label">TIPO</label>
-            <select id="ob-rtype">
-              <option value="monthly">Mensal</option>
-              <option value="biweekly">Quinzenal</option>
-              <option value="weekly">Semanal</option>
-              <option value="once">Única vez</option>
-            </select>
-          </div>
-        </div>
-        <button onclick="obAddRenda()" style="width:100%;margin-top:10px;padding:9px;border-radius:8px;border:0.5px dashed rgba(255,255,255,0.15);background:transparent;color:#9ca3af;cursor:pointer;font-size:13px;transition:all .2s" id="ob-add-renda-btn">+ Adicionar renda</button>
+    <!-- Slide 1: Versículo -->
+    <div class="ob-slide" id="ob-slide-1">
+      <div class="ob-badge" id="ob-s1-badge">Fundamento</div>
+      <div class="ob-quote" id="ob-s1-quote">"Pois onde estiver o seu tesouro, aí também estará o seu coração."</div>
+      <div class="ob-quote-ref">— Mateus 6:21</div>
+      <div class="ob-slide-sub" id="ob-s1-sub">O TryFreed começa aqui: o dinheiro segue os valores, não o contrário.</div>
+      <div class="ob-nav">
+        <button class="ob-nav-btn" onclick="obGoSlide(0)" id="ob-s1-back">← Voltar</button>
+        <button class="ob-nav-btn primary" onclick="obGoSlide(2)" id="ob-s1-next">Próximo →</button>
       </div>
-
-      <div class="ob-actions">
-        <button class="ob-next" onclick="obNext(2)"><span id="ob-btn-2">Próximo →</span></button>
-        <button class="ob-skip" onclick="obStep(3)"><span id="ob-skip-2">Pular</span></button>
+      <div class="ob-dots">
+        <div class="ob-dot done"></div>
+        <div class="ob-dot active"></div>
+        <div class="ob-dot"></div>
+        <div class="ob-dot"></div>
+        <div class="ob-dot"></div>
       </div>
     </div>
 
-    <!-- Step 3: Despesas -->
-    <div id="ob-step-3" style="display:none">
-      <span class="ob-emoji"></span>
-      <div class="ob-title" id="ob-title-3">Suas despesas</div>
-      <div class="ob-sub" id="ob-sub-3">Adicione quantas despesas quiser. Aluguel, mercado, assinaturas...</div>
-
-      <!-- Lista de despesas adicionadas -->
-      <div id="ob-bills-list" style="margin-bottom:10px"></div>
-
-      <!-- Mini form -->
-      <div id="ob-bill-form" style="background:rgba(255,255,255,0.04);border-radius:12px;padding:12px;margin-bottom:10px">
-        <div class="ob-field" style="margin-bottom:8px">
-          <label id="ob-bname-label">NOME</label>
-          <input id="ob-bname" type="text" placeholder="ex: Aluguel">
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <div class="ob-field" style="margin-bottom:0">
-            <label id="ob-bval-label">VALOR ($)</label>
-            <input id="ob-bval" type="number" placeholder="0.00" min="0" inputmode="decimal">
-          </div>
-          <div class="ob-field" style="margin-bottom:0">
-            <label id="ob-btype-label">TIPO</label>
-            <select id="ob-btype">
-              <option value="monthly">Mensal</option>
-              <option value="weekly">Semanal</option>
-              <option value="once">Única vez</option>
-              <option value="extra">Parcela</option>
-            </select>
-          </div>
-        </div>
-        <div class="ob-field" style="margin-top:8px;margin-bottom:0">
-          <label id="ob-bcat-label">CATEGORIA</label>
-          <select id="ob-bcat">
-            <option value="moradia">Moradia</option>
-            <option value="alimentacao">Alimentação</option>
-            <option value="transporte">Transporte</option>
-            <option value="saude">Saúde</option>
-            <option value="educacao">Educação</option>
-            <option value="lazer">Lazer</option>
-            <option value="assinaturas">Assinaturas</option>
-            <option value="vestuario">Vestuário</option>
-            <option value="viagem">Viagem</option>
-            <option value="generosidade">Generosidade</option>
-            <option value="outros">Outros</option>
-          </select>
-        </div>
-        <button onclick="obAddBill()" style="width:100%;margin-top:10px;padding:9px;border-radius:8px;border:0.5px dashed rgba(255,255,255,0.15);background:transparent;color:#9ca3af;cursor:pointer;font-size:13px;transition:all .2s" id="ob-add-bill-btn">+ Adicionar despesa</button>
+    <!-- Slide 2: História -->
+    <div class="ob-slide" id="ob-slide-2">
+      <div class="ob-badge" id="ob-s2-badge">Nossa história</div>
+      <div class="ob-slide-title" id="ob-s2-title">Nasceu de uma necessidade real</div>
+      <div class="ob-slide-sub" id="ob-s2-sub">Criado por alguém que também se perdeu nos números no fim do mês. TryFreed nasceu para transformar caos financeiro em clareza — simples, honesto, sem enrolação.</div>
+      <div class="ob-nav">
+        <button class="ob-nav-btn" onclick="obGoSlide(1)" id="ob-s2-back">← Voltar</button>
+        <button class="ob-nav-btn primary" onclick="obGoSlide(3)" id="ob-s2-next">Próximo →</button>
       </div>
-
-      <div class="ob-actions">
-        <button class="ob-next" onclick="obNext(3)"><span id="ob-btn-3">Próximo →</span></button>
-        <button class="ob-skip" onclick="obStep(4)"><span id="ob-skip-3">Pular</span></button>
+      <div class="ob-dots">
+        <div class="ob-dot done"></div>
+        <div class="ob-dot done"></div>
+        <div class="ob-dot active"></div>
+        <div class="ob-dot"></div>
+        <div class="ob-dot"></div>
       </div>
     </div>
 
-    <!-- Step 4: Pronto! -->
-    <div id="ob-step-4" style="display:none">
-      <span class="ob-emoji"></span>
-      <div class="ob-title" id="ob-title-4">Tudo pronto!</div>
-      <div class="ob-sub" id="ob-sub-4">Veja o resumo do que configuramos:</div>
-      <div class="ob-summary" id="ob-summary"></div>
-      <div class="ob-actions">
-        <button class="ob-next" onclick="obFinish(true)"><span id="ob-btn-4">Fazer tour do app →</span></button>
-        <button class="ob-skip" onclick="obFinish(false)"><span id="ob-ob-skip-4">Pular tour</span></button>
+    <!-- Slide 3: Missão -->
+    <div class="ob-slide" id="ob-slide-3">
+      <div class="ob-badge" id="ob-s3-badge">Missão</div>
+      <div class="ob-slide-title" id="ob-s3-title">Liberdade com consciência</div>
+      <div class="ob-slide-sub" id="ob-s3-sub">Não queremos que você pense em dinheiro o dia todo. Queremos que você pense nele o suficiente para parar de se preocupar — e viver livre.</div>
+      <div class="ob-nav">
+        <button class="ob-nav-btn" onclick="obGoSlide(2)" id="ob-s3-back">← Voltar</button>
+        <button class="ob-nav-btn primary" onclick="obGoSlide(4)" id="ob-s3-next">Próximo →</button>
+      </div>
+      <div class="ob-dots">
+        <div class="ob-dot done"></div>
+        <div class="ob-dot done"></div>
+        <div class="ob-dot done"></div>
+        <div class="ob-dot active"></div>
+        <div class="ob-dot"></div>
+      </div>
+    </div>
+
+    <!-- Slide 4: CTA -->
+    <div class="ob-slide" id="ob-slide-4">
+      <div class="ob-badge" id="ob-s4-badge">Pronto!</div>
+      <div class="ob-slide-title" id="ob-s4-title">O seu controle começa agora</div>
+      <div class="ob-slide-sub" id="ob-s4-sub">Adicione sua renda, despesas e metas. Tudo em um só lugar — rápido, simples, bonito.</div>
+      <button class="ob-cta-btn" onclick="obFinish()" id="ob-s4-cta">Explorar o app →</button>
+      <div class="ob-nav" style="justify-content:center;margin-top:1rem">
+        <button class="ob-nav-btn" onclick="obGoSlide(3)" id="ob-s4-back" style="flex:unset;padding:8px 16px;font-size:12px">← Voltar</button>
+      </div>
+      <div class="ob-dots">
+        <div class="ob-dot done"></div>
+        <div class="ob-dot done"></div>
+        <div class="ob-dot done"></div>
+        <div class="ob-dot done"></div>
+        <div class="ob-dot active"></div>
       </div>
     </div>
 
@@ -1220,7 +1149,7 @@ body.dark .confirm-delete{background:#dc2626}
     <button onclick="exportExcel();closeDrawer();" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerExportBtn">Exportar Excel</button>
   </div>
   <div class="drawer-section">
-    <button onclick="obReset()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)">Refazer configuração inicial</button>
+    <button onclick="obReset()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)">Ver apresentação do app</button>
   </div>
   <div class="drawer-section">
     <button class="drawer-logout" onclick="handleLogout()">Sair / Sign out</button>
@@ -3316,8 +3245,8 @@ _supa.auth.onAuthStateChange(async (event, session)=>{
   if(event==='SIGNED_IN'&&session?.user){
     _user=session.user;
     setUserUI(_user);
-    if(!localStorage.getItem('ob_done_'+_user.id)){
-      obStart();          // show wizard immediately, no waiting for network
+    if(obIsFirstTime()){
+      obStart();          // show slides immediately, no waiting for network
       loadFromSupabase(); // fire-and-forget: loads empty data for new user
       return;
     }
@@ -3348,201 +3277,65 @@ async function bootApp(){
   }
 }
 
-// ── ONBOARDING WIZARD ────────────────────────────────────────────
-let _obName='', _obBalance=0, _obRendas=[], _obBills=[];
-
+// ── ONBOARDING SLIDES ─────────────────────────────────────────────
 function obIsFirstTime(){
-  if(!_user){console.log('[OB] no _user');return false;}
-  const key='ob_done_'+_user.id;
-  const done=localStorage.getItem(key);
-  console.log('[OB] checking key:',key,'done:',done);
-  if(done) return false;
-  return true;
+  return !localStorage.getItem('tryfreed_onboarding_done');
 }
 
 function obStart(){
-  console.log('[OB] obStart called, _user:',_user?.id);
-  if(!obIsFirstTime()){console.log('[OB] not first time, skipping');return;}
-  document.getElementById('homeScreen').style.display='none';
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('resetScreen').style.display='none';
-  _obName='';_obBalance=0;_obRendas=[];_obBills=[];
-  document.getElementById('ob-name').value='';
-  document.getElementById('ob-balance').value='';
-  document.getElementById('ob-rname').value='';
-  document.getElementById('ob-rval').value='';
-  document.getElementById('ob-bname').value='';
-  document.getElementById('ob-bval').value='';
-  document.getElementById('ob-rendas-list').innerHTML='';
-  document.getElementById('ob-bills-list').innerHTML='';
-  console.log('[OB] showing wizard!');
+  if(!obIsFirstTime()) return;
+  ['homeScreen','loginScreen','resetScreen'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display='none';
+  });
   document.getElementById('onboardingScreen').style.display='flex';
+  obGoSlide(0);
   obApplyLang();
-  obStep(0);
+}
+
+function obGoSlide(n){
+  [0,1,2,3,4].forEach(i=>{
+    const s=document.getElementById('ob-slide-'+i);
+    if(s) s.classList.toggle('active',i===n);
+  });
 }
 
 function obApplyLang(){
-  const isEN=lang==='en';
-  document.getElementById('ob-title-0').textContent=isEN?'Welcome to TryFreed!':'Bem-vindo ao TryFreed!';
-  document.getElementById('ob-sub-0').textContent=isEN?"Let\'s set things up so you can start controlling your money.":'Vamos configurar tudo rapidinho para você começar a controlar seu dinheiro.';
-  document.getElementById('ob-name-label').textContent=isEN?'WHAT SHOULD I CALL YOU?':'COMO POSSO TE CHAMAR?';
-  document.getElementById('ob-name').placeholder=isEN?'Your name':'Seu nome';
-  document.getElementById('ob-btn-0').textContent=isEN?'Continue →':'Continuar →';
-  document.getElementById('ob-skip-0').textContent=isEN?'Skip all':'Pular tudo';
-  document.getElementById('ob-title-1').textContent=isEN?'Starting balance':'Saldo inicial';
-  document.getElementById('ob-sub-1').textContent=isEN?'How much do you have saved today?':'Quanto você já tem guardado hoje?';
-  document.getElementById('ob-bal-label').textContent=isEN?'AMOUNT ($)':'VALOR ($)';
-  document.getElementById('ob-btn-1').textContent=isEN?'Continue →':'Continuar →';
-  document.getElementById('ob-skip-1').textContent=isEN?'Skip':'Pular';
-  document.getElementById('ob-title-2').textContent=isEN?'Your income':'Suas rendas';
-  document.getElementById('ob-sub-2').textContent=isEN?'Add as many income sources as you want.':'Adicione quantas rendas quiser.';
-  document.getElementById('ob-rname-label').textContent=isEN?'DESCRIPTION':'DESCRIÇÃO';
-  document.getElementById('ob-rname').placeholder=isEN?'e.g. Salary':'ex: Salário';
-  document.getElementById('ob-rval-label').textContent=isEN?'AMOUNT ($)':'VALOR ($)';
-  document.getElementById('ob-rtype-label').textContent=isEN?'TYPE':'TIPO';
-  document.getElementById('ob-rtype').options[0].text=isEN?'Monthly':'Mensal';
-  document.getElementById('ob-rtype').options[1].text=isEN?'Biweekly':'Quinzenal';
-  document.getElementById('ob-rtype').options[2].text=isEN?'Weekly':'Semanal';
-  document.getElementById('ob-rtype').options[3].text=isEN?'One-time':'Única vez';
-  document.getElementById('ob-add-renda-btn').textContent=isEN?'+ Add income':'+ Adicionar renda';
-  document.getElementById('ob-btn-2').textContent=isEN?'Next →':'Próximo →';
-  document.getElementById('ob-skip-2').textContent=isEN?'Skip':'Pular';
-  document.getElementById('ob-title-3').textContent=isEN?'Your expenses':'Suas despesas';
-  document.getElementById('ob-sub-3').textContent=isEN?'Add as many expenses as you want.':'Adicione quantas despesas quiser.';
-  document.getElementById('ob-bname-label').textContent=isEN?'NAME':'NOME';
-  document.getElementById('ob-bname').placeholder=isEN?'e.g. Rent':'ex: Aluguel';
-  document.getElementById('ob-bval-label').textContent=isEN?'AMOUNT ($)':'VALOR ($)';
-  document.getElementById('ob-btype-label').textContent=isEN?'TYPE':'TIPO';
-  document.getElementById('ob-bcat-label').textContent=isEN?'CATEGORY':'CATEGORIA';
-  document.getElementById('ob-add-bill-btn').textContent=isEN?'+ Add expense':'+ Adicionar despesa';
-  document.getElementById('ob-btn-3').textContent=isEN?'Next →':'Próximo →';
-  document.getElementById('ob-skip-3').textContent=isEN?'Skip':'Pular';
-  document.getElementById('ob-title-4').textContent=isEN?'All set!':'Tudo pronto!';
-  document.getElementById('ob-sub-4').textContent=isEN?"Here\'s what we configured:":'Veja o resumo do que configuramos:';
-  document.getElementById('ob-btn-4').textContent=isEN?'Take app tour →':'Fazer tour do app →';
-  document.getElementById('ob-ob-skip-4').textContent=isEN?'Skip tour':'Pular tour';
+  if(lang!=='en') return;
+  const el=id=>document.getElementById(id);
+  if(el('ob-tagline')) el('ob-tagline').textContent='Your money with purpose.';
+  if(el('ob-s0-next')) el('ob-s0-next').textContent='Get started →';
+  if(el('ob-s1-badge')) el('ob-s1-badge').textContent='Foundation';
+  if(el('ob-s1-quote')) el('ob-s1-quote').textContent='"For where your treasure is, there your heart will be also."';
+  if(el('ob-s1-sub')) el('ob-s1-sub').textContent='TryFreed starts here: money follows values, not the other way around.';
+  if(el('ob-s1-back')) el('ob-s1-back').textContent='← Back';
+  if(el('ob-s1-next')) el('ob-s1-next').textContent='Next →';
+  if(el('ob-s2-badge')) el('ob-s2-badge').textContent='Our story';
+  if(el('ob-s2-title')) el('ob-s2-title').textContent='Born from a real need';
+  if(el('ob-s2-sub')) el('ob-s2-sub').textContent='Built by someone who also got lost in the numbers at month-end. TryFreed was created to turn financial chaos into clarity — simple, honest, no fluff.';
+  if(el('ob-s2-back')) el('ob-s2-back').textContent='← Back';
+  if(el('ob-s2-next')) el('ob-s2-next').textContent='Next →';
+  if(el('ob-s3-badge')) el('ob-s3-badge').textContent='Mission';
+  if(el('ob-s3-title')) el('ob-s3-title').textContent='Freedom with intention';
+  if(el('ob-s3-sub')) el('ob-s3-sub').textContent="We don't want you thinking about money all day. We want you thinking about it just enough to stop worrying — and live free.";
+  if(el('ob-s3-back')) el('ob-s3-back').textContent='← Back';
+  if(el('ob-s3-next')) el('ob-s3-next').textContent='Next →';
+  if(el('ob-s4-badge')) el('ob-s4-badge').textContent='Ready!';
+  if(el('ob-s4-title')) el('ob-s4-title').textContent='Your control starts now';
+  if(el('ob-s4-sub')) el('ob-s4-sub').textContent='Add your income, expenses and goals. All in one place — fast, simple, beautiful.';
+  if(el('ob-s4-cta')) el('ob-s4-cta').textContent='Explore the app →';
+  if(el('ob-s4-back')) el('ob-s4-back').textContent='← Back';
 }
-
-function obStep(n){
-  [0,1,2,3,4].forEach(i=>{
-    document.getElementById('ob-step-'+i).style.display=i===n?'block':'none';
-    const dot=document.getElementById('ob-dot-'+i);
-    dot.classList.remove('active','done');
-    if(i<n) dot.classList.add('done');
-    else if(i===n) dot.classList.add('active');
-  });
-  if(n===4) obBuildSummary();
-}
-
-function obNext(step){
-  if(step===0){
-    _obName=document.getElementById('ob-name').value.trim();
-    obStep(1);
-  } else if(step===1){
-    _obBalance=parseFloat(document.getElementById('ob-balance').value)||0;
-    obStep(2);
-  } else if(step===2){
-    obAddRenda(true);
-    obStep(3);
-  } else if(step===3){
-    obAddBill(true);
-    obStep(4);
-  }
-}
-
-function obAddRenda(silent=false){
-  const name=document.getElementById('ob-rname').value.trim();
-  const val=parseFloat(document.getElementById('ob-rval').value)||0;
-  const type=document.getElementById('ob-rtype').value;
-  if(!name||!val){if(!silent)alert(lang==='en'?'Fill name and value.':'Preencha nome e valor.');return;}
-  _obRendas.push({name,val,type});
-  document.getElementById('ob-rname').value='';
-  document.getElementById('ob-rval').value='';
-  obRenderRendaList();
-}
-
-function obRenderRendaList(){
-  const isEN=lang==='en';
-  const tl={monthly:isEN?'Monthly':'Mensal',biweekly:isEN?'Biweekly':'Quinzenal',weekly:isEN?'Weekly':'Semanal',once:isEN?'One-time':'Única'};
-  document.getElementById('ob-rendas-list').innerHTML=_obRendas.map((r,i)=>
-    `<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(96,165,250,0.08);border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:13px">
-      <span style="color:#f9fafb">${r.name}</span>
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="color:#60a5fa">${fmt(r.val)}</span>
-        <span style="color:#6b7280;font-size:11px">${tl[r.type]||r.type}</span>
-        <button onclick="_obRendas.splice(${i},1);obRenderRendaList()" style="background:none;border:none;color:#6b7280;cursor:pointer;font-size:14px;padding:0 2px">×</button>
-      </div>
-    </div>`).join('');
-}
-
-function obAddBill(silent=false){
-  const name=document.getElementById('ob-bname').value.trim();
-  const val=parseFloat(document.getElementById('ob-bval').value)||0;
-  const type=document.getElementById('ob-btype').value;
-  const cat=document.getElementById('ob-bcat').value;
-  if(!name||!val){if(!silent)alert(lang==='en'?'Fill name and value.':'Preencha nome e valor.');return;}
-  _obBills.push({name,val,type,cat});
-  document.getElementById('ob-bname').value='';
-  document.getElementById('ob-bval').value='';
-  obRenderBillList();
-}
-
-function obRenderBillList(){
-  const isEN=lang==='en';
-  const tl={monthly:isEN?'Monthly':'Mensal',weekly:isEN?'Weekly':'Semanal',once:isEN?'One-time':'Única',extra:isEN?'Installment':'Parcela'};
-  document.getElementById('ob-bills-list').innerHTML=_obBills.map((b,i)=>
-    `<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(248,113,113,0.08);border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:13px">
-      <span style="color:#f9fafb">${b.name}</span>
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="color:#f87171">${fmt(b.val)}</span>
-        <span style="color:#6b7280;font-size:11px">${tl[b.type]||b.type}</span>
-        <button onclick="_obBills.splice(${i},1);obRenderBillList()" style="background:none;border:none;color:#6b7280;cursor:pointer;font-size:14px;padding:0 2px">×</button>
-      </div>
-    </div>`).join('');
-}
-
-function obBuildSummary(){
-  const isEN=lang==='en';
-  const rows=[];
-  if(_obName) rows.push([isEN?'Name':'Nome',_obName]);
-  if(_obBalance>0) rows.push([isEN?'Starting balance':'Saldo inicial',fmt(_obBalance)]);
-  if(_obRendas.length) rows.push([isEN?'Income sources':'Fontes de renda',_obRendas.length+'']);
-  if(_obBills.length) rows.push([isEN?'Expenses':'Despesas',_obBills.length+'']);
-  if(!rows.length) rows.push([isEN?'Nothing configured':'Nada configurado',isEN?'You can add later':'Pode adicionar depois']);
-  document.getElementById('ob-summary').innerHTML=rows.map(([k,v])=>
-    `<div class="ob-summary-row"><span>${k}</span><span>${v}</span></div>`).join('');
-}
-
-function obSkip(){ obFinish(false); }
 
 function obReset(){
-  if(!_user) return;
-  localStorage.removeItem('ob_done_'+_user.id);
+  localStorage.removeItem('tryfreed_onboarding_done');
   closeDrawer();
   obStart();
 }
 
-function obFinish(doTour){
-  if(_obName) localStorage.setItem('ob_name_'+_user.id,_obName);
-  if(_obBalance>0){
-    initialBalance=_obBalance;
-    localStorage.setItem('ib_'+_user.id,_obBalance);
-    const sub=document.querySelector('.sub');
-    if(sub) sub.innerHTML=t('starting_balance_label')+' '+fmt(initialBalance);
-  }
-  const today=new Date();
-  _obRendas.forEach(r=>{
-    const nr={id:newId(),name:r.name,val:r.val,day:1,month:today.getMonth(),year:today.getFullYear(),type:r.type,locked:false,dow:5};
-    rendas.push(nr);saveRenda(nr);
-  });
-  _obBills.forEach(b=>{
-    const nb={id:newId(),name:b.name,val:b.val,day:1,month:today.getMonth(),year:today.getFullYear(),type:b.type,cat:b.cat,locked:false};
-    bills.push(nb);saveBill(nb);
-  });
-  localStorage.setItem('ob_done_'+_user.id,'1');
+function obFinish(){
+  localStorage.setItem('tryfreed_onboarding_done','1');
   document.getElementById('onboardingScreen').style.display='none';
-  buildRendaList();renderBills();buildTopCards();rebuild();
-  if(doTour) setTimeout(()=>tourStart(),400);
+  initApp();
 }
 
 // ── APP TOUR ─────────────────────────────────────────────────────
