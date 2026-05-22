@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TryFreed</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%235b21b6'/><stop offset='100%25' stop-color='%23c084fc'/></linearGradient></defs><circle cx='50' cy='50' r='50' fill='url(%23g)'/><text x='50' y='68' font-family='Inter,sans-serif' font-size='52' font-weight='800' fill='white' text-anchor='middle'>F</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='60 40 160 160'><defs><linearGradient id='iBg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%237c3aed'/><stop offset='100%25' stop-color='%234c1d95'/></linearGradient><linearGradient id='iArr' x1='0%25' y1='0%25' x2='100%25' y2='0%25'><stop offset='0%25' stop-color='rgba(255,255,255,0.4)'/><stop offset='100%25' stop-color='white'/></linearGradient></defs><rect x='60' y='40' width='160' height='160' rx='32' fill='url(%23iBg)'/><rect x='78' y='158' width='22' height='22' rx='4' fill='rgba(255,255,255,0.22)'/><rect x='108' y='138' width='22' height='42' rx='4' fill='rgba(255,255,255,0.35)'/><rect x='138' y='118' width='22' height='62' rx='4' fill='rgba(255,255,255,0.48)'/><path d='M89 152 Q130 190 168 110' fill='none' stroke='url(%23iArr)' stroke-width='4' stroke-linecap='round'/><path d='M158 108 L169 108 L167 120' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/><line x1='178' y1='52' x2='178' y2='88' stroke='white' stroke-width='7' stroke-linecap='round'/><line x1='160' y1='64' x2='196' y2='64' stroke='white' stroke-width='7' stroke-linecap='round'/></svg>">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -571,7 +571,7 @@ body.dark .confirm-delete{background:#dc2626}
 }
 .drawer-logo{
   font-size:18px;font-weight:800;letter-spacing:-0.5px;
-  background:linear-gradient(135deg,#60a5fa,#a78bfa);
+  background:linear-gradient(135deg,#7c3aed,#b47bff);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
 .drawer-close{
@@ -705,10 +705,17 @@ body.dark .confirm-delete{background:#dc2626}
 .debt-pay-confirm{width:100%;padding:12px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px}
 
 .app-header{
-  background:linear-gradient(135deg,#1a0a3e 0%,#0f0f1a 100%);
-  border-bottom:1px solid rgba(124,58,237,0.2);
+  background:var(--card);
+  border-bottom:1px solid var(--border);
   position:sticky;top:0;z-index:100;
 }
+body.dark .app-header{
+  background:linear-gradient(135deg,#1a0a3e 0%,#0f0f1a 100%);
+  border-bottom:1px solid rgba(124,58,237,0.2);
+}
+body:not(.dark) .tab{color:rgba(60,40,100,0.5)}
+body:not(.dark) .tab:hover:not(.on){color:rgba(60,40,100,0.8);background:rgba(124,58,237,0.06)}
+body:not(.dark) .tab.on{color:#7c3aed}
 .app-header-inner{
   max-width:1100px;margin:0 auto;padding:0 1.25rem;
   height:56px;display:flex;align-items:center;gap:0;
@@ -772,7 +779,15 @@ body.dark .confirm-delete{background:#dc2626}
   }
   /* Active state */
   .bn-item.on{color:transparent}
-  .bn-item.on > span:last-child{display:none}
+  .bn-item.on > span:last-child{
+    display:block;
+    position:absolute;
+    bottom:4px;left:0;right:0;
+    text-align:center;
+    color:#fff;
+    font-size:9px;font-weight:600;
+    letter-spacing:.02em;
+  }
   /* Elevated bubble */
   .bn-item.on .bn-icon{
     width:56px;height:56px;
@@ -884,7 +899,23 @@ body.dark .confirm-delete{background:#dc2626}
 <!-- HOME SCREEN -->
 <div id="homeScreen">
   <div style="text-align:center">
-    <div class="home-logo">TryFreed</div>
+    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:6px">
+      <svg width="80" height="80" viewBox="60 40 160 160" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:8px">
+        <defs>
+          <linearGradient id="hmBg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#4c1d95"/></linearGradient>
+          <linearGradient id="hmArr" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="100%" stop-color="rgba(255,255,255,1)"/></linearGradient>
+        </defs>
+        <rect x="60" y="40" width="160" height="160" rx="32" fill="url(#hmBg)"/>
+        <rect x="78" y="158" width="22" height="22" rx="4" fill="rgba(255,255,255,0.22)"/>
+        <rect x="108" y="138" width="22" height="42" rx="4" fill="rgba(255,255,255,0.35)"/>
+        <rect x="138" y="118" width="22" height="62" rx="4" fill="rgba(255,255,255,0.48)"/>
+        <path d="M89 152 Q130 190 168 110" fill="none" stroke="url(#hmArr)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M158 108 L169 108 L167 120" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="178" y1="52" x2="178" y2="88" stroke="white" stroke-width="7" stroke-linecap="round"/>
+        <line x1="160" y1="64" x2="196" y2="64" stroke="white" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+      <div style="font-size:44px;font-weight:800;letter-spacing:-2px;background:linear-gradient(135deg,#fff,#b47bff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1">tryfreed</div>
+    </div>
     <div class="home-tagline" id="homeTagline">Your money. Your control.</div>
     <button class="home-enter-btn" onclick="showLoginFromHome()">
       <span id="homeEnterLabel">Entrar</span>
@@ -920,13 +951,35 @@ body.dark .confirm-delete{background:#dc2626}
 <!-- LOGIN SCREEN -->
 <div id="loginScreen" style="display:none">
   <div class="auth-card">
-    <div class="login-logo">TryFreed</div>
+    <div style="text-align:center;margin-bottom:16px">
+      <svg width="60" height="60" viewBox="60 40 160 160" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="lgBg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#4c1d95"/></linearGradient>
+          <linearGradient id="lgArr" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="100%" stop-color="rgba(255,255,255,1)"/></linearGradient>
+        </defs>
+        <rect x="60" y="40" width="160" height="160" rx="32" fill="url(#lgBg)"/>
+        <rect x="78" y="158" width="22" height="22" rx="4" fill="rgba(255,255,255,0.22)"/>
+        <rect x="108" y="138" width="22" height="42" rx="4" fill="rgba(255,255,255,0.35)"/>
+        <rect x="138" y="118" width="22" height="62" rx="4" fill="rgba(255,255,255,0.48)"/>
+        <path d="M89 152 Q130 190 168 110" fill="none" stroke="url(#lgArr)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M158 108 L169 108 L167 120" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="178" y1="52" x2="178" y2="88" stroke="white" stroke-width="7" stroke-linecap="round"/>
+        <line x1="160" y1="64" x2="196" y2="64" stroke="white" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+      <div style="font-size:22px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#fff,#b47bff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-top:6px">tryfreed</div>
+    </div>
     <div class="login-sub" id="loginSubtitle">Entre na sua conta</div>
     <div class="login-error" id="loginError"></div>
     <div class="login-field"><label id="loginEmailLabel">Email</label><input id="authEmail" type="email" placeholder="seu@email.com" autocomplete="email"></div>
     <div class="login-field">
       <label id="loginPwdLabel">Senha</label>
-      <input id="authPassword" type="password" placeholder="••••••••" autocomplete="current-password">
+      <div style="position:relative">
+        <input id="authPassword" type="password" placeholder="••••••••" autocomplete="current-password" style="padding-right:40px">
+        <button type="button" onclick="togglePwdVisibility()" id="pwdEyeBtn" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:#6b7280;display:flex;align-items:center;justify-content:center;line-height:0">
+          <svg id="pwdEyeOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg id="pwdEyeClosed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
     </div>
     <div class="login-forgot" id="forgotRow"><a onclick="showReset()" id="loginForgotLink">Esqueci minha senha</a></div>
     <button class="login-btn" id="authBtn" onclick="handleAuth()">Entrar</button>
@@ -944,7 +997,23 @@ body.dark .confirm-delete{background:#dc2626}
 <!-- RESET PASSWORD SCREEN -->
 <div id="resetScreen" style="display:none">
   <div class="auth-card">
-    <div class="login-logo">TryFreed</div>
+    <div style="text-align:center;margin-bottom:16px">
+      <svg width="60" height="60" viewBox="60 40 160 160" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="rsBg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#4c1d95"/></linearGradient>
+          <linearGradient id="rsArr" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="100%" stop-color="rgba(255,255,255,1)"/></linearGradient>
+        </defs>
+        <rect x="60" y="40" width="160" height="160" rx="32" fill="url(#rsBg)"/>
+        <rect x="78" y="158" width="22" height="22" rx="4" fill="rgba(255,255,255,0.22)"/>
+        <rect x="108" y="138" width="22" height="42" rx="4" fill="rgba(255,255,255,0.35)"/>
+        <rect x="138" y="118" width="22" height="62" rx="4" fill="rgba(255,255,255,0.48)"/>
+        <path d="M89 152 Q130 190 168 110" fill="none" stroke="url(#rsArr)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M158 108 L169 108 L167 120" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="178" y1="52" x2="178" y2="88" stroke="white" stroke-width="7" stroke-linecap="round"/>
+        <line x1="160" y1="64" x2="196" y2="64" stroke="white" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+      <div style="font-size:22px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#fff,#b47bff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-top:6px">tryfreed</div>
+    </div>
     <div class="login-sub" id="resetSubtitle">Redefinir senha</div>
     <div class="login-error" id="resetError"></div>
     <div class="login-field"><label id="resetEmailLabel">Email</label><input id="resetEmail" type="email" placeholder="seu@email.com"></div>
@@ -1030,12 +1099,21 @@ body.dark .confirm-delete{background:#dc2626}
 
     <!-- Slide 0: Splash -->
     <div class="ob-slide active" id="ob-slide-0">
-      <svg width="72" height="72" viewBox="0 0 100 100" style="margin-bottom:1.5rem" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="og" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#5b21b6"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
-        <circle cx="50" cy="50" r="50" fill="url(#og)"/>
-        <text x="50" y="68" font-family="Inter,sans-serif" font-size="52" font-weight="800" fill="white" text-anchor="middle">F</text>
+      <svg width="110" height="110" viewBox="60 40 160 160" style="margin-bottom:1rem" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="obBg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#4c1d95"/></linearGradient>
+          <linearGradient id="obArr" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="100%" stop-color="rgba(255,255,255,1)"/></linearGradient>
+        </defs>
+        <rect x="60" y="40" width="160" height="160" rx="32" fill="url(#obBg)"/>
+        <rect x="78" y="158" width="22" height="22" rx="4" fill="rgba(255,255,255,0.22)"/>
+        <rect x="108" y="138" width="22" height="42" rx="4" fill="rgba(255,255,255,0.35)"/>
+        <rect x="138" y="118" width="22" height="62" rx="4" fill="rgba(255,255,255,0.48)"/>
+        <path d="M89 152 Q130 190 168 110" fill="none" stroke="url(#obArr)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M158 108 L169 108 L167 120" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="178" y1="52" x2="178" y2="88" stroke="white" stroke-width="7" stroke-linecap="round"/>
+        <line x1="160" y1="64" x2="196" y2="64" stroke="white" stroke-width="7" stroke-linecap="round"/>
       </svg>
-      <div style="font-size:28px;font-weight:800;color:#f9fafb;letter-spacing:-.5px;margin-bottom:.5rem">tryfreed</div>
+      <div style="font-size:28px;font-weight:800;letter-spacing:-.5px;margin-bottom:.5rem;background:linear-gradient(135deg,#fff,#b47bff);-webkit-background-clip:text;-webkit-text-fill-color:transparent">tryfreed</div>
       <div class="ob-slide-sub" id="ob-tagline">Seu dinheiro com propósito.</div>
       <div class="ob-nav" style="justify-content:center;margin-top:1.5rem">
         <button class="ob-nav-btn primary" onclick="obGoSlide(1)" id="ob-s0-next">Começar →</button>
@@ -2038,6 +2116,24 @@ function toggleAuthMode(){
   document.getElementById('loginOrLabel').textContent=t('login_or');
 }
 
+function togglePwdVisibility(){
+  const inp=document.getElementById('authPassword');
+  const open=document.getElementById('pwdEyeOpen');
+  const closed=document.getElementById('pwdEyeClosed');
+  const btn=document.getElementById('pwdEyeBtn');
+  if(inp.type==='password'){
+    inp.type='text';
+    open.style.display='';
+    closed.style.display='none';
+    btn.style.color='#7c3aed';
+  } else {
+    inp.type='password';
+    open.style.display='none';
+    closed.style.display='';
+    btn.style.color='#6b7280';
+  }
+}
+
 async function handleAuth(){
   const email=document.getElementById('authEmail').value.trim().toLowerCase();
   const password=document.getElementById('authPassword').value;
@@ -2361,17 +2457,22 @@ function buildTopCards(){
   const periodMargem=periodIn-periodOut;
   const periodLabel=fmtDate(from)+' – '+fmtDate(to);
 
+  const rawMargem={weekly:wk-mo/4.33,monthly:wk*4.33-mo,yearly:wk*52-mo*12,period:periodMargem};
   const periodVals={
     renda:{weekly:fmt(wk),monthly:fmt(wk*4.33),yearly:fmt(wk*52),period:fmt(periodIn)},
     desp:{weekly:fmt(mo/4.33),monthly:fmt(mo),yearly:fmt(mo*12),period:fmt(periodOut)},
     margem:{weekly:fmt(wk-mo/4.33),monthly:fmt(wk*4.33-mo),yearly:fmt(wk*52-mo*12),period:fmt(periodMargem)},
     semrenda:{weekly:fmt(wk),monthly:fmt(wk*4.33)},
   };
+  const icoUp=`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`;
+  const icoDn=`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>`;
+  const icoBal=`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`;
+  const icoWk=`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`;
   const cards=[
-    {key:'renda', label:t('card_renda'), color:'#3B6D11', periods:['weekly','monthly','yearly','period'], labels:[t('period_weekly'),t('period_monthly'),t('period_yearly'),t('period_period')]},
-    {key:'desp',  label:t('card_desp'),  color:'#A32D2D', periods:['weekly','monthly','yearly','period'], labels:[t('period_weekly'),t('period_monthly'),t('period_yearly'),t('period_period')]},
-    {key:'margem',label:t('card_margem'),color:'#185FA5', periods:['weekly','monthly','yearly','period'], labels:[t('period_weekly'),t('period_monthly'),t('period_yearly'),t('period_period')]},
-    {key:'semrenda',label:t('card_semrenda'),color:'#854F0B', periods:['weekly','monthly'],               labels:[t('period_weekly'),t('period_monthly')]},
+    {key:'renda',    label:t('card_renda'),    cssColor:'var(--green)',  border:'var(--green)',  icon:icoUp,  periods:['weekly','monthly','yearly','period'], labels:[t('period_weekly'),t('period_monthly'),t('period_yearly'),t('period_period')]},
+    {key:'desp',     label:t('card_desp'),     cssColor:'var(--red)',    border:'var(--red)',    icon:icoDn,  periods:['weekly','monthly','yearly','period'], labels:[t('period_weekly'),t('period_monthly'),t('period_yearly'),t('period_period')]},
+    {key:'margem',   label:t('card_margem'),   cssColor:'var(--accent)', border:'var(--accent)', icon:icoBal, periods:['weekly','monthly','yearly','period'], labels:[t('period_weekly'),t('period_monthly'),t('period_yearly'),t('period_period')]},
+    {key:'semrenda', label:t('card_semrenda'), cssColor:'var(--amber)',  border:'var(--amber)',  icon:icoWk,  periods:['weekly','monthly'],                  labels:[t('period_weekly'),t('period_monthly')]},
   ];
 
   document.getElementById('topCards').innerHTML=cards.map(c=>{
@@ -2379,9 +2480,12 @@ function buildTopCards(){
     const v=periodVals[c.key][p]||'—';
     const btns=c.periods.map((pp,i)=>`<button class="pbtn${pp===p?' on':''}" onclick="setPeriod('${c.key}','${pp}')">${c.labels[i]}</button>`).join('');
     const showPicker=p==='period'&&c.key!=='semrenda';
-    return `<div class="card" style="position:relative">
+    let valColor=c.cssColor;
+    if(c.key==='margem'){ valColor=(rawMargem[p]||0)>=0?'var(--green)':'var(--red)'; }
+    return `<div class="card" style="position:relative;border-top:2.5px solid ${c.border}">
+      <div style="position:absolute;top:10px;right:10px;color:${c.border};opacity:0.7">${c.icon}</div>
       <div class="card-label">${c.label}</div>
-      <div class="card-val" style="color:${c.color}">${v}</div>
+      <div class="card-val" style="color:${valColor}">${v}</div>
       <div class="period-btns">${btns}</div>
       ${showPicker?`
         <div style="margin-top:8px;border-top:0.5px solid var(--border);padding-top:8px">
@@ -3417,7 +3521,7 @@ function obFinish(){
 // ── APP TOUR ─────────────────────────────────────────────────────
 let _tourStep=0;
 const TOUR_STEPS=[
-  {tab:null,        emoji:'👋', dSel:null,                  mSel:null,             tk:'tour_1'},
+  {tab:null,        emoji:'👋', dSel:'.app-logo',           mSel:'.app-logo',     tk:'tour_1'},
   {tab:'renda',     emoji:'📊', dSel:'.cards',              mSel:'.cards',         tk:'tour_2'},
   {tab:'renda',     emoji:'💵', dSel:'#tab-btn-renda',      mSel:'#bn-renda',      tk:'tour_3'},
   {tab:'bills',     emoji:'📋', dSel:'#tab-btn-bills',      mSel:'#bn-bills',      tk:'tour_4'},
