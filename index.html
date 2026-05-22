@@ -3269,6 +3269,11 @@ async function bootApp(){
       showPinScreen();
     } else {
       setUserUI(_user);
+      if(obIsFirstTime()){
+        obStart();
+        loadFromSupabase();
+        return;
+      }
       await loadFromSupabase();
       initApp();
     }
