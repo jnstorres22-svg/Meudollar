@@ -1846,9 +1846,9 @@ function applyLang(){
   if(logoutDesktop) logoutDesktop.textContent=t('logout_btn');
   // Drawer sections
   const dsl=document.querySelectorAll('.drawer-section-label');
-  if(dsl[0]) dsl[0].textContent=t('drawer_appearance');
-  if(dsl[1]) dsl[1].textContent=t('drawer_lang');
-  if(dsl[2]) dsl[2].textContent=t('drawer_initial_balance');
+  if(dsl[0]) dsl[0].textContent=t('drawer_initial_balance');
+  if(dsl[1]) dsl[1].textContent=t('drawer_appearance');
+  if(dsl[2]) dsl[2].textContent=t('drawer_lang');
   const ibHint=document.getElementById('drawerIBhint');
   if(ibHint) ibHint.textContent=t('drawer_ib_hint');
   const dlo=document.querySelector('.drawer-logout');
@@ -2156,11 +2156,11 @@ function getEventsForDate(date,isFirstWeek){
     if(r.type==='weekly'&&dow===r.dow)
       evs.push({l:'+$'+r.val+' '+r.name,t:'i',a:r.val,src:r.name});
     if(r.type==='monthly'&&r.day===d)
-      evs.push({l:'+$'+r.val+' '+r.name,t:'ex',a:r.val,src:r.name});
+      evs.push({l:'+$'+r.val+' '+r.name,t:'i',a:r.val,src:r.name});
     if(r.type==='biweekly'&&(r.day===d||(r.day2&&r.day2===d)))
-      evs.push({l:'+$'+r.val+' '+r.name,t:'ex',a:r.val,src:r.name});
+      evs.push({l:'+$'+r.val+' '+r.name,t:'i',a:r.val,src:r.name});
     if(r.type==='once'&&r.year===y&&r.month===m&&r.day===d)
-      evs.push({l:'+$'+r.val+' '+r.name,t:'ex',a:r.val,src:r.name});
+      evs.push({l:'+$'+r.val+' '+r.name,t:'i',a:r.val,src:r.name});
   });
   bills.forEach(b=>{
     if(b.type==='monthly'||b.type==='extra'){
