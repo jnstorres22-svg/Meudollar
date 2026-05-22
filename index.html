@@ -1152,6 +1152,9 @@ body.dark .confirm-delete{background:#dc2626}
     <button onclick="Object.keys(localStorage).forEach(k=>{if(k.startsWith('ob_done_'))localStorage.removeItem(k)});location.reload();" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)">Ver introdução novamente</button>
   </div>
   <div class="drawer-section">
+    <button onclick="tourReset()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerTourBtn">Ver tour novamente</button>
+  </div>
+  <div class="drawer-section">
     <button class="drawer-logout" onclick="handleLogout()">Sair / Sign out</button>
   </div>
 </div>
@@ -1609,6 +1612,19 @@ const TRANSLATIONS = {
     dividas_pay_interest:'Juros do mês:',dividas_pay_principal:'Amortização:',
     dividas_pay_new_remaining:'Saldo após pagamento:',
     dividas_pay_confirm:'Confirmar pagamento',
+    // Tour
+    tour_1_title:'Bem-vindo!', tour_1_body:'Bem-vindo ao TryFreed! Vamos fazer um tour rápido pelo app.',
+    tour_2_title:'Resumo financeiro', tour_2_body:'Aqui você vê o resumo completo das suas finanças — renda, despesas e saldo projetado.',
+    tour_3_title:'Renda', tour_3_body:'Cadastre suas fontes de renda — mensal, semanal ou única.',
+    tour_4_title:'Despesas', tour_4_body:'Registre suas contas e despesas fixas ou variáveis.',
+    tour_5_title:'Metas', tour_5_body:'Crie metas financeiras e acompanhe semana a semana.',
+    tour_6_title:'Dívidas', tour_6_body:'Organize suas dívidas com juros e parcelas — quite com estratégia.',
+    tour_7_title:'Calendário', tour_7_body:'Veja todos os seus compromissos financeiros no calendário.',
+    tour_8_title:'PIN de segurança', tour_8_body:'Proteja o app com um PIN de 4 dígitos. Acesse pelo menu lateral.',
+    tour_9_title:'Relatório', tour_9_body:'Veja gráficos e análises mensais das suas finanças.',
+    tour_10_title:'Tudo pronto!', tour_10_body:'Agora você conhece o TryFreed. Que sua jornada rumo à liberdade financeira comece hoje.',
+    tour_next:'Próximo →', tour_finish:'Começar', tour_skip:'Pular tour',
+    tour_replay:'Ver tour novamente',
   },
   en: {
     tab_renda:'Income', tab_bills:'Expenses', tab_semana:'Week',
@@ -1750,6 +1766,19 @@ const TRANSLATIONS = {
     dividas_pay_interest:'Monthly interest:',dividas_pay_principal:'Principal:',
     dividas_pay_new_remaining:'Balance after payment:',
     dividas_pay_confirm:'Confirm payment',
+    // Tour
+    tour_1_title:'Welcome!', tour_1_body:'Welcome to TryFreed! Let\'s take a quick tour of the app.',
+    tour_2_title:'Financial overview', tour_2_body:'Here you can see a full summary of your finances — income, expenses and projected balance.',
+    tour_3_title:'Income', tour_3_body:'Add your income sources — monthly, weekly, or one-time.',
+    tour_4_title:'Expenses', tour_4_body:'Track your fixed and variable expenses.',
+    tour_5_title:'Goals', tour_5_body:'Set financial goals and track them week by week.',
+    tour_6_title:'Debts', tour_6_body:'Manage your debts with interest and installments — pay them off strategically.',
+    tour_7_title:'Calendar', tour_7_body:'See all your financial commitments in the calendar.',
+    tour_8_title:'Security PIN', tour_8_body:'Protect the app with a 4-digit PIN. Access it via the side menu.',
+    tour_9_title:'Report', tour_9_body:'View monthly charts and analysis of your finances.',
+    tour_10_title:'All set!', tour_10_body:"You're all set! Now you know TryFreed. May your journey to financial freedom begin today.",
+    tour_next:'Next →', tour_finish:'Get Started', tour_skip:'Skip tour',
+    tour_replay:'Replay tour',
   }
 };
 function t(key){ return TRANSLATIONS[lang][key] ?? TRANSLATIONS['pt'][key] ?? key; }
@@ -1858,6 +1887,8 @@ function applyLang(){
   const btnEN=document.getElementById('langBtnEN');
   if(btnPT){btnPT.style.fontWeight=lang==='pt'?'700':'400';btnPT.style.color=lang==='pt'?'var(--blue)':'var(--sub)';}
   if(btnEN){btnEN.style.fontWeight=lang==='en'?'700':'400';btnEN.style.color=lang==='en'?'var(--blue)':'var(--sub)';}
+  const dtb=document.getElementById('drawerTourBtn');
+  if(dtb) dtb.textContent=t('tour_replay');
   // Collapsible form toggle labels
   ['renda','bills','metas'].forEach(k=>{
     const lbl=document.getElementById(k+'ToggleLabel');
@@ -3343,19 +3374,27 @@ function obFinish(){
   if(_user) localStorage.setItem('ob_done_v2_'+_user.id,'1');
   document.getElementById('onboardingScreen').style.display='none';
   initApp();
+  setTimeout(()=>{ if(tourIsFirstTime()) tourStart(); },600);
 }
 
 // ── APP TOUR ─────────────────────────────────────────────────────
 let _tourStep=0;
 const TOUR_STEPS=[
-  {sel:'.cards',         emoji:'📊',title:()=>lang==='en'?'Overview cards':'Cards de resumo',     desc:()=>lang==='en'?'These cards show your projected income, expenses and margin. Click each tab to see different periods.':'Esses cards mostram sua renda, despesas e margem projetadas. Clique nas abas para ver períodos diferentes.'},
-  {sel:'.tabs',          emoji:'🗂',title:()=>lang==='en'?'Navigation':'Navegação',               desc:()=>lang==='en'?'Switch between Income, Expenses, Week, Calendar, Goals and Report.':'Navegue entre Renda, Despesas, Semana, Calendário, Metas e Relatório.'},
-  {sel:'#tab-renda',     emoji:'💵',title:()=>lang==='en'?'Income':'Renda',                       desc:()=>lang==='en'?'Add and manage all your income sources. Click + to add a new one.':'Adicione e gerencie todas as suas fontes de renda. Clique no + para adicionar.'},
-  {sel:'#tab-bills',     emoji:'📋',title:()=>lang==='en'?'Expenses':'Despesas',                  desc:()=>lang==='en'?'Track all your expenses by category. Fixed, variable or one-time.':'Registre todas suas despesas por categoria. Fixas, variáveis ou únicas.'},
-  {sel:'#tab-semana',    emoji:'📅',title:()=>lang==='en'?'Week view':'Semana',                   desc:()=>lang==='en'?'See everything that comes in and goes out day by day this week.':'Veja tudo que entra e sai dia a dia durante a semana atual.'},
-  {sel:'#tab-metas',     emoji:'🎯',title:()=>lang==='en'?'Goals':'Metas',                       desc:()=>lang==='en'?'Set savings goals and track weekly progress automatically.':'Defina metas de economia e acompanhe o progresso semanal automaticamente.'},
-  {sel:'#tab-relatorio', emoji:'📈',title:()=>lang==='en'?'Report':'Relatório',                  desc:()=>lang==='en'?'Charts and statements — expenses by category, income vs expenses and balance over time.':'Gráficos e extrato — despesas por categoria, receita vs despesa e evolução do saldo.'},
+  {tab:null,       emoji:'👋', dSel:'.app-logo',          mSel:'.app-logo',          tk:'tour_1'},
+  {tab:'renda',    emoji:'📊', dSel:'.cards',             mSel:'.cards',             tk:'tour_2'},
+  {tab:'renda',    emoji:'💵', dSel:'#tab-btn-renda',     mSel:'#bn-renda',          tk:'tour_3'},
+  {tab:'bills',    emoji:'📋', dSel:'#tab-btn-bills',     mSel:'#bn-bills',          tk:'tour_4'},
+  {tab:'metas',    emoji:'🎯', dSel:'#tab-btn-metas',     mSel:'#bn-metas',          tk:'tour_5'},
+  {tab:'dividas',  emoji:'💳', dSel:'#tab-btn-dividas',   mSel:'#bn-dividas',        tk:'tour_6'},
+  {tab:'cal',      emoji:'📅', dSel:'#tab-btn-cal',       mSel:'#bn-cal',            tk:'tour_7'},
+  {tab:null,       emoji:'🔐', dSel:'.hamburger',         mSel:'.hamburger',         tk:'tour_8'},
+  {tab:'relatorio',emoji:'📈', dSel:'#tab-btn-relatorio', mSel:'#bn-relatorio',      tk:'tour_9'},
+  {tab:'renda',    emoji:'🎉', dSel:null,                 mSel:null,                 tk:'tour_10'},
 ];
+
+function tourIsFirstTime(){
+  return _user&&!localStorage.getItem('tour_done_v2_'+_user.id);
+}
 
 function tourStart(){
   _tourStep=0;
@@ -3363,34 +3402,34 @@ function tourStart(){
   tourShow();
 }
 
+function tourReset(){
+  if(_user) localStorage.removeItem('tour_done_v2_'+_user.id);
+  closeDrawer();
+  tourStart();
+}
+
 function tourShow(){
+  if(_tourStep>=TOUR_STEPS.length){tourSkip();return;}
   const step=TOUR_STEPS[_tourStep];
-  const isMobile=window.innerWidth<=640;
+  const isMobile=window.innerWidth<768;
 
-  // Map desktop tab selectors → tab id for showTab()
-  const tabMap={
-    '#tab-renda':'renda','#tab-bills':'bills','#tab-semana':'semana',
-    '#tab-metas':'metas','#tab-relatorio':'relatorio','#tab-dividas':'dividas','#tab-cal':'cal'
-  };
-  // On mobile, .tabs is hidden; map to bottom-nav equivalents
-  const mobileSelMap={
-    '.tabs':'.bottom-nav',
-    '#tab-renda':'#bn-renda','#tab-bills':'#bn-bills','#tab-semana':'#bn-semana',
-    '#tab-metas':'#bn-metas','#tab-relatorio':'#bn-relatorio',
-    '#tab-dividas':'#bn-dividas','#tab-cal':'#bn-cal'
-  };
+  // Navigate to correct tab first
+  if(step.tab) showTab(step.tab);
 
-  // Navigate to the correct tab first
-  if(tabMap[step.sel]) showTab(tabMap[step.sel]);
+  // Pick selector based on device
+  const sel=isMobile?step.mSel:step.dSel;
+  const el=sel?document.querySelector(sel):null;
 
-  // Pick the right DOM element to highlight
-  const sel=isMobile&&mobileSelMap[step.sel]?mobileSelMap[step.sel]:step.sel;
-  const el=document.querySelector(sel);
+  // Skip step if element not found
+  if(sel&&!el){_tourStep++;tourShow();return;}
+
   const hl=document.getElementById('tourHighlight');
   const tt=document.getElementById('tourTooltip');
+
   if(el){
     const r=el.getBoundingClientRect();
     const pad=8;
+    hl.style.display='block';
     hl.style.left=(r.left-pad)+'px';
     hl.style.top=(r.top-pad)+'px';
     hl.style.width=(r.width+pad*2)+'px';
@@ -3399,13 +3438,19 @@ function tourShow(){
     const ttLeft=Math.min(Math.max(r.left,12),window.innerWidth-292);
     tt.style.left=ttLeft+'px';
     tt.style.top=(ttTop+200>window.innerHeight?r.top-pad-180:ttTop)+'px';
+  } else {
+    hl.style.display='none';
+    tt.style.left=Math.max(12,window.innerWidth/2-140)+'px';
+    tt.style.top=Math.max(60,window.innerHeight/2-100)+'px';
   }
+
+  const isLast=_tourStep===TOUR_STEPS.length-1;
   document.getElementById('tourEmoji').textContent=step.emoji;
-  document.getElementById('tourTitle').textContent=step.title();
-  document.getElementById('tourDesc').textContent=step.desc();
+  document.getElementById('tourTitle').textContent=t(step.tk+'_title');
+  document.getElementById('tourDesc').textContent=t(step.tk+'_body');
   document.getElementById('tourCounter').textContent=(_tourStep+1)+' / '+TOUR_STEPS.length;
-  document.getElementById('tourNextBtn').textContent=_tourStep===TOUR_STEPS.length-1?(lang==='en'?'Finish ✓':'Concluir ✓'):(lang==='en'?'Next →':'Próximo →');
-  document.getElementById('tourSkipBtn').textContent=lang==='en'?'Skip tour':'Pular tour';
+  document.getElementById('tourNextBtn').textContent=isLast?t('tour_finish'):t('tour_next');
+  document.getElementById('tourSkipBtn').textContent=t('tour_skip');
 }
 
 function tourNext(){
@@ -3415,8 +3460,9 @@ function tourNext(){
 
 function tourSkip(){
   document.getElementById('tourOverlay').style.display='none';
+  document.getElementById('tourHighlight').style.display='block';
   showTab('renda');
-  if(_user) localStorage.setItem('tour_done_'+_user.id,'1');
+  if(_user) localStorage.setItem('tour_done_v2_'+_user.id,'1');
 }
 
 // ── INLINE NAME EDITING ──────────────────────────────────────────
