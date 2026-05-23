@@ -888,19 +888,20 @@ body:not(.dark) .tab.on{color:#7c3aed}
   /* SVG dip — moves horizontally with JS */
   #bn-dip{
     position:absolute;
-    top:0;left:0;
+    top:-35px;left:0;
     width:100px;
     overflow:visible;
     pointer-events:none;
     transition:transform .35s cubic-bezier(0.34,1.56,0.64,1);
     transform:translateX(-9999px);
   }
-  #bn-dip svg{display:block}
+  #bn-dip svg{display:block;overflow:visible}
   #bn-dip-icon{
     position:absolute;
-    left:39px;top:-16px;
+    left:39px;top:5px;
     width:22px;height:22px;
     display:flex;align-items:center;justify-content:center;
+    z-index:2;
   }
   #bn-dip-icon svg{
     width:22px;height:22px;
@@ -1408,17 +1409,17 @@ body:not(.dark) .tab.on{color:#7c3aed}
   <!-- BOTTOM NAV (mobile only) -->
   <nav class="bottom-nav">
     <div id="bn-dip">
-      <div id="bn-dip-icon"></div>
-      <svg width="100" height="35" viewBox="0 0 100 35" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 0C15 0 15 0 25 0C35 0 35 25 50 25C65 25 65 0 75 0C85 0 85 0 100 0V35H0V0Z" fill="#0f0f1a"/>
-        <circle cx="50" cy="-5" r="25" fill="url(#bnGrad)"/>
+      <svg width="100" height="65" viewBox="0 0 100 65" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="bnGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#7c3aed"/>
             <stop offset="100%" stop-color="#b47bff"/>
           </linearGradient>
         </defs>
+        <path d="M0,35 C18,35 22,35 32,35 C42,35 42,57 50,57 C58,57 58,35 68,35 C78,35 82,35 100,35 L100,65 L0,65 Z" fill="#0f0f1a"/>
+        <circle cx="50" cy="16" r="22" fill="url(#bnGrad)"/>
       </svg>
+      <div id="bn-dip-icon"></div>
     </div>
     <button class="bn-item on" id="bn-renda" onclick="showTab('renda')">
       <div class="bn-bubble"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
