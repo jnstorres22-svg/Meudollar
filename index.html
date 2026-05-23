@@ -13,67 +13,42 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f5f4fb;
+  --bg:#faf9fe;
   --card:#ffffff;
-  --border:#e4e0f5;
-  --panel:#f0eef9;
+  --border:#e8e4f5;
+  --panel:#f5f3fb;
   --text:#1a1535;
-  --sub:#7a7398;
-  --label:#7a7398;
+  --sub:#8a7fa0;
+  --label:#8a7fa0;
   --accent:#7c3aed;
   --accent-dim:rgba(124,58,237,0.08);
   --accent2:#9d5cf6;
   --accent3:#b47bff;
-  --green:#16a34a;--red:#dc2626;--blue:#7c3aed;--amber:#d97706;--purple:#7c3aed;
-  --tab-on-bg:rgba(124,58,237,0.10);--tab-on-color:#7c3aed;
-  --input-bg:#ffffff;--input-border:#e4e0f5;
-  --nav-btn-bg:#ffffff;--nav-btn-hover:#f0eef9;
-  --row-border:#ede9fa;--summary-bg:#f5f4fb;
-  --weekbills-bg:#ffffff;--weekbills-border:#e4e0f5;
-  --goal-bg:#ffffff;--goal-border:#e4e0f5;
-  --report-bg:#ffffff;--report-border:#e4e0f5;
-  --extrato-border:#ede9fa;--wb-border:#ede9fa;
-  --dc-bg:#ffffff;--dc-border:#e4e0f5;--dc-neu:#f5f4fb;
-  --icon-btn-hover:#f0eef9;
-  --picker-bg:#f5f4fb;
-  --shadow:0 1px 4px rgba(124,58,237,0.07),0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md:0 4px 20px rgba(124,58,237,0.12);
+  --green:#10b981;--red:#ef4444;--blue:#7c3aed;--amber:#f59e0b;--purple:#7c3aed;
+  --tab-on-bg:rgba(124,58,237,0.12);--tab-on-color:#7c3aed;
+  --input-bg:#ffffff;--input-border:#e8e4f5;
+  --nav-btn-bg:#ffffff;--nav-btn-hover:#f5f3fb;
+  --row-border:#f0ecf9;--summary-bg:#faf9fe;
+  --weekbills-bg:#ffffff;--weekbills-border:#e8e4f5;
+  --goal-bg:#ffffff;--goal-border:#e8e4f5;
+  --report-bg:#ffffff;--report-border:#e8e4f5;
+  --extrato-border:#f0ecf9;--wb-border:#f0ecf9;
+  --dc-bg:#ffffff;--dc-border:#e8e4f5;--dc-neu:#faf9fe;
+  --icon-btn-hover:#f5f3fb;
+  --picker-bg:#faf9fe;
+  --shadow:0 2px 8px rgba(124,58,237,0.08),0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md:0 8px 24px rgba(124,58,237,0.14);
+  --shadow-lg:0 12px 32px rgba(124,58,237,0.16);
   --cal-inc-bg:#f0fdf4;--cal-inc-bdr:#bbf7d0;
   --cal-exp-bg:#fef2f2;--cal-exp-bdr:#fecaca;
   --cal-bth-bg:#fffbeb;--cal-bth-bdr:#fde68a;
   --cal-pur-bg:#faf5ff;--cal-pur-bdr:#e9d5ff;
+  /* Mobile Nav Specific */
+  --nav-bg: #1a1a28;
+  --nav-active: #f97316; /* Laranja da imagem */
 }
-body.dark{
-  --bg:#0f0f1a;
-  --card:#161626;
-  --border:#2a2545;
-  --panel:#1e1e32;
-  --text:#f0eeff;
-  --sub:#8b85aa;
-  --label:#8b85aa;
-  --accent:#9d5cf6;
-  --accent-dim:rgba(157,92,246,0.12);
-  --accent2:#b47bff;
-  --accent3:#c99fff;
-  --green:#4ade80;--red:#f87171;--blue:#9d5cf6;--amber:#fbbf24;--purple:#9d5cf6;
-  --tab-on-bg:rgba(157,92,246,0.14);--tab-on-color:#b47bff;
-  --input-bg:#1e1e32;--input-border:#2a2545;
-  --nav-btn-bg:#1e1e32;--nav-btn-hover:#252540;
-  --row-border:#1e1e32;--summary-bg:#0f0f1a;
-  --weekbills-bg:#161626;--weekbills-border:#2a2545;
-  --goal-bg:#161626;--goal-border:#2a2545;
-  --report-bg:#161626;--report-border:#2a2545;
-  --extrato-border:#1e1e32;--wb-border:#1e1e32;
-  --dc-bg:#161626;--dc-border:#2a2545;--dc-neu:#0f0f1a;
-  --icon-btn-hover:#252540;
-  --picker-bg:#161626;
-  --shadow:0 1px 4px rgba(0,0,0,0.4),0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md:0 4px 20px rgba(0,0,0,0.5);
-  --cal-inc-bg:#0a1a0a;--cal-inc-bdr:#1a3a1a;
-  --cal-exp-bg:#1a0a0a;--cal-exp-bdr:#3a1a1a;
-  --cal-bth-bg:#1a160a;--cal-bth-bdr:#3a2d0a;
-  --cal-pur-bg:#12091e;--cal-pur-bdr:#2a1a3a;
-}
+
+
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg);padding:0;transition:background .2s,color .2s;overflow-x:hidden}
 .wrap{max-width:1100px;margin:0 auto;padding:1.5rem 1.25rem 2rem;overflow-x:hidden}
@@ -91,12 +66,17 @@ body.dark .toggle-dot{transform:translateX(18px);background:#000}
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1rem}
 .card{
   background:var(--card);
-  border-radius:16px;
-  padding:1.1rem 1.25rem;
+  border-radius:12px;
+  padding:1.25rem 1.5rem;
   border:1px solid var(--border);
   box-shadow:var(--shadow);
   position:relative;
   overflow:hidden;
+  transition:all .2s ease;
+}
+.card:hover{
+  box-shadow:var(--shadow-md);
+  border-color:rgba(124,58,237,0.2);
 }
 .card::before{
   content:'';
@@ -119,22 +99,24 @@ body.dark .toggle-dot{transform:translateX(18px);background:#000}
 .tab{padding:6px 14px;border-radius:6px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:rgba(240,238,255,0.5);transition:all .15s}
 .tab.on{color:#b47bff;background:rgba(124,58,237,0.15);font-weight:600}
 .tab:hover:not(.on){background:rgba(255,255,255,0.06);color:rgba(240,238,255,0.8)}
-.sec{display:none}.sec.on{display:block}
+.sec{display:none;animation:fadeIn 0.4s ease}.sec.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .panel{background:var(--panel);border-radius:8px;padding:1rem;margin-bottom:1rem;border:1px solid var(--border)}
 .panel h3{font-size:12px;font-weight:600;margin-bottom:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.04em}
 .frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:10px;align-items:end}
 .frow label,.frow6 label{font-size:11px;font-weight:500;color:var(--label);display:block;margin-bottom:4px;letter-spacing:.01em}
 .frow6{display:grid;grid-template-columns:1.5fr 80px 60px 90px 110px 110px;gap:10px;margin-bottom:10px;align-items:end}
 input,select{font-size:13px;padding:10px 12px;border-radius:8px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);width:100%;outline:none;transition:border-color .15s}
-input:focus,select:focus{border-color:var(--accent)}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,0.1)}
 .btn{font-size:13px;font-weight:500;padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:var(--card);cursor:pointer;color:var(--text);transition:all .15s}
 .btn:hover{background:var(--nav-btn-hover)}
-.btn.primary{background:var(--accent);color:#fff;border-color:transparent}
+.btn.primary{background:var(--accent);color:#fff;border-color:transparent;font-weight:600;box-shadow:0 4px 12px rgba(124,58,237,0.3)}
 .btn.primary:hover{opacity:.88}
 .btn.success{background:transparent;color:var(--green);border-color:var(--green)}
 body.dark .btn.success{color:#4ade80;border-color:#4ade80}
 /* ROWS */
-.row{display:grid;grid-template-columns:1fr 78px 90px auto;gap:6px;align-items:center;padding:14px 0;border-bottom:1px solid var(--row-border)}
+.row{display:grid;grid-template-columns:1fr 78px 90px auto;gap:8px;align-items:center;padding:16px 0;border-bottom:1px solid var(--row-border);transition:all .2s ease}
+.row:hover{background:rgba(124,58,237,0.02);border-radius:6px;padding:16px 8px}
 .row:last-child{border-bottom:none}
 .rname{font-size:13px;font-weight:500}
 .rsub{font-size:11px;color:var(--sub);margin-top:1px}
@@ -541,6 +523,126 @@ body.dark .confirm-delete{background:#dc2626}
 .user-bar span{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .logout-btn{font-size:11px;padding:3px 10px;border-radius:6px;border:0.5px solid var(--border);background:transparent;cursor:pointer;color:var(--sub)}
 .logout-btn:hover{background:var(--cal-exp-bg);color:var(--red)}
+
+  /* ── CURVED BOTTOM NAV ────────────────────────────────────────── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    height: 65px;
+    background: var(--nav-bg);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-radius: 20px;
+    z-index: 1000;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    padding: 0 10px;
+  }
+  
+  .bn-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 100%;
+    z-index: 10;
+    cursor: pointer;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .bn-icon {
+    font-size: 22px;
+    color: rgba(255,255,255,0.5);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
+  .bn-item.on .bn-icon {
+    transform: translateY(-32px);
+    color: #fff;
+  }
+  
+  .bn-indicator {
+    position: absolute;
+    top: -50%;
+    width: 55px;
+    height: 55px;
+    background: var(--nav-active);
+    border-radius: 50%;
+    border: 6px solid var(--bg);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: none;
+  }
+  
+  .bn-item.on ~ .bn-indicator,
+  .bn-indicator-active {
+    display: block;
+    position: absolute;
+    top: -28px;
+    width: 58px;
+    height: 58px;
+    background: var(--nav-active);
+    border-radius: 50%;
+    border: 5px solid var(--bg);
+    z-index: 1;
+    box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4);
+  }
+
+  /* Curve Background SVG */
+  .nav-curve {
+    position: absolute;
+    top: -20px;
+    height: 20px;
+    width: 100%;
+    fill: var(--nav-bg);
+    display: none; /* We will use a different approach for the curve */
+  }
+
+  /* Better approach for the curve using a pseudo-element on the indicator or a wrapper */
+  .indicator-wrapper {
+    position: absolute;
+    top: -28px;
+    width: 58px;
+    height: 58px;
+    background: var(--nav-active);
+    border-radius: 50%;
+    border: 5px solid var(--bg);
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 5;
+    box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4);
+  }
+  
+  /* The "cutout" effect using pseudo-elements */
+  .indicator-wrapper::before,
+  .indicator-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 23px;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+  }
+  
+  .indicator-wrapper::before {
+    left: -22px;
+    border-radius: 0 20px 0 0;
+    box-shadow: 5px -5px 0 5px var(--bg);
+  }
+  
+  .indicator-wrapper::after {
+    right: -22px;
+    border-radius: 20px 0 0 0;
+    box-shadow: -5px -5px 0 5px var(--bg);
+  }
+
+  @media(min-width: 641px) {
+    .bottom-nav { display: none; }
+  }
+
 /* ── MOBILE LAYOUT ─────────────────────────────────────────────── */
 /* Hide desktop tabs on mobile, show bottom nav */
 .bottom-nav{display:none}
