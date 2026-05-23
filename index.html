@@ -756,7 +756,7 @@ body:not(.dark) .tab.on{color:#7c3aed}
     height:60px;
     background:#0f0f1a;
     display:flex;
-    align-items:flex-end;
+    align-items:center;
     z-index:100;
     border-radius:20px 20px 0 0;
     box-shadow:0 -4px 30px rgba(124,58,237,0.15);
@@ -765,46 +765,46 @@ body:not(.dark) .tab.on{color:#7c3aed}
   }
   .bn-item{
     flex:1;
-    display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-    padding-bottom:6px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:2px;
     border:none;background:transparent;cursor:pointer;
-    position:relative;
     height:100%;
   }
   .bn-bubble{
-    width:44px;height:44px;
-    border-radius:50%;
+    width:20px;height:20px;
     display:flex;align-items:center;justify-content:center;
-    margin-bottom:2px;
-    transition:all .25s ease;
+    transition:opacity .2s;
   }
   .bn-bubble svg{
     width:20px;height:20px;
     fill:none;stroke:#6b7280;
     stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
-    transition:stroke .2s;
   }
-  .bn-label{
-    font-size:9px;color:#6b7280;
-    transition:color .2s,transform .2s;
-    line-height:1;
+  .bn-label{font-size:9px;color:#6b7280;line-height:1;transition:color .2s}
+  .bn-item.on .bn-bubble{opacity:0}
+  .bn-item.on .bn-label{color:#b47bff;font-weight:600}
+  /* SVG dip — moves horizontally with JS */
+  #bn-dip{
+    position:absolute;
+    top:0;left:0;
+    width:100px;
+    overflow:visible;
+    pointer-events:none;
+    transition:transform .35s cubic-bezier(0.34,1.56,0.64,1);
+    transform:translateX(-9999px);
   }
-  .bn-item.on .bn-bubble{
-    background:linear-gradient(135deg,#7c3aed,#b47bff);
-    box-shadow:0 0 20px rgba(124,58,237,0.6);
-    transform:translateY(-18px);
-    border:3px solid #0f0f1a;
+  #bn-dip svg{display:block}
+  #bn-dip-icon{
+    position:absolute;
+    left:39px;top:-16px;
+    width:22px;height:22px;
+    display:flex;align-items:center;justify-content:center;
   }
-  .bn-item.on .bn-bubble svg{stroke:#fff}
-  .bn-item.on .bn-label{color:#b47bff;transform:translateY(-4px)}
-  .bn-item.on::before,.bn-item.on::after{
-    content:'';position:absolute;top:0;
-    width:16px;height:16px;
-    background:transparent;border-radius:50%;
-    box-shadow:0 -8px 0 0 #0f0f1a;
+  #bn-dip-icon svg{
+    width:22px;height:22px;
+    fill:none;stroke:#fff;
+    stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
   }
-  .bn-item.on::before{right:calc(50% + 19px)}
-  .bn-item.on::after{left:calc(50% + 19px)}
 
   /* Content padding */
   .sec{padding-top:4px}
@@ -1305,6 +1305,19 @@ body:not(.dark) .tab.on{color:#7c3aed}
 
   <!-- BOTTOM NAV (mobile only) -->
   <nav class="bottom-nav">
+    <div id="bn-dip">
+      <div id="bn-dip-icon"></div>
+      <svg width="100" height="35" viewBox="0 0 100 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 0C15 0 15 0 25 0C35 0 35 25 50 25C65 25 65 0 75 0C85 0 85 0 100 0V35H0V0Z" fill="#0f0f1a"/>
+        <circle cx="50" cy="-5" r="25" fill="url(#bnGrad)"/>
+        <defs>
+          <linearGradient id="bnGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#b47bff"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
     <button class="bn-item on" id="bn-renda" onclick="showTab('renda')">
       <div class="bn-bubble"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
       <span class="bn-label">Renda</span>
@@ -3351,6 +3364,29 @@ function chartColors(){
     :{text:'#888',grid:'rgba(0,0,0,0.06)',border:'#fff'};
 }
 
+const BN_ICONS={
+  renda:`<svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`,
+  bills:`<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>`,
+  dividas:`<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg>`,
+  semana:`<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+  cal:`<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+  metas:`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+  relatorio:`<svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+};
+function updateBnDip(tabId,instant){
+  if(window.innerWidth>=640) return;
+  const dip=document.getElementById('bn-dip');
+  if(!dip) return;
+  const item=document.getElementById('bn-'+tabId);
+  if(!item) return;
+  const rect=item.getBoundingClientRect();
+  const cx=rect.left+rect.width/2;
+  if(instant){dip.style.transition='none';}
+  dip.style.transform='translateX('+(cx-50)+'px)';
+  if(instant) requestAnimationFrame(()=>{dip.style.transition='';});
+  const ic=document.getElementById('bn-dip-icon');
+  if(ic) ic.innerHTML=BN_ICONS[tabId]||'';
+}
 function showTab(tabId){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.getElementById('tab-'+tabId).classList.add('on');
@@ -3360,6 +3396,7 @@ function showTab(tabId){
     const el=document.getElementById('bn-'+k);
     if(el) el.classList.toggle('on',k===tabId);
   });
+  updateBnDip(tabId);
 }
 
 // DRAWER
@@ -3411,6 +3448,8 @@ function initApp(){
   calYear=START.getFullYear();calMonth=START.getMonth();
   ovFrom=new Date(START);ovTo=new Date(END);
   buildRendaList();renderBills();buildTopCards();buildPeriodRow();buildNotifBanner();buildWeek();buildCal();buildMetas();buildDividas();buildRelatorio();
+  // Init bottom-nav dip position
+  requestAnimationFrame(()=>updateBnDip('renda',true));
   // Show onboarding for first-time users
   obStart();
 }
