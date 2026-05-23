@@ -2249,13 +2249,22 @@ async function loadFromSupabase(){
   if(saved!=null) initialBalance=parseFloat(saved)||0;
 }
 
+function _showToast(msg,color){
+  let el=document.getElementById('_sToast');
+  if(!el){el=document.createElement('div');el.id='_sToast';el.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:9px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s;max-width:300px;text-align:center;pointer-events:none';document.body.appendChild(el);}
+  el.textContent=msg;el.style.background=color||'#ef4444';el.style.color='#fff';el.style.opacity='1';
+  clearTimeout(el._t);el._t=setTimeout(()=>{el.style.opacity='0';},4000);
+}
 async function saveRenda(r){
   if(!_user) return;
-  const {error}=await _supa.from('rendas').upsert({
-    id:r.id, user_id:_user.id, name:r.name, val:r.val,
-    type:r.type, dow:r.dow, day:r.day, day2:r.day2??null, month:r.month, year:r.year, locked:r.locked
-  },{onConflict:'id'});
-  if(error) console.error('saveRenda error:',error);
+  const payload={id:r.id,user_id:_user.id,name:r.name,val:r.val,type:r.type,dow:r.dow,day:r.day,day2:r.day2??null,month:r.month,year:r.year,locked:r.locked};
+  let {error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'});
+  if(error&&(error.code==='42703'||error.code==='PGRST204')){
+    // column missing — retry without day2
+    const {day2,...rest}=payload;
+    ({error}=await _supa.from('rendas').upsert(rest,{onConflict:'id'}));
+  }
+  if(error){console.error('saveRenda error:',error);_showToast('Erro ao salvar renda: '+error.message);}
 }
 async function deleteRenda(id){
   if(!_user) return;
@@ -2264,14 +2273,14 @@ async function deleteRenda(id){
 }
 async function saveBill(b){
   if(!_user) return;
-  const {error}=await _supa.from('bills').upsert({
-    id:b.id, user_id:_user.id, name:b.name, val:b.val,
-    type:b.type, day:b.day, month:b.month??null, year:b.year??null,
-    cat:b.cat, note:b.note||null, locked:b.locked,
-    meta_id:b.metaId||null, meta_end:b.metaEnd||null,
-    pagamentos:b.pagamentos||[]
-  },{onConflict:'id'});
-  if(error) console.error('saveBill error:',error);
+  const payload={id:b.id,user_id:b.user_id||_user.id,name:b.name,val:b.val,type:b.type,day:b.day,month:b.month??null,year:b.year??null,cat:b.cat,note:b.note||null,locked:b.locked,meta_id:b.metaId||null,meta_end:b.metaEnd||null,pagamentos:b.pagamentos||[]};
+  let {error}=await _supa.from('bills').upsert(payload,{onConflict:'id'});
+  if(error&&(error.code==='42703'||error.code==='PGRST204')){
+    // pagamentos column missing — retry without it
+    const {pagamentos,...rest}=payload;
+    ({error}=await _supa.from('bills').upsert(rest,{onConflict:'id'}));
+  }
+  if(error){console.error('saveBill error:',error);_showToast('Erro ao salvar despesa: '+error.message);}
 }
 async function deleteBill(id){
   if(!_user) return;
@@ -2699,13 +2708,16 @@ function onRendaTypeChange(type){
 }
 
 function addRenda(){
+  try{
   const name=document.getElementById('re-name').value.trim();
   const val=parseFloat(document.getElementById('re-val').value)||0;
   const day=parseInt(document.getElementById('re-day').value)||1;
-  const my=document.getElementById('re-monthyear').value;
+  const rawMy=document.getElementById('re-monthyear').value||new Date().toISOString().slice(0,7);
   const type=document.getElementById('re-type').value;
   if(!name||!val){alert(t('alert_fill_name_val'));return;}
-  const [yr,mo]=my.split('-').map(Number);
+  const parts=rawMy.split('-').map(Number);
+  const yr=parts[0]||new Date().getFullYear();
+  const mo=parts[1]||new Date().getMonth()+1;
   const day2=type==='biweekly'?(parseInt(document.getElementById('re-day2').value)||null):null;
   const nr={id:newId(),name,val,day,day2,month:mo-1,year:yr,type,locked:false,dow:5};
   rendas.push(nr);
@@ -2717,7 +2729,9 @@ function addRenda(){
   onRendaTypeChange('monthly');
   document.getElementById('re-type').value='monthly';
   toggleForm('renda',false);
-  buildRendaList();rebuild();
+  buildRendaList();
+  try{rebuild();}catch(e2){console.error('rebuild error after addRenda:',e2);}
+  }catch(e){console.error('addRenda error:',e);_showToast('Erro ao adicionar: '+e.message);}
 }
 
 // DESPESAS
@@ -2827,21 +2841,26 @@ function removeBill(id){
   openConfirm(b?.name||'',()=>{bills=bills.filter(x=>x.id!==id);deleteBill(id);renderBills();rebuild();});
 }
 function addBill(){
+  try{
   const name=document.getElementById('f-name').value.trim();
   const val=parseFloat(document.getElementById('f-val').value)||0;
   const day=parseInt(document.getElementById('f-day').value)||1;
   const type=document.getElementById('f-type').value;
-  const my=document.getElementById('f-monthyear').value;
+  const rawMy=document.getElementById('f-monthyear').value||new Date().toISOString().slice(0,7);
   const cat=document.getElementById('f-cat').value;
   if(!name||!val){alert(t('alert_fill_name_val'));return;}
-  const [yr,mo]=my.split('-').map(Number);
+  const parts=rawMy.split('-').map(Number);
+  const yr=parts[0]||new Date().getFullYear();
+  const mo=parts[1]||new Date().getMonth()+1;
   const nb={id:newId(),name,val,day,type,locked:false,cat};
   if(type==='once'){nb.month=mo-1;nb.year=yr;}
   bills.push(nb);
   saveBill(nb);
   document.getElementById('f-name').value='';document.getElementById('f-val').value='';document.getElementById('f-day').value='';
   toggleForm('bills',false);
-  renderBills();rebuild();
+  renderBills();
+  try{rebuild();}catch(e2){console.error('rebuild error after addBill:',e2);}
+  }catch(e){console.error('addBill error:',e);_showToast('Erro ao adicionar: '+e.message);}
 }
 
 // SEMANA
