@@ -751,46 +751,60 @@ body:not(.dark) .tab.on{color:#7c3aed}
 
   /* Bottom nav */
   .bottom-nav{
-    display:flex;
     position:fixed;
     bottom:0;left:0;right:0;
+    height:60px;
     background:#0f0f1a;
+    display:flex;
+    align-items:flex-end;
     z-index:100;
-    padding:0 4px max(10px,env(safe-area-inset-bottom));
-    height:62px;
-    align-items:center;
     border-radius:20px 20px 0 0;
     box-shadow:0 -4px 30px rgba(124,58,237,0.15);
+    padding-bottom:max(8px,env(safe-area-inset-bottom));
+    overflow:visible;
   }
   .bn-item{
     flex:1;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:3px;
-    padding:6px 2px;
-    cursor:pointer;
-    border:none;background:transparent;
-    font-size:9px;color:#6b7280;
-    transition:color .2s;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+    padding-bottom:6px;
+    border:none;background:transparent;cursor:pointer;
+    position:relative;
+    height:100%;
   }
-  .bn-item .bn-icon-wrap{
-    padding:6px;
-    border-radius:14px;
-    transition:all .2s;
+  .bn-bubble{
+    width:44px;height:44px;
+    border-radius:50%;
     display:flex;align-items:center;justify-content:center;
+    margin-bottom:2px;
+    transition:all .25s ease;
   }
-  .bn-item .bn-icon-wrap svg{
-    width:18px;height:18px;
+  .bn-bubble svg{
+    width:20px;height:20px;
     fill:none;stroke:#6b7280;
-    stroke-width:1.8;
-    stroke-linecap:round;stroke-linejoin:round;
+    stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
     transition:stroke .2s;
   }
-  .bn-item.on{color:#b47bff}
-  .bn-item.on .bn-icon-wrap{
-    background:linear-gradient(135deg,#7c3aed,#b47bff);
-    box-shadow:0 0 16px rgba(124,58,237,0.5);
+  .bn-label{
+    font-size:9px;color:#6b7280;
+    transition:color .2s,transform .2s;
+    line-height:1;
   }
-  .bn-item.on .bn-icon-wrap svg{stroke:#fff}
+  .bn-item.on .bn-bubble{
+    background:linear-gradient(135deg,#7c3aed,#b47bff);
+    box-shadow:0 0 20px rgba(124,58,237,0.6);
+    transform:translateY(-18px);
+    border:3px solid #0f0f1a;
+  }
+  .bn-item.on .bn-bubble svg{stroke:#fff}
+  .bn-item.on .bn-label{color:#b47bff;transform:translateY(-4px)}
+  .bn-item.on::before,.bn-item.on::after{
+    content:'';position:absolute;top:0;
+    width:16px;height:16px;
+    background:transparent;border-radius:50%;
+    box-shadow:0 -8px 0 0 #0f0f1a;
+  }
+  .bn-item.on::before{right:calc(50% + 19px)}
+  .bn-item.on::after{left:calc(50% + 19px)}
 
   /* Content padding */
   .sec{padding-top:4px}
@@ -1292,32 +1306,32 @@ body:not(.dark) .tab.on{color:#7c3aed}
   <!-- BOTTOM NAV (mobile only) -->
   <nav class="bottom-nav">
     <button class="bn-item on" id="bn-renda" onclick="showTab('renda')">
-      <div class="bn-icon-wrap"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
-      <span>Renda</span>
+      <div class="bn-bubble"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+      <span class="bn-label">Renda</span>
     </button>
     <button class="bn-item" id="bn-bills" onclick="showTab('bills')">
-      <div class="bn-icon-wrap"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg></div>
-      <span>Despesas</span>
+      <div class="bn-bubble"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg></div>
+      <span class="bn-label">Despesas</span>
     </button>
     <button class="bn-item" id="bn-dividas" onclick="showTab('dividas')">
-      <div class="bn-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg></div>
-      <span>Dívidas</span>
+      <div class="bn-bubble"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg></div>
+      <span class="bn-label">Dívidas</span>
     </button>
     <button class="bn-item" id="bn-semana" onclick="showTab('semana')">
-      <div class="bn-icon-wrap"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-      <span>Semana</span>
+      <div class="bn-bubble"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <span class="bn-label">Semana</span>
     </button>
     <button class="bn-item" id="bn-cal" onclick="showTab('cal')">
-      <div class="bn-icon-wrap"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-      <span>Calendário</span>
+      <div class="bn-bubble"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <span class="bn-label">Calendário</span>
     </button>
     <button class="bn-item" id="bn-metas" onclick="showTab('metas')">
-      <div class="bn-icon-wrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-      <span>Metas</span>
+      <div class="bn-bubble"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+      <span class="bn-label">Metas</span>
     </button>
     <button class="bn-item" id="bn-relatorio" onclick="showTab('relatorio')">
-      <div class="bn-icon-wrap"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-      <span>Relatório</span>
+      <div class="bn-bubble"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+      <span class="bn-label">Relatório</span>
     </button>
   </nav>
 
@@ -1950,7 +1964,7 @@ function applyLang(){
   tabKeys.forEach(k=>{
     const el=document.getElementById('bn-'+k);
     if(el){
-      const lbl=el.querySelector('span:not(.bn-icon)');
+      const lbl=el.querySelector('.bn-label');
       if(lbl) lbl.textContent=t('bn_'+k);
     }
   });
