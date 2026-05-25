@@ -1365,6 +1365,9 @@ body:not(.dark) .tab.on{color:#7c3aed}
     <button onclick="tourReset()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerTourBtn">Ver tour novamente</button>
   </div>
   <div class="drawer-section">
+    <button onclick="openChangePassModal()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerChangePassBtn">Mudar senha / Change password</button>
+  </div>
+  <div class="drawer-section">
     <button class="drawer-logout" onclick="handleLogout()">Sair / Sign out</button>
   </div>
 </div>
@@ -1649,6 +1652,35 @@ body:not(.dark) .tab.on{color:#7c3aed}
   </div>
 </div>
 
+<!-- CHANGE PASSWORD MODAL -->
+<div id="changePassModal" style="display:none;position:fixed;inset:0;z-index:1100;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);padding:1rem">
+  <div class="debt-pay-card">
+    <div class="debt-pay-header">
+      <span class="debt-pay-title" id="changePassTitle">Mudar senha</span>
+      <button class="debt-pay-close" onclick="closeChangePassModal()">✕</button>
+    </div>
+    <div style="margin-bottom:1rem">
+      <label style="font-size:11px;font-weight:500;color:var(--sub);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em" id="cpNewLabel">Nova senha</label>
+      <div style="position:relative">
+        <input id="cpNewPass" type="password" autocomplete="new-password" style="width:100%;font-size:16px;padding:10px 38px 10px 12px;border-radius:8px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);outline:none;box-sizing:border-box">
+        <button type="button" onclick="togglePassVis('cpNewPass','cpNewEye')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--sub);padding:2px" id="cpNewEye">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </div>
+    <div style="margin-bottom:1.2rem">
+      <label style="font-size:11px;font-weight:500;color:var(--sub);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em" id="cpConfirmLabel">Confirmar senha</label>
+      <div style="position:relative">
+        <input id="cpConfirmPass" type="password" autocomplete="new-password" style="width:100%;font-size:16px;padding:10px 38px 10px 12px;border-radius:8px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);outline:none;box-sizing:border-box">
+        <button type="button" onclick="togglePassVis('cpConfirmPass','cpConfirmEye')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--sub);padding:2px" id="cpConfirmEye">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </div>
+    <button class="debt-pay-confirm" onclick="submitChangePass()" id="cpSaveBtn">Salvar</button>
+  </div>
+</div>
+
 <!-- DAY EDIT BOTTOM SHEET -->
 <div id="dayEditModal" style="display:none">
   <div class="day-edit-overlay" onclick="closeDayEditModal()"></div>
@@ -1847,6 +1879,15 @@ const TRANSLATIONS = {
     tour_11_title:'Tudo pronto!', tour_11_body:'Agora você conhece o TryFreed. Que sua jornada rumo à liberdade financeira comece hoje.',
     tour_next:'Próximo →', tour_finish:'Começar', tour_skip:'Pular tour',
     tour_replay:'Ver tour novamente',
+    // Change password
+    drawer_change_pass:'Mudar senha',
+    change_pass_title:'Mudar senha',
+    change_pass_new:'Nova senha',
+    change_pass_confirm:'Confirmar senha',
+    change_pass_save:'Salvar',
+    change_pass_mismatch:'Senhas não coincidem',
+    change_pass_success:'Senha alterada com sucesso!',
+    change_pass_empty:'Digite a nova senha',
   },
   en: {
     tab_renda:'Income', tab_bills:'Expenses', tab_semana:'Week',
@@ -2002,6 +2043,15 @@ const TRANSLATIONS = {
     tour_11_title:'All set!', tour_11_body:"You're all set! Now you know TryFreed. May your journey to financial freedom begin today.",
     tour_next:'Next →', tour_finish:'Get Started', tour_skip:'Skip tour',
     tour_replay:'Replay tour',
+    // Change password
+    drawer_change_pass:'Change password',
+    change_pass_title:'Change password',
+    change_pass_new:'New password',
+    change_pass_confirm:'Confirm password',
+    change_pass_save:'Save',
+    change_pass_mismatch:"Passwords don't match",
+    change_pass_success:'Password updated successfully!',
+    change_pass_empty:'Enter a new password',
   }
 };
 function t(key){ return TRANSLATIONS[lang][key] ?? TRANSLATIONS['pt'][key] ?? key; }
@@ -2112,6 +2162,8 @@ function applyLang(){
   if(btnEN){btnEN.style.fontWeight=lang==='en'?'700':'400';btnEN.style.color=lang==='en'?'var(--blue)':'var(--sub)';}
   const dtb=document.getElementById('drawerTourBtn');
   if(dtb) dtb.textContent=t('tour_replay');
+  const dcpb=document.getElementById('drawerChangePassBtn');
+  if(dcpb) dcpb.textContent=t('drawer_change_pass');
   // Collapsible form toggle labels
   ['renda','bills','metas'].forEach(k=>{
     const lbl=document.getElementById(k+'ToggleLabel');
@@ -3636,22 +3688,27 @@ function setUserUI(user){
 }
 
 let _booted = false;
+let _appRunning = false;
 
 // Listen for auth state changes (login/logout only)
 _supa.auth.onAuthStateChange(async (event, session)=>{
   if(!_booted) return; // ignore initial fire, handled by bootApp
-  if(event==='SIGNED_IN'&&session?.user){
-    _user=session.user;
+  if(session?.user) _user=session.user; // always keep _user fresh (token refresh, updateUser, etc.)
+  if(event==='SIGNED_IN'){
+    if(_appRunning) return; // app already running — don't reload, just keep _user fresh above
     setUserUI(_user);
     if(obIsFirstTime()){
       obStart();          // show slides immediately, no waiting for network
       loadFromSupabase(); // fire-and-forget: loads empty data for new user
+      _appRunning=true;
       return;
     }
     await loadFromSupabase();
     initApp();
+    _appRunning=true;
     if(!_user.user_metadata?.pin) setTimeout(showPinOffer,800);
   } else if(event==='SIGNED_OUT'){
+    _appRunning=false;
     _user=null;
     rendas=[];bills=[];metas=[];dividas=[];
     showHome();
@@ -3670,10 +3727,12 @@ async function bootApp(){
       if(obIsFirstTime()){
         obStart();
         loadFromSupabase();
+        _appRunning=true;
         return;
       }
       await loadFromSupabase();
       initApp();
+      _appRunning=true;
     }
   } else {
     showHome();
@@ -3944,6 +4003,7 @@ async function pinSubmit(){
     setUserUI(_user);
     await loadFromSupabase();
     initApp();
+    _appRunning=true;
   } else {
     const dots=document.getElementById('pinDots');
     pinUpdateDots('pd',4,true);
@@ -3956,6 +4016,43 @@ async function pinSubmit(){
 function pinUseEmail(){
   document.getElementById('pinScreen').style.display='none';
   _supa.auth.signOut().then(()=>showLogin());
+}
+
+// ── CHANGE PASSWORD ────────────────────────────────────────────────
+function openChangePassModal(){
+  closeDrawer();
+  const isEN=lang==='en';
+  document.getElementById('changePassTitle').textContent=t('change_pass_title');
+  document.getElementById('cpNewLabel').textContent=t('change_pass_new');
+  document.getElementById('cpConfirmLabel').textContent=t('change_pass_confirm');
+  document.getElementById('cpSaveBtn').textContent=t('change_pass_save');
+  document.getElementById('cpNewPass').value='';
+  document.getElementById('cpConfirmPass').value='';
+  document.getElementById('changePassModal').style.display='flex';
+}
+
+function closeChangePassModal(){
+  document.getElementById('changePassModal').style.display='none';
+}
+
+function togglePassVis(inputId,btnId){
+  const inp=document.getElementById(inputId);
+  const show=inp.type==='password';
+  inp.type=show?'text':'password';
+  const btn=document.getElementById(btnId);
+  btn.innerHTML=show
+    ?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+    :'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+}
+
+async function submitChangePass(){
+  const np=document.getElementById('cpNewPass').value.trim();
+  const cp=document.getElementById('cpConfirmPass').value.trim();
+  if(!np){_showToast(t('change_pass_empty'),'#ef4444');return;}
+  if(np!==cp){_showToast(t('change_pass_mismatch'),'#ef4444');return;}
+  const {error}=await _supa.auth.updateUser({password:np});
+  if(error){_showToast((lang==='en'?'Error: ':'Erro: ')+error.message,'#ef4444');}
+  else{_showToast(t('change_pass_success'),'#10b981');closeChangePassModal();}
 }
 
 function showPinOffer(){
