@@ -2166,6 +2166,29 @@ const SUPA_URL = 'https://nyicbxrbabudbwahrjzx.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55aWNieHJiYWJ1ZGJ3YWhyanp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMjg1MDYsImV4cCI6MjA5NDcwNDUwNn0.C8r8MdY3i12Q9fX1DSJTdopDf_mBepFp0ft9skluD4I';
 const _supa = supabase.createClient(SUPA_URL, SUPA_KEY);
 let _user = null;
+window._testLoad = async function(){
+  if(!_user){alert('Não está logado! _user = null');return;}
+  const uid=_user.id;
+  console.log('[testLoad] buscando dados para user:',uid);
+  const [r,b,m,dv]=await Promise.all([
+    _supa.from('rendas').select('*').eq('user_id',uid),
+    _supa.from('bills').select('*').eq('user_id',uid),
+    _supa.from('metas').select('*').eq('user_id',uid),
+    _supa.from('dividas').select('*').eq('user_id',uid),
+  ]);
+  console.log('[testLoad] rendas  data:',r.data,'error:',r.error);
+  console.log('[testLoad] bills   data:',b.data,'error:',b.error);
+  console.log('[testLoad] metas   data:',m.data,'error:',m.error);
+  console.log('[testLoad] dividas data:',dv.data,'error:',dv.error);
+  const erros=[r.error,b.error,m.error,dv.error].filter(Boolean);
+  alert(
+    'rendas: '+(r.data?.length??'ERRO')+'\n'+
+    'bills: '+(b.data?.length??'ERRO')+'\n'+
+    'metas: '+(m.data?.length??'ERRO')+'\n'+
+    'dividas: '+(dv.data?.length??'ERRO')+
+    (erros.length?'\n\nERROS:\n'+JSON.stringify(erros,null,2):'')
+  );
+};
 window._testSave = async function(){
   if(!_user){alert('Não está logado!');return;}
   const id = crypto.randomUUID();
