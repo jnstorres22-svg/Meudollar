@@ -2350,15 +2350,18 @@ function _showToast(msg,color){
   clearTimeout(el._t);el._t=setTimeout(()=>{el.style.opacity='0';},4000);
 }
 async function saveRenda(r){
-  if(!_user) return;
+  if(!_user){console.warn('[saveRenda] _user é null, abortando');return;}
   const payload={id:r.id,user_id:_user.id,name:r.name,val:r.val,type:r.type,dow:r.dow,day:r.day,day2:r.day2??null,month:r.month,year:r.year,locked:r.locked};
+  console.log('[saveRenda] payload enviado:', JSON.stringify(payload));
   let {error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'});
+  console.log('[saveRenda] resultado upsert:', error||'OK');
   if(error&&(error.code==='42703'||error.code==='PGRST204')){
-    // column missing — retry without day2
     const {day2,...rest}=payload;
+    console.log('[saveRenda] retry sem day2:', JSON.stringify(rest));
     ({error}=await _supa.from('rendas').upsert(rest,{onConflict:'id'}));
+    console.log('[saveRenda] resultado retry:', error||'OK');
   }
-  if(error){console.error('saveRenda error:',error);_showToast('Erro ao salvar renda: '+error.message);}
+  if(error){console.error('[saveRenda] ERRO FINAL:',error);alert('❌ ERRO saveRenda:\n'+error.message+'\nCódigo: '+error.code+'\n'+JSON.stringify(error));_showToast('Erro ao salvar renda: '+error.message);}
 }
 async function deleteRenda(id){
   if(!_user) return;
@@ -2366,15 +2369,19 @@ async function deleteRenda(id){
   if(error) console.error('deleteRenda error:',error);
 }
 async function saveBill(b){
-  if(!_user) return;
+  if(!_user){console.warn('[saveBill] _user é null, abortando');return;}
   const payload={id:b.id,user_id:b.user_id||_user.id,name:b.name,val:b.val,type:b.type,day:b.day,month:b.month??null,year:b.year??null,cat:b.cat,note:b.note||null,locked:b.locked,meta_id:b.metaId||null,meta_end:b.metaEnd||null,pagamentos:b.pagamentos||[]};
+  console.log('[saveBill] payload enviado:', JSON.stringify(payload));
   let {error}=await _supa.from('bills').upsert(payload,{onConflict:'id'});
+  console.log('[saveBill] resultado upsert:', error||'OK');
   if(error&&(error.code==='42703'||error.code==='PGRST204')){
-    // pagamentos column missing — retry without it
-    const {pagamentos,...rest}=payload;
+    // retry sem colunas que podem estar faltando (pagamentos, meta_end)
+    const {pagamentos,meta_end,...rest}=payload;
+    console.log('[saveBill] retry sem pagamentos/meta_end:', JSON.stringify(rest));
     ({error}=await _supa.from('bills').upsert(rest,{onConflict:'id'}));
+    console.log('[saveBill] resultado retry:', error||'OK');
   }
-  if(error){console.error('saveBill error:',error);_showToast('Erro ao salvar despesa: '+error.message);}
+  if(error){console.error('[saveBill] ERRO FINAL:',error);alert('❌ ERRO saveBill:\n'+error.message+'\nCódigo: '+error.code+'\n'+JSON.stringify(error));_showToast('Erro ao salvar despesa: '+error.message);}
 }
 async function deleteBill(id){
   if(!_user) return;
