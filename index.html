@@ -3648,7 +3648,7 @@ _supa.auth.onAuthStateChange(async (event, session)=>{
     }
     await loadFromSupabase();
     initApp();
-    if(!localStorage.getItem('pin_'+_user.id)) setTimeout(showPinOffer,800);
+    if(!_user.user_metadata?.pin) setTimeout(showPinOffer,800);
   } else if(event==='SIGNED_OUT'){
     _user=null;
     rendas=[];bills=[];metas=[];dividas=[];
@@ -3661,7 +3661,7 @@ async function bootApp(){
   _booted=true;
   if(session?.user){
     _user=session.user;
-    if(localStorage.getItem('pin_'+_user.id)){
+    if(session.user.user_metadata?.pin){
       showPinScreen();
     } else {
       setUserUI(_user);
@@ -3908,7 +3908,7 @@ function startInlineEditVal(el, type, id){
 // ── PIN SYSTEM ────────────────────────────────────────────────────
 let _pinBuf=[], _pinSetupStep=1, _pinSetupFirst=null, _pinSetupMode='create';
 
-function getStoredPin(){ return _user ? localStorage.getItem('pin_'+_user.id) : null; }
+function getStoredPin(){ return _user?.user_metadata?.pin || null; }
 
 function showPinScreen(){
   ['homeScreen','loginScreen','resetScreen','pinSetupScreen'].forEach(id=>document.getElementById(id).style.display='none');
@@ -3994,14 +3994,18 @@ function pinSetupKey(k){
   if(_pinBuf.length===4) setTimeout(pinSetupSubmit,120);
 }
 
-function pinSetupSubmit(){
+async function pinSetupSubmit(){
   if(_pinSetupStep===1){
     _pinSetupFirst=_pinBuf.join('');
     _pinSetupStep=2; pinSetupUpdateUI();
   } else {
     const confirm=_pinBuf.join('');
     if(confirm===_pinSetupFirst){
-      if(_user) localStorage.setItem('pin_'+_user.id,confirm);
+      if(_user){
+        const {data,error}=await _supa.auth.updateUser({data:{pin:confirm}});
+        if(error){console.error('PIN save error:',error);_showToast('Erro ao salvar PIN: '+error.message);return;}
+        if(data?.user) _user=data.user;
+      }
       document.getElementById('pinSetupScreen').style.display='none';
       updateDrawerPinSection();
     } else {
@@ -4018,9 +4022,11 @@ function cancelPinSetup(){
   document.getElementById('pinSetupScreen').style.display='none';
 }
 
-function removePIN(){
+async function removePIN(){
   if(!_user) return;
-  localStorage.removeItem('pin_'+_user.id);
+  const {data,error}=await _supa.auth.updateUser({data:{pin:null}});
+  if(error){console.error('PIN remove error:',error);_showToast('Erro ao remover PIN: '+error.message);return;}
+  if(data?.user) _user=data.user;
   updateDrawerPinSection();
   if(typeof closeDrawer==='function') closeDrawer();
 }
