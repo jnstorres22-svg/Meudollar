@@ -2403,7 +2403,7 @@ async function saveRenda(r){
   let {data,error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'}).select();
   console.log('[saveRenda] RESULT data:',data,'error:',error);
   for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
-    const col=error.message?.match(/"([^"]+)"/)?.[1];
+    const col=error.message?.match(/["']([\w]+)["']/)?.[1];
     if(!col||!(col in payload))break;
     payload={...payload};delete payload[col];
     ({data,error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'}).select());
@@ -2424,7 +2424,7 @@ async function saveBill(b){
   let {data,error}=await _supa.from('bills').upsert(payload,{onConflict:'id'}).select();
   console.log('[saveBill] RESULT data:',data,'error:',error);
   for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
-    const col=error.message?.match(/"([^"]+)"/)?.[1];
+    const col=error.message?.match(/["']([\w]+)["']/)?.[1];
     if(!col||!(col in payload))break;
     payload={...payload};delete payload[col];
     ({data,error}=await _supa.from('bills').upsert(payload,{onConflict:'id'}).select());
@@ -2445,7 +2445,7 @@ async function saveMeta(m){
   let {data,error}=await _supa.from('metas').upsert(payload,{onConflict:'id'}).select();
   console.log('[saveMeta] RESULT data:',data,'error:',error);
   for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
-    const col=error.message?.match(/"([^"]+)"/)?.[1];
+    const col=error.message?.match(/["']([\w]+)["']/)?.[1];
     if(!col||!(col in payload))break;
     payload={...payload};delete payload[col];
     ({data,error}=await _supa.from('metas').upsert(payload,{onConflict:'id'}).select());
@@ -4340,7 +4340,7 @@ async function saveDivida(d){
   let {data,error}=await _supa.from('dividas').upsert(payload,{onConflict:'id'}).select();
   console.log('[saveDivida] RESULT data:',data,'error:',error);
   for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
-    const col=error.message?.match(/"([^"]+)"/)?.[1];
+    const col=error.message?.match(/["']([\w]+)["']/)?.[1];
     if(!col||!(col in payload))break;
     payload={...payload};delete payload[col];
     ({data,error}=await _supa.from('dividas').upsert(payload,{onConflict:'id'}).select());
