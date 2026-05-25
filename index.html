@@ -2357,7 +2357,8 @@ async function loadFromSupabase(){
   console.log('[load] dividas →',dv.data?.length??'null','itens | erro:',dv.error);
   if(r.error||b.error||m.error||dv.error){
     const errs=[r.error,b.error,m.error,dv.error].filter(Boolean);
-    alert('ERRO ao carregar dados do Supabase:\n'+JSON.stringify(errs,null,2));
+    console.error('[load] ERROS nas queries:',errs);
+    _showToast('Erro ao carregar dados: '+errs[0]?.message);
   }
   rendas = (r.data||[]).map(x=>({
     id:x.id, name:x.name, val:x.val, type:x.type,
@@ -2397,7 +2398,7 @@ function _showToast(msg,color){
   clearTimeout(el._t);el._t=setTimeout(()=>{el.style.opacity='0';},4000);
 }
 async function saveRenda(r){
-  if(!_user){console.warn('[saveRenda] _user é null');alert('ERRO: usuário não autenticado ao salvar renda');return;}
+  if(!_user){console.warn('[saveRenda] _user é null');return;}
   let payload={id:r.id,user_id:_user.id,name:r.name,val:r.val,type:r.type,dow:r.dow,day:r.day,day2:r.day2??null,month:r.month,year:r.year,locked:r.locked};
   console.log('[saveRenda] SAVING:',JSON.stringify(payload));
   let {data,error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'}).select();
@@ -2409,7 +2410,7 @@ async function saveRenda(r){
     ({data,error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'}).select());
     console.log('[saveRenda] retry:',data,error);
   }
-  if(error){console.error('[saveRenda] ERRO:',error);alert('ERRO saveRenda:\n'+JSON.stringify(error,null,2));_showToast('Erro ao salvar renda: '+error.message);}
+  if(error){console.error('[saveRenda] ERRO:',error);_showToast('Erro ao salvar renda: '+error.message);}
   else if(!data?.length){console.warn('[saveRenda] 0 linhas retornadas — verifique políticas RLS no Supabase (INSERT/UPDATE em rendas)');}
 }
 async function deleteRenda(id){
@@ -2418,7 +2419,7 @@ async function deleteRenda(id){
   if(error) console.error('deleteRenda error:',error);
 }
 async function saveBill(b){
-  if(!_user){console.warn('[saveBill] _user é null');alert('ERRO: usuário não autenticado ao salvar despesa');return;}
+  if(!_user){console.warn('[saveBill] _user é null');return;}
   let payload={id:b.id,user_id:b.user_id||_user.id,name:b.name,val:b.val,type:b.type,day:b.day,month:b.month??null,year:b.year??null,cat:b.cat,note:b.note||null,locked:b.locked,meta_id:b.metaId||null,meta_end:b.metaEnd||null,pagamentos:b.pagamentos||[]};
   console.log('[saveBill] SAVING:',JSON.stringify(payload));
   let {data,error}=await _supa.from('bills').upsert(payload,{onConflict:'id'}).select();
@@ -2430,7 +2431,7 @@ async function saveBill(b){
     ({data,error}=await _supa.from('bills').upsert(payload,{onConflict:'id'}).select());
     console.log('[saveBill] retry:',data,error);
   }
-  if(error){console.error('[saveBill] ERRO:',error);alert('ERRO saveBill:\n'+JSON.stringify(error,null,2));_showToast('Erro ao salvar despesa: '+error.message);}
+  if(error){console.error('[saveBill] ERRO:',error);_showToast('Erro ao salvar despesa: '+error.message);}
   else if(!data?.length){console.warn('[saveBill] 0 linhas retornadas — verifique políticas RLS no Supabase (INSERT/UPDATE em bills)');}
 }
 async function deleteBill(id){
@@ -2451,7 +2452,7 @@ async function saveMeta(m){
     ({data,error}=await _supa.from('metas').upsert(payload,{onConflict:'id'}).select());
     console.log('[saveMeta] retry:',data,error);
   }
-  if(error){console.error('[saveMeta] ERRO:',error);alert('ERRO saveMeta:\n'+JSON.stringify(error,null,2));_showToast('Erro ao salvar meta: '+error.message);}
+  if(error){console.error('[saveMeta] ERRO:',error);_showToast('Erro ao salvar meta: '+error.message);}
   else if(!data?.length){console.warn('[saveMeta] 0 linhas retornadas — verifique políticas RLS no Supabase (INSERT/UPDATE em metas)');}
 }
 async function deleteMeta(id){
@@ -4346,7 +4347,7 @@ async function saveDivida(d){
     ({data,error}=await _supa.from('dividas').upsert(payload,{onConflict:'id'}).select());
     console.log('[saveDivida] retry:',data,error);
   }
-  if(error){console.error('[saveDivida] ERRO:',error);alert('ERRO saveDivida:\n'+JSON.stringify(error,null,2));_showToast('Erro ao salvar dívida: '+error.message);}
+  if(error){console.error('[saveDivida] ERRO:',error);_showToast('Erro ao salvar dívida: '+error.message);}
   else if(!data?.length){console.warn('[saveDivida] 0 linhas retornadas — verifique políticas RLS no Supabase (INSERT/UPDATE em dividas)');}
 }
 async function deleteDividaDB(id){
