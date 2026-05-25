@@ -2351,17 +2351,15 @@ function _showToast(msg,color){
 }
 async function saveRenda(r){
   if(!_user){console.warn('[saveRenda] _user é null, abortando');return;}
-  const payload={id:r.id,user_id:_user.id,name:r.name,val:r.val,type:r.type,dow:r.dow,day:r.day,day2:r.day2??null,month:r.month,year:r.year,locked:r.locked};
-  console.log('[saveRenda] payload enviado:', JSON.stringify(payload));
+  let payload={id:r.id,user_id:_user.id,name:r.name,val:r.val,type:r.type,dow:r.dow,day:r.day,day2:r.day2??null,month:r.month,year:r.year,locked:r.locked};
   let {error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'});
-  console.log('[saveRenda] resultado upsert:', error||'OK');
-  if(error&&(error.code==='42703'||error.code==='PGRST204')){
-    const {day2,...rest}=payload;
-    console.log('[saveRenda] retry sem day2:', JSON.stringify(rest));
-    ({error}=await _supa.from('rendas').upsert(rest,{onConflict:'id'}));
-    console.log('[saveRenda] resultado retry:', error||'OK');
+  for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
+    const col=error.message?.match(/"([^"]+)"/)?.[1];
+    if(!col||!(col in payload))break;
+    payload={...payload};delete payload[col];
+    ({error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'}));
   }
-  if(error){console.error('[saveRenda] ERRO FINAL:',error);alert('❌ ERRO saveRenda:\n'+error.message+'\nCódigo: '+error.code+'\n'+JSON.stringify(error));_showToast('Erro ao salvar renda: '+error.message);}
+  if(error){console.error('[saveRenda] erro:',error);_showToast('Erro ao salvar renda: '+error.message);}
 }
 async function deleteRenda(id){
   if(!_user) return;
@@ -2370,18 +2368,15 @@ async function deleteRenda(id){
 }
 async function saveBill(b){
   if(!_user){console.warn('[saveBill] _user é null, abortando');return;}
-  const payload={id:b.id,user_id:b.user_id||_user.id,name:b.name,val:b.val,type:b.type,day:b.day,month:b.month??null,year:b.year??null,cat:b.cat,note:b.note||null,locked:b.locked,meta_id:b.metaId||null,meta_end:b.metaEnd||null,pagamentos:b.pagamentos||[]};
-  console.log('[saveBill] payload enviado:', JSON.stringify(payload));
+  let payload={id:b.id,user_id:b.user_id||_user.id,name:b.name,val:b.val,type:b.type,day:b.day,month:b.month??null,year:b.year??null,cat:b.cat,note:b.note||null,locked:b.locked,meta_id:b.metaId||null,meta_end:b.metaEnd||null,pagamentos:b.pagamentos||[]};
   let {error}=await _supa.from('bills').upsert(payload,{onConflict:'id'});
-  console.log('[saveBill] resultado upsert:', error||'OK');
-  if(error&&(error.code==='42703'||error.code==='PGRST204')){
-    // retry sem colunas que podem estar faltando (pagamentos, meta_end)
-    const {pagamentos,meta_end,...rest}=payload;
-    console.log('[saveBill] retry sem pagamentos/meta_end:', JSON.stringify(rest));
-    ({error}=await _supa.from('bills').upsert(rest,{onConflict:'id'}));
-    console.log('[saveBill] resultado retry:', error||'OK');
+  for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
+    const col=error.message?.match(/"([^"]+)"/)?.[1];
+    if(!col||!(col in payload))break;
+    payload={...payload};delete payload[col];
+    ({error}=await _supa.from('bills').upsert(payload,{onConflict:'id'}));
   }
-  if(error){console.error('[saveBill] ERRO FINAL:',error);alert('❌ ERRO saveBill:\n'+error.message+'\nCódigo: '+error.code+'\n'+JSON.stringify(error));_showToast('Erro ao salvar despesa: '+error.message);}
+  if(error){console.error('[saveBill] erro:',error);_showToast('Erro ao salvar despesa: '+error.message);}
 }
 async function deleteBill(id){
   if(!_user) return;
@@ -4279,17 +4274,16 @@ function toggleMetaCheckin(metaId,weekIdx){
 
 // ── DÍVIDAS ───────────────────────────────────────────────────────
 async function saveDivida(d){
-  if(!_user) return;
-  const {error}=await _supa.from('dividas').upsert({
-    id:d.id, user_id:_user.id, name:d.name,
-    total:d.total, remaining:d.remaining,
-    juros:d.juros, min_payment:d.min_payment,
-    frequencia:d.frequencia||'monthly',
-    target_date:d.target_date||null,
-    payments:d.payments||[],
-    parcelas:d.parcelas||[]
-  },{onConflict:'id'});
-  if(error) console.error('saveDivida error:',error);
+  if(!_user){console.warn('[saveDivida] _user é null, abortando');return;}
+  let payload={id:d.id,user_id:_user.id,name:d.name,total:d.total,remaining:d.remaining,juros:d.juros,min_payment:d.min_payment,frequencia:d.frequencia||'monthly',target_date:d.target_date||null,payments:d.payments||[],parcelas:d.parcelas||[]};
+  let {error}=await _supa.from('dividas').upsert(payload,{onConflict:'id'});
+  for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
+    const col=error.message?.match(/"([^"]+)"/)?.[1];
+    if(!col||!(col in payload))break;
+    payload={...payload};delete payload[col];
+    ({error}=await _supa.from('dividas').upsert(payload,{onConflict:'id'}));
+  }
+  if(error){console.error('[saveDivida] erro:',error);_showToast('Erro ao salvar dívida: '+error.message);}
 }
 async function deleteDividaDB(id){
   if(!_user) return;
