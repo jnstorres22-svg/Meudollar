@@ -2165,9 +2165,21 @@ const CATS = {
 const SUPA_URL = 'https://nyicbxrbabudbwahrjzx.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55aWNieHJiYWJ1ZGJ3YWhyanp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMjg1MDYsImV4cCI6MjA5NDcwNDUwNn0.C8r8MdY3i12Q9fX1DSJTdopDf_mBepFp0ft9skluD4I';
 const _supa = supabase.createClient(SUPA_URL, SUPA_KEY);
-window._supa = _supa; // exposto para teste no console do browser
 let _user = null;
-window._getUser = () => _user;
+window._testSave = async function(){
+  if(!_user){alert('Não está logado!');return;}
+  const id = crypto.randomUUID();
+  console.log('=== _testSave: inserindo renda teste, user_id='+_user.id);
+  const {data,error} = await _supa.from('rendas').insert({
+    id, user_id:_user.id, name:'_TESTE_', val:1,
+    type:'monthly', dow:0, day:1, month:1, year:2026, locked:false
+  }).select();
+  console.log('data:', JSON.stringify(data));
+  console.log('error:', JSON.stringify(error));
+  if(error) alert('ERRO:\n'+JSON.stringify(error,null,2));
+  else if(!data||!data.length) alert('AVISO: inseriu sem erro mas 0 linhas retornadas.\nIsso indica RLS bloqueando silenciosamente.');
+  else alert('SUCESSO! Linha salva:\n'+JSON.stringify(data[0],null,2));
+};
 
 // ── Auth navigation ───────────────────────────────────────────────
 // Invite-only: only these emails can sign up. Add emails here to grant access.
