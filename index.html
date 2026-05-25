@@ -2165,7 +2165,9 @@ const CATS = {
 const SUPA_URL = 'https://nyicbxrbabudbwahrjzx.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55aWNieHJiYWJ1ZGJ3YWhyanp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMjg1MDYsImV4cCI6MjA5NDcwNDUwNn0.C8r8MdY3i12Q9fX1DSJTdopDf_mBepFp0ft9skluD4I';
 const _supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+window._supa = _supa; // exposto para teste no console do browser
 let _user = null;
+window._getUser = () => _user;
 
 // ── Auth navigation ───────────────────────────────────────────────
 // Invite-only: only these emails can sign up. Add emails here to grant access.
@@ -2350,16 +2352,20 @@ function _showToast(msg,color){
   clearTimeout(el._t);el._t=setTimeout(()=>{el.style.opacity='0';},4000);
 }
 async function saveRenda(r){
-  if(!_user){console.warn('[saveRenda] _user é null, abortando');return;}
+  if(!_user){console.warn('[saveRenda] _user é null');alert('ERRO: usuário não autenticado ao salvar renda');return;}
   let payload={id:r.id,user_id:_user.id,name:r.name,val:r.val,type:r.type,dow:r.dow,day:r.day,day2:r.day2??null,month:r.month,year:r.year,locked:r.locked};
-  let {error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'});
+  console.log('[saveRenda] SAVING:',JSON.stringify(payload));
+  let {data,error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'}).select();
+  console.log('[saveRenda] RESULT data:',data,'error:',error);
   for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
     const col=error.message?.match(/"([^"]+)"/)?.[1];
     if(!col||!(col in payload))break;
     payload={...payload};delete payload[col];
-    ({error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'}));
+    ({data,error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'}).select());
+    console.log('[saveRenda] retry:',data,error);
   }
-  if(error){console.error('[saveRenda] erro:',error);_showToast('Erro ao salvar renda: '+error.message);}
+  if(error){console.error('[saveRenda] ERRO:',error);alert('ERRO saveRenda:\n'+JSON.stringify(error,null,2));_showToast('Erro ao salvar renda: '+error.message);}
+  else if(!data?.length){console.warn('[saveRenda] 0 linhas retornadas — verifique políticas RLS no Supabase (INSERT/UPDATE em rendas)');}
 }
 async function deleteRenda(id){
   if(!_user) return;
@@ -2367,16 +2373,20 @@ async function deleteRenda(id){
   if(error) console.error('deleteRenda error:',error);
 }
 async function saveBill(b){
-  if(!_user){console.warn('[saveBill] _user é null, abortando');return;}
+  if(!_user){console.warn('[saveBill] _user é null');alert('ERRO: usuário não autenticado ao salvar despesa');return;}
   let payload={id:b.id,user_id:b.user_id||_user.id,name:b.name,val:b.val,type:b.type,day:b.day,month:b.month??null,year:b.year??null,cat:b.cat,note:b.note||null,locked:b.locked,meta_id:b.metaId||null,meta_end:b.metaEnd||null,pagamentos:b.pagamentos||[]};
-  let {error}=await _supa.from('bills').upsert(payload,{onConflict:'id'});
+  console.log('[saveBill] SAVING:',JSON.stringify(payload));
+  let {data,error}=await _supa.from('bills').upsert(payload,{onConflict:'id'}).select();
+  console.log('[saveBill] RESULT data:',data,'error:',error);
   for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
     const col=error.message?.match(/"([^"]+)"/)?.[1];
     if(!col||!(col in payload))break;
     payload={...payload};delete payload[col];
-    ({error}=await _supa.from('bills').upsert(payload,{onConflict:'id'}));
+    ({data,error}=await _supa.from('bills').upsert(payload,{onConflict:'id'}).select());
+    console.log('[saveBill] retry:',data,error);
   }
-  if(error){console.error('[saveBill] erro:',error);_showToast('Erro ao salvar despesa: '+error.message);}
+  if(error){console.error('[saveBill] ERRO:',error);alert('ERRO saveBill:\n'+JSON.stringify(error,null,2));_showToast('Erro ao salvar despesa: '+error.message);}
+  else if(!data?.length){console.warn('[saveBill] 0 linhas retornadas — verifique políticas RLS no Supabase (INSERT/UPDATE em bills)');}
 }
 async function deleteBill(id){
   if(!_user) return;
@@ -2384,15 +2394,20 @@ async function deleteBill(id){
   if(error) console.error('deleteBill error:',error);
 }
 async function saveMeta(m){
-  if(!_user) return;
-  const {error}=await _supa.from('metas').upsert({
-    id:m.id, user_id:_user.id, name:m.name, val:m.val,
-    day:m.day, month:m.month, year:m.year,
-    descricao:m.desc||null, done:m.done,
-    bill_id:m.billId||null, need_per_week:m.needPerWeek, weeks_left:m.weeksLeft,
-    checkins:m.checkins||[]
-  },{onConflict:'id'});
-  if(error) console.error('saveMeta error:',error);
+  if(!_user){console.warn('[saveMeta] _user é null');return;}
+  let payload={id:m.id,user_id:_user.id,name:m.name,val:m.val,day:m.day,month:m.month,year:m.year,descricao:m.desc||null,done:m.done,bill_id:m.billId||null,need_per_week:m.needPerWeek,weeks_left:m.weeksLeft,checkins:m.checkins||[]};
+  console.log('[saveMeta] SAVING:',JSON.stringify(payload));
+  let {data,error}=await _supa.from('metas').upsert(payload,{onConflict:'id'}).select();
+  console.log('[saveMeta] RESULT data:',data,'error:',error);
+  for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
+    const col=error.message?.match(/"([^"]+)"/)?.[1];
+    if(!col||!(col in payload))break;
+    payload={...payload};delete payload[col];
+    ({data,error}=await _supa.from('metas').upsert(payload,{onConflict:'id'}).select());
+    console.log('[saveMeta] retry:',data,error);
+  }
+  if(error){console.error('[saveMeta] ERRO:',error);alert('ERRO saveMeta:\n'+JSON.stringify(error,null,2));_showToast('Erro ao salvar meta: '+error.message);}
+  else if(!data?.length){console.warn('[saveMeta] 0 linhas retornadas — verifique políticas RLS no Supabase (INSERT/UPDATE em metas)');}
 }
 async function deleteMeta(id){
   if(!_user) return;
@@ -4274,16 +4289,20 @@ function toggleMetaCheckin(metaId,weekIdx){
 
 // ── DÍVIDAS ───────────────────────────────────────────────────────
 async function saveDivida(d){
-  if(!_user){console.warn('[saveDivida] _user é null, abortando');return;}
+  if(!_user){console.warn('[saveDivida] _user é null');return;}
   let payload={id:d.id,user_id:_user.id,name:d.name,total:d.total,remaining:d.remaining,juros:d.juros,min_payment:d.min_payment,frequencia:d.frequencia||'monthly',target_date:d.target_date||null,payments:d.payments||[],parcelas:d.parcelas||[]};
-  let {error}=await _supa.from('dividas').upsert(payload,{onConflict:'id'});
+  console.log('[saveDivida] SAVING:',JSON.stringify(payload));
+  let {data,error}=await _supa.from('dividas').upsert(payload,{onConflict:'id'}).select();
+  console.log('[saveDivida] RESULT data:',data,'error:',error);
   for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
     const col=error.message?.match(/"([^"]+)"/)?.[1];
     if(!col||!(col in payload))break;
     payload={...payload};delete payload[col];
-    ({error}=await _supa.from('dividas').upsert(payload,{onConflict:'id'}));
+    ({data,error}=await _supa.from('dividas').upsert(payload,{onConflict:'id'}).select());
+    console.log('[saveDivida] retry:',data,error);
   }
-  if(error){console.error('[saveDivida] erro:',error);_showToast('Erro ao salvar dívida: '+error.message);}
+  if(error){console.error('[saveDivida] ERRO:',error);alert('ERRO saveDivida:\n'+JSON.stringify(error,null,2));_showToast('Erro ao salvar dívida: '+error.message);}
+  else if(!data?.length){console.warn('[saveDivida] 0 linhas retornadas — verifique políticas RLS no Supabase (INSERT/UPDATE em dividas)');}
 }
 async function deleteDividaDB(id){
   if(!_user) return;
