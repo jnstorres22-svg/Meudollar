@@ -2411,7 +2411,8 @@ async function saveRenda(r){
     console.log('[saveRenda] retry:',data,error);
   }
   if(error){console.error('[saveRenda] ERRO:',error);_showToast('Erro ao salvar renda: '+error.message);}
-  else if(!data?.length){console.warn('[saveRenda] 0 linhas retornadas — verifique políticas RLS no Supabase (INSERT/UPDATE em rendas)');}
+  else if(!data?.length){console.error('[saveRenda] 0 linhas — RLS bloqueando INSERT');_showToast('⚠️ Renda não salva (RLS). Execute o SQL de políticas no Supabase.');}
+  else{console.log('[saveRenda] ✓ salvo');_showToast('✓ Renda salva!','#10b981');}
 }
 async function deleteRenda(id){
   if(!_user) return;
@@ -2432,7 +2433,8 @@ async function saveBill(b){
     console.log('[saveBill] retry:',data,error);
   }
   if(error){console.error('[saveBill] ERRO:',error);_showToast('Erro ao salvar despesa: '+error.message);}
-  else if(!data?.length){console.warn('[saveBill] 0 linhas retornadas — verifique políticas RLS no Supabase (INSERT/UPDATE em bills)');}
+  else if(!data?.length){console.error('[saveBill] 0 linhas — RLS bloqueando INSERT');_showToast('⚠️ Despesa não salva (RLS). Execute o SQL de políticas no Supabase.');}
+  else{console.log('[saveBill] ✓ salvo');_showToast('✓ Despesa salva!','#10b981');}
 }
 async function deleteBill(id){
   if(!_user) return;
