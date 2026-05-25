@@ -2319,14 +2319,23 @@ async function handleLogout(){
 
 // ── Supabase data sync ────────────────────────────────────────────
 async function loadFromSupabase(){
-  if(!_user) return;
+  if(!_user){console.warn('[load] _user null, abortando');return;}
   const uid = _user.id;
+  console.log('[load] iniciando para user:',uid);
   const [r,b,m,dv] = await Promise.all([
     _supa.from('rendas').select('*').eq('user_id',uid),
     _supa.from('bills').select('*').eq('user_id',uid),
     _supa.from('metas').select('*').eq('user_id',uid),
     _supa.from('dividas').select('*').eq('user_id',uid),
   ]);
+  console.log('[load] rendas  →',r.data?.length??'null','itens | erro:',r.error);
+  console.log('[load] bills   →',b.data?.length??'null','itens | erro:',b.error);
+  console.log('[load] metas   →',m.data?.length??'null','itens | erro:',m.error);
+  console.log('[load] dividas →',dv.data?.length??'null','itens | erro:',dv.error);
+  if(r.error||b.error||m.error||dv.error){
+    const errs=[r.error,b.error,m.error,dv.error].filter(Boolean);
+    alert('ERRO ao carregar dados do Supabase:\n'+JSON.stringify(errs,null,2));
+  }
   rendas = (r.data||[]).map(x=>({
     id:x.id, name:x.name, val:x.val, type:x.type,
     dow:x.dow, day:x.day, day2:x.day2??null, month:x.month, year:x.year, locked:x.locked
@@ -2352,6 +2361,7 @@ async function loadFromSupabase(){
     target_date:x.target_date||null, payments:x.payments||[],
     parcelas:x.parcelas||[]
   }));
+  console.log('[load] arrays finais → rendas:',rendas.length,'bills:',bills.length,'metas:',metas.length,'dividas:',dividas.length);
   // load initial balance from localStorage per user
   const saved=localStorage.getItem('ib_'+_user.id);
   if(saved!=null) initialBalance=parseFloat(saved)||0;
