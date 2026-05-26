@@ -2688,7 +2688,7 @@ function buildTopCards(){
   const periodDays=proj.daily.filter(d=>d.date>=from&&d.date<=to);
   const periodIn=periodDays.reduce((s,d)=>s+d.in,0);
   const periodOut=periodDays.reduce((s,d)=>s+d.out,0);
-  const periodMargem=periodIn-periodOut;
+  const periodMargem=initialBalance+periodIn-periodOut;
   const periodLabel=fmtDate(from)+' – '+fmtDate(to);
 
   const rawMargem={weekly:wk-mo/4.33,monthly:wk*4.33-mo,yearly:wk*52-mo*12,period:periodMargem};
@@ -3083,8 +3083,8 @@ function buildWeek(){
     : `Semana ${wNum} — ${weekStart.getDate()}/${weekStart.getMonth()+1}/${weekStart.getFullYear()} a ${wEnd.getDate()}/${wEnd.getMonth()+1}/${wEnd.getFullYear()}`;
   document.getElementById('weekTitle').textContent=wTitle;
 
-  // compute balance before weekStart
-  let bal=0;let cur=new Date(START);let pFS=false,pFM=false;
+  // compute balance before weekStart (starting from initialBalance)
+  let bal=initialBalance;let cur=new Date(START);let pFS=false,pFM=false;
   while(cur<weekStart){
     const dow=cur.getDay();
     const isF=(!pFS&&dow===0)||(!pFM&&dow===1);
@@ -3166,7 +3166,7 @@ function buildCal(){
   const firstDow=new Date(calYear,calMonth,1).getDay();
   document.getElementById('calTitle').textContent=MN(calMonth)+' '+calYear;
 
-  let bal=0;let cur=new Date(START);let pFS=false,pFM=false;
+  let bal=initialBalance;let cur=new Date(START);let pFS=false,pFM=false;
   const thisStart=new Date(calYear,calMonth,1);
   while(cur<thisStart){
     const dow=cur.getDay();const isF=(!pFS&&dow===0)||(!pFM&&dow===1);
@@ -3409,6 +3409,7 @@ function buildRelatorio(){
 
   const totalIn=filtered.reduce((s,d)=>s+d.in,0);
   const totalOut=filtered.reduce((s,d)=>s+d.out,0);
+  const periodEndBal=filtered.length?filtered[filtered.length-1].bal:initialBalance;
 
   // por categoria
   const catTotals={};
@@ -3466,7 +3467,7 @@ function buildRelatorio(){
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
         <div class="card"><div class="card-label">${t('rep_total_in')}</div><div class="card-val g">${fmt(totalIn)}</div></div>
         <div class="card"><div class="card-label">${t('rep_total_out')}</div><div class="card-val r">-${fmt(totalOut)}</div></div>
-        <div class="card"><div class="card-label">${t('rep_balance')}</div><div class="card-val b">${fmt(totalIn-totalOut)}</div></div>
+        <div class="card"><div class="card-label">${t('rep_balance')}</div><div class="card-val b">${fmt(periodEndBal)}</div></div>
       </div>
     </div>
     <div class="report-section">
