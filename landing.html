@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TryFreed — Your money with purpose.</title>
+<meta name="description" content="Track income, expenses, debts and savings goals — all in one place. Syncs across all your devices.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#7c3aed;
+  --accent2:#9d5cf6;
+  --accent-dim:rgba(124,58,237,0.10);
+  --green:#10b981;
+  --red:#ef4444;
+  --amber:#f59e0b;
+  --text:#1a1535;
+  --sub:#8a7fa0;
+  --bg:#faf9fe;
+  --card:#ffffff;
+  --border:#e8e4f5;
+  --panel:#f5f3fb;
+}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+
+/* ── NAV ─────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;height:64px;
+  background:rgba(250,249,254,0.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{font-size:18px;font-weight:800;color:var(--accent);letter-spacing:-.5px}
+.nav-right{display:flex;align-items:center;gap:12px}
+.lang-toggle{display:flex;border:1px solid var(--border);border-radius:20px;overflow:hidden;font-size:12px;font-weight:600}
+.lang-toggle button{padding:5px 12px;border:none;background:transparent;cursor:pointer;color:var(--sub);transition:all .15s}
+.lang-toggle button.on{background:var(--accent);color:#fff}
+.btn-login{padding:8px 20px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .15s}
+.btn-login:hover{border-color:var(--accent);color:var(--accent)}
+.btn-cta{padding:8px 20px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 4px 14px rgba(124,58,237,.3);transition:all .15s}
+.btn-cta:hover{background:var(--accent2);transform:translateY(-1px)}
+
+/* ── HERO ────────────────────────── */
+.hero{
+  min-height:100vh;padding:100px 5% 80px;
+  display:flex;align-items:center;gap:60px;
+  background:linear-gradient(135deg,#faf9fe 0%,#f0ebff 50%,#faf9fe 100%);
+}
+.hero-text{flex:1;max-width:520px}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--accent-dim);color:var(--accent);
+  font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;margin-bottom:20px;
+  border:1px solid rgba(124,58,237,0.2);
+}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block}
+h1{font-size:clamp(32px,5vw,56px);font-weight:900;line-height:1.1;letter-spacing:-1.5px;color:var(--text);margin-bottom:20px}
+h1 span{color:var(--accent)}
+.hero-sub{font-size:16px;color:var(--sub);line-height:1.6;margin-bottom:36px;max-width:420px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:40px}
+.hero-social{display:flex;gap:20px;align-items:center}
+.hero-stat{text-align:center}
+.hero-stat strong{display:block;font-size:20px;font-weight:800;color:var(--text)}
+.hero-stat span{font-size:11px;color:var(--sub)}
+.hero-sep{width:1px;height:30px;background:var(--border)}
+
+/* ── PHONE MOCKUP ────────────────── */
+.hero-visual{flex:1;display:flex;justify-content:center;align-items:center;position:relative}
+.phone-wrap{position:relative;width:260px}
+.phone{
+  width:260px;height:520px;
+  background:#fff;
+  border-radius:36px;
+  border:8px solid #1a1535;
+  box-shadow:0 40px 80px rgba(26,21,53,0.25),0 0 0 1px rgba(255,255,255,0.1);
+  overflow:hidden;position:relative;
+}
+.phone-notch{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:90px;height:24px;background:#1a1535;border-radius:0 0 16px 16px;z-index:10;
+}
+.phone-screen{position:absolute;inset:0;overflow:hidden}
+.app-screen{
+  position:absolute;inset:0;
+  background:var(--bg);
+  padding:30px 14px 14px;
+  opacity:0;transition:opacity .6s;
+}
+.app-screen.visible{opacity:1}
+
+/* Screen 1 – Overview */
+.s1-header{font-size:9px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.s1-bal{font-size:22px;font-weight:800;color:var(--text);margin-bottom:4px}
+.s1-sub{font-size:9px;color:var(--sub);margin-bottom:14px}
+.s1-cards{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.s1-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 10px}
+.s1-card-label{font-size:8px;color:var(--sub);font-weight:600;text-transform:uppercase;margin-bottom:4px}
+.s1-card-val{font-size:13px;font-weight:700}
+.s1-card-val.g{color:var(--green)}.s1-card-val.r{color:var(--red)}.s1-card-val.a{color:var(--accent)}
+
+/* Screen 2 – Calendar */
+.s2-month{font-size:11px;font-weight:700;color:var(--text);margin-bottom:10px;text-align:center}
+.s2-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.s2-dh{font-size:7px;color:var(--sub);text-align:center;font-weight:600;padding:2px 0}
+.s2-day{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:500;background:var(--panel);color:var(--sub)}
+.s2-day.inc{background:#d1fae5;color:#065f46}
+.s2-day.exp{background:#fee2e2;color:#991b1b}
+.s2-day.bth{background:#ede9fe;color:var(--accent)}
+.s2-day.today{border:1.5px solid var(--accent);font-weight:700;color:var(--accent)}
+
+/* Screen 3 – Goals */
+.s3-title{font-size:10px;font-weight:700;color:var(--text);margin-bottom:10px}
+.s3-goal{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px}
+.s3-goal-name{font-size:9px;font-weight:700;color:var(--text);margin-bottom:6px}
+.s3-bar-bg{height:5px;background:var(--panel);border-radius:3px;margin-bottom:5px}
+.s3-bar-fill{height:5px;border-radius:3px;background:var(--green)}
+.s3-goal-vals{display:flex;justify-content:space-between;font-size:8px;color:var(--sub)}
+
+/* Screen 4 – Debts */
+.s4-title{font-size:10px;font-weight:700;color:var(--text);margin-bottom:10px}
+.s4-debt{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px}
+.s4-debt-name{font-size:9px;font-weight:700;color:var(--text);margin-bottom:4px}
+.s4-debt-row{display:flex;justify-content:space-between;font-size:8px;color:var(--sub);margin-bottom:5px}
+.s4-bar-bg{height:4px;background:var(--panel);border-radius:2px}
+.s4-bar-fill{height:4px;border-radius:2px;background:var(--amber)}
+
+/* Floating cards */
+.float-card{
+  position:absolute;background:#fff;border-radius:12px;
+  box-shadow:0 8px 24px rgba(26,21,53,0.12);
+  border:1px solid var(--border);padding:10px 14px;
+  animation:floatUp 4s ease-in-out infinite;
+  font-size:12px;font-weight:600;white-space:nowrap;
+}
+.float-card:nth-child(1){top:80px;right:-60px;animation-delay:0s}
+.float-card:nth-child(2){bottom:130px;left:-70px;animation-delay:2s}
+.float-card .fc-label{font-size:9px;color:var(--sub);font-weight:400;display:block;margin-bottom:2px}
+.float-card .fc-val.g{color:var(--green)}
+.float-card .fc-val.r{color:var(--red)}
+@keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* Nav bar bottom mockup */
+.phone-nav{
+  position:absolute;bottom:0;left:0;right:0;height:44px;
+  background:#fff;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-around;padding:0 8px;z-index:5;
+}
+.pn-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:6px;color:var(--sub);font-weight:500}
+.pn-item.on{color:var(--accent)}
+.pn-icon{width:14px;height:14px;opacity:.5}
+.pn-item.on .pn-icon{opacity:1}
+
+/* ── FEATURES ────────────────────── */
+.features{padding:100px 5%;background:#fff}
+.section-label{text-align:center;font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.section-title{text-align:center;font-size:clamp(24px,4vw,40px);font-weight:800;letter-spacing:-.5px;margin-bottom:14px}
+.section-sub{text-align:center;color:var(--sub);font-size:15px;max-width:500px;margin:0 auto 60px;line-height:1.6}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:900px;margin:0 auto}
+.feat-card{
+  background:var(--bg);border:1px solid var(--border);border-radius:16px;
+  padding:28px 24px;transition:all .2s;
+}
+.feat-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 32px rgba(124,58,237,0.1)}
+.feat-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:var(--accent-dim);display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;font-size:20px;
+}
+.feat-title{font-size:15px;font-weight:700;margin-bottom:8px}
+.feat-desc{font-size:13px;color:var(--sub);line-height:1.6}
+
+/* ── HOW IT WORKS ────────────────── */
+.how{padding:100px 5%;background:var(--panel)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;max-width:800px;margin:0 auto;position:relative}
+.step{text-align:center;padding:0 16px}
+.step-num{
+  width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;
+  font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;box-shadow:0 6px 18px rgba(124,58,237,.3);
+}
+.step-title{font-size:15px;font-weight:700;margin-bottom:8px}
+.step-desc{font-size:13px;color:var(--sub);line-height:1.6}
+
+/* ── PRICING ─────────────────────── */
+.pricing{padding:100px 5%;background:#fff}
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:700px;margin:0 auto}
+.price-card{
+  border:1px solid var(--border);border-radius:20px;
+  padding:36px 32px;background:var(--bg);position:relative;
+  transition:all .2s;
+}
+.price-card.featured{
+  border-color:var(--accent);background:#fff;
+  box-shadow:0 20px 60px rgba(124,58,237,0.15);
+  transform:scale(1.03);
+}
+.price-badge{
+  position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+  background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+  padding:4px 16px;border-radius:20px;white-space:nowrap;
+}
+.price-name{font-size:13px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.price-val{font-size:42px;font-weight:900;color:var(--text);letter-spacing:-1px;line-height:1}
+.price-val sup{font-size:18px;vertical-align:top;margin-top:8px;font-weight:700}
+.price-val sub{font-size:14px;color:var(--sub);font-weight:500}
+.price-save{font-size:12px;color:var(--green);font-weight:600;margin-top:6px;margin-bottom:24px;min-height:18px}
+.price-features{list-style:none;margin-bottom:28px}
+.price-features li{font-size:13px;color:var(--sub);padding:7px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.price-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
+.btn-price{
+  width:100%;padding:14px;border-radius:10px;border:none;
+  background:var(--accent);color:#fff;font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .15s;text-decoration:none;display:block;text-align:center;
+  box-shadow:0 4px 14px rgba(124,58,237,.25);
+}
+.btn-price:hover{background:var(--accent2);transform:translateY(-1px)}
+.price-note{text-align:center;font-size:12px;color:var(--sub);margin-top:32px}
+
+/* ── CTA BOTTOM ──────────────────── */
+.cta-bottom{
+  padding:100px 5%;text-align:center;
+  background:linear-gradient(135deg,#1a1535 0%,#2d1b69 100%);color:#fff;
+}
+.cta-bottom h2{font-size:clamp(24px,4vw,40px);font-weight:800;letter-spacing:-.5px;margin-bottom:14px}
+.cta-bottom p{font-size:15px;opacity:.7;margin-bottom:36px;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.6}
+.btn-cta-white{
+  padding:16px 36px;border-radius:10px;border:none;
+  background:#fff;color:var(--accent);font-size:15px;font-weight:700;
+  cursor:pointer;text-decoration:none;transition:all .15s;display:inline-block;
+  box-shadow:0 6px 24px rgba(0,0,0,.2);
+}
+.btn-cta-white:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,0,0,.3)}
+
+/* ── FOOTER ──────────────────────── */
+footer{background:#fff;padding:32px 5%;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);flex-wrap:wrap;gap:12px}
+.footer-logo{font-size:15px;font-weight:800;color:var(--accent)}
+footer p{font-size:12px;color:var(--sub)}
+
+/* ── RESPONSIVE ──────────────────── */
+@media(max-width:720px){
+  .hero{flex-direction:column;padding:90px 5% 60px;text-align:center}
+  .hero-sub{margin-left:auto;margin-right:auto}
+  .hero-actions{justify-content:center}
+  .hero-social{justify-content:center}
+  .phone-wrap{transform:scale(.85)}
+  .float-card{display:none}
+  .price-card.featured{transform:scale(1)}
+  footer{justify-content:center;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">TryFreed</div>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button id="btn-en" class="on" onclick="setLang('en')">EN</button>
+      <button id="btn-pt" onclick="setLang('pt')">PT</button>
+    </div>
+    <a href="https://tryfreed.com" class="btn-login" id="nav-login">Login</a>
+    <a href="https://tryfreed.com" class="btn-cta" id="nav-cta">Get started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-badge" id="hero-badge">Now available — free to try</div>
+    <h1 id="hero-h1">Your money<br><span>with purpose.</span></h1>
+    <p class="hero-sub" id="hero-sub">Track income, expenses, debts and savings goals — all in one place. Syncs across all your devices instantly.</p>
+    <div class="hero-actions">
+      <a href="https://tryfreed.com" class="btn-cta" style="padding:14px 32px;font-size:15px" id="hero-cta">Start for free →</a>
+      <a href="https://tryfreed.com" class="btn-login" style="padding:14px 24px;font-size:14px" id="hero-login">Sign in</a>
+    </div>
+    <div class="hero-social">
+      <div class="hero-stat"><strong>100%</strong><span id="stat1">Cloud sync</span></div>
+      <div class="hero-sep"></div>
+      <div class="hero-stat"><strong id="stat2-val">PIN</strong><span id="stat2">Secured</span></div>
+      <div class="hero-sep"></div>
+      <div class="hero-stat"><strong id="stat3-val">PT/EN</strong><span id="stat3">Bilingual</span></div>
+    </div>
+  </div>
+
+  <!-- ANIMATED PHONE MOCKUP -->
+  <div class="hero-visual">
+    <div class="phone-wrap">
+
+      <!-- Floating cards -->
+      <div class="float-card">
+        <span class="fc-label" id="fc1-label">Monthly income</span>
+        <span class="fc-val g" id="fc1-val">+$4,200</span>
+      </div>
+      <div class="float-card">
+        <span class="fc-label" id="fc2-label">Goal saved</span>
+        <span class="fc-val r" id="fc2-val">72% done</span>
+      </div>
+
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+
+          <!-- Screen 1: Overview -->
+          <div class="app-screen visible" id="screen-1">
+            <div class="s1-header" id="sc1-header">Overview</div>
+            <div class="s1-bal">$6,248</div>
+            <div class="s1-sub" id="sc1-sub">Projected balance</div>
+            <div class="s1-cards">
+              <div class="s1-card">
+                <div class="s1-card-label" id="sc1-income">Income</div>
+                <div class="s1-card-val g">$4,200</div>
+              </div>
+              <div class="s1-card">
+                <div class="s1-card-label" id="sc1-exp">Expenses</div>
+                <div class="s1-card-val r">-$1,840</div>
+              </div>
+              <div class="s1-card">
+                <div class="s1-card-label" id="sc1-margin">Margin</div>
+                <div class="s1-card-val a">$2,360</div>
+              </div>
+              <div class="s1-card">
+                <div class="s1-card-label" id="sc1-weekly">Weekly</div>
+                <div class="s1-card-val g">$969</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen 2: Calendar -->
+          <div class="app-screen" id="screen-2">
+            <div class="s2-month" id="sc2-month">May 2026</div>
+            <div class="s2-grid">
+              <div class="s2-dh">S</div><div class="s2-dh">M</div><div class="s2-dh">T</div><div class="s2-dh">W</div><div class="s2-dh">T</div><div class="s2-dh">F</div><div class="s2-dh">S</div>
+              <div class="s2-day"></div><div class="s2-day"></div><div class="s2-day"></div><div class="s2-day"></div>
+              <div class="s2-day inc">1</div><div class="s2-day">2</div><div class="s2-day">3</div>
+              <div class="s2-day exp">4</div><div class="s2-day inc">5</div><div class="s2-day">6</div>
+              <div class="s2-day bth">7</div><div class="s2-day">8</div><div class="s2-day">9</div><div class="s2-day">10</div>
+              <div class="s2-day today">11</div><div class="s2-day inc">12</div><div class="s2-day">13</div>
+              <div class="s2-day">14</div><div class="s2-day exp">15</div><div class="s2-day">16</div>
+              <div class="s2-day">17</div><div class="s2-day inc">18</div><div class="s2-day">19</div>
+              <div class="s2-day">20</div><div class="s2-day">21</div><div class="s2-day bth">22</div>
+              <div class="s2-day">23</div><div class="s2-day">24</div><div class="s2-day">25</div>
+              <div class="s2-day exp">26</div><div class="s2-day">27</div><div class="s2-day">28</div>
+              <div class="s2-day">29</div><div class="s2-day">30</div><div class="s2-day">31</div>
+            </div>
+          </div>
+
+          <!-- Screen 3: Goals -->
+          <div class="app-screen" id="screen-3">
+            <div class="s3-title" id="sc3-title">Savings Goals</div>
+            <div class="s3-goal">
+              <div class="s3-goal-name" id="sc3-g1">Trip to Brazil</div>
+              <div class="s3-bar-bg"><div class="s3-bar-fill" style="width:72%"></div></div>
+              <div class="s3-goal-vals"><span>$1,440 saved</span><span>$2,000 goal</span></div>
+            </div>
+            <div class="s3-goal">
+              <div class="s3-goal-name" id="sc3-g2">Emergency Fund</div>
+              <div class="s3-bar-bg"><div class="s3-bar-fill" style="width:45%;background:var(--amber)"></div></div>
+              <div class="s3-goal-vals"><span>$2,250 saved</span><span>$5,000 goal</span></div>
+            </div>
+            <div class="s3-goal">
+              <div class="s3-goal-name" id="sc3-g3">New Car</div>
+              <div class="s3-bar-bg"><div class="s3-bar-fill" style="width:20%;background:var(--red)"></div></div>
+              <div class="s3-goal-vals"><span>$1,000 saved</span><span>$5,000 goal</span></div>
+            </div>
+          </div>
+
+          <!-- Screen 4: Debts -->
+          <div class="app-screen" id="screen-4">
+            <div class="s4-title" id="sc4-title">Debt Manager</div>
+            <div class="s4-debt">
+              <div class="s4-debt-name" id="sc4-d1">Credit Card</div>
+              <div class="s4-debt-row"><span id="sc4-rem">Remaining</span><span style="color:var(--red);font-weight:700">$3,200</span></div>
+              <div class="s4-bar-bg"><div class="s4-bar-fill" style="width:40%"></div></div>
+            </div>
+            <div class="s4-debt">
+              <div class="s4-debt-name" id="sc4-d2">Car Loan</div>
+              <div class="s4-debt-row"><span id="sc4-rem2">Remaining</span><span style="color:var(--red);font-weight:700">$8,400</span></div>
+              <div class="s4-bar-bg"><div class="s4-bar-fill" style="width:65%;background:var(--red)"></div></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bottom nav -->
+        <div class="phone-nav">
+          <div class="pn-item on" id="pn1">
+            <svg class="pn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            <span id="pn1-label">Income</span>
+          </div>
+          <div class="pn-item" id="pn2">
+            <svg class="pn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span id="pn2-label">Calendar</span>
+          </div>
+          <div class="pn-item" id="pn3">
+            <svg class="pn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            <span id="pn3-label">Goals</span>
+          </div>
+          <div class="pn-item" id="pn4">
+            <svg class="pn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
+            <span id="pn4-label">Debts</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="section-label" id="feat-label">Features</div>
+  <h2 class="section-title" id="feat-title">Everything you need to take control</h2>
+  <p class="section-sub" id="feat-sub">Built for people who want a real picture of their finances — not just a list of transactions.</p>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-icon">📊</div>
+      <div class="feat-title" id="f1-title">Financial Overview</div>
+      <p class="feat-desc" id="f1-desc">See your projected income, expenses and balance in real time — weekly, monthly or yearly.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📅</div>
+      <div class="feat-title" id="f2-title">Smart Calendar</div>
+      <p class="feat-desc" id="f2-desc">Every bill and income source plotted on a calendar. See what's coming before it hits.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🎯</div>
+      <div class="feat-title" id="f3-title">Savings Goals</div>
+      <p class="feat-desc" id="f3-desc">Set a target and a date — TryFreed calculates how much you need to save each week.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💳</div>
+      <div class="feat-title" id="f4-title">Debt Manager</div>
+      <p class="feat-desc" id="f4-desc">Track every debt with interest, minimum payments and a full payoff schedule.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">☁️</div>
+      <div class="feat-title" id="f5-title">Cloud Sync</div>
+      <p class="feat-desc" id="f5-desc">Your data syncs instantly across all your devices. Phone, tablet or computer.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔐</div>
+      <div class="feat-title" id="f6-title">PIN Security</div>
+      <p class="feat-desc" id="f6-desc">Protect your financial data with a 4-digit PIN. No one opens the app without it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <div class="section-label" id="how-label">How it works</div>
+  <h2 class="section-title" id="how-title">Up and running in 2 minutes</h2>
+  <p class="section-sub" id="how-sub">No complicated setup. Just sign in and start adding your income and bills.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title" id="step1-title">Create your account</div>
+      <p class="step-desc" id="step1-desc">Sign up with your email. Your data is private and secured from day one.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title" id="step2-title">Add income & bills</div>
+      <p class="step-desc" id="step2-desc">Enter your recurring income and monthly bills. TryFreed builds your financial picture automatically.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title" id="step3-title">See the full picture</div>
+      <p class="step-desc" id="step3-desc">Check your projected balance, upcoming bills and savings progress — anytime, anywhere.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing">
+  <div class="section-label" id="price-label">Pricing</div>
+  <h2 class="section-title" id="price-title">Simple, honest pricing</h2>
+  <p class="section-sub" id="price-sub">No hidden fees. Cancel anytime.</p>
+  <div class="price-grid">
+    <div class="price-card">
+      <div class="price-name" id="plan1-name">Monthly</div>
+      <div class="price-val"><sup>$</sup>9<sub id="plan1-per">/mo</sub></div>
+      <div class="price-save"> </div>
+      <ul class="price-features">
+        <li id="pf1-1">All features included</li>
+        <li id="pf1-2">Cloud sync across devices</li>
+        <li id="pf1-3">PIN security</li>
+        <li id="pf1-4">Cancel anytime</li>
+      </ul>
+      <a href="https://tryfreed.com" class="btn-price" id="plan1-btn">Get started</a>
+    </div>
+    <div class="price-card featured">
+      <div class="price-badge" id="plan2-badge">Best value</div>
+      <div class="price-name" id="plan2-name">Annual</div>
+      <div class="price-val"><sup>$</sup>79<sub id="plan2-per">/yr</sub></div>
+      <div class="price-save" id="plan2-save">Save $29 vs monthly</div>
+      <ul class="price-features">
+        <li id="pf2-1">All features included</li>
+        <li id="pf2-2">Cloud sync across devices</li>
+        <li id="pf2-3">PIN security</li>
+        <li id="pf2-4">Priority support</li>
+      </ul>
+      <a href="https://tryfreed.com" class="btn-price" id="plan2-btn">Get started</a>
+    </div>
+  </div>
+  <p class="price-note" id="price-note">Prices are placeholder — final pricing coming soon.</p>
+</section>
+
+<!-- CTA BOTTOM -->
+<section class="cta-bottom">
+  <h2 id="cta-h2">Ready to take control of your money?</h2>
+  <p id="cta-p">Join TryFreed and start building the financial future you deserve.</p>
+  <a href="https://tryfreed.com" class="btn-cta-white" id="cta-btn">Start for free →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">TryFreed</div>
+  <p id="footer-text">© 2026 TryFreed. All rights reserved.</p>
+  <a href="https://tryfreed.com" style="font-size:12px;color:var(--accent);font-weight:600;text-decoration:none" id="footer-login">Sign in →</a>
+</footer>
+
+<script>
+// ── SCREEN ROTATION ───────────────────────────────────────────────
+const screens=[1,2,3,4];
+const navItems=[1,2,3,4];
+let current=1;
+function showScreen(n){
+  screens.forEach(i=>{
+    document.getElementById('screen-'+i).classList.toggle('visible',i===n);
+  });
+  navItems.forEach(i=>{
+    document.getElementById('pn'+i).classList.toggle('on',i===n);
+  });
+}
+setInterval(()=>{
+  current=current>=4?1:current+1;
+  showScreen(current);
+},3000);
+
+// ── TRANSLATIONS ──────────────────────────────────────────────────
+const TR={
+  en:{
+    'hero-badge':'Now available — free to try',
+    'hero-h1':'Your money<br><span>with purpose.</span>',
+    'hero-sub':'Track income, expenses, debts and savings goals — all in one place. Syncs across all your devices instantly.',
+    'stat1':'Cloud sync','stat2':'Secured','stat3':'Bilingual',
+    'hero-cta':'Start for free →','hero-login':'Sign in',
+    'nav-login':'Login','nav-cta':'Get started',
+    'fc1-label':'Monthly income','fc2-label':'Goal saved',
+    'sc1-header':'Overview','sc1-sub':'Projected balance',
+    'sc1-income':'Income','sc1-exp':'Expenses','sc1-margin':'Margin','sc1-weekly':'Weekly',
+    'sc2-month':'May 2026',
+    'sc3-title':'Savings Goals','sc3-g1':'Trip to Brazil','sc3-g2':'Emergency Fund','sc3-g3':'New Car',
+    'sc4-title':'Debt Manager','sc4-d1':'Credit Card','sc4-d2':'Car Loan','sc4-rem':'Remaining','sc4-rem2':'Remaining',
+    'pn1-label':'Income','pn2-label':'Calendar','pn3-label':'Goals','pn4-label':'Debts',
+    'feat-label':'Features','feat-title':'Everything you need to take control',
+    'feat-sub':'Built for people who want a real picture of their finances — not just a list of transactions.',
+    'f1-title':'Financial Overview','f1-desc':'See your projected income, expenses and balance in real time — weekly, monthly or yearly.',
+    'f2-title':'Smart Calendar','f2-desc':'Every bill and income source plotted on a calendar. See what\'s coming before it hits.',
+    'f3-title':'Savings Goals','f3-desc':'Set a target and a date — TryFreed calculates how much you need to save each week.',
+    'f4-title':'Debt Manager','f4-desc':'Track every debt with interest, minimum payments and a full payoff schedule.',
+    'f5-title':'Cloud Sync','f5-desc':'Your data syncs instantly across all your devices. Phone, tablet or computer.',
+    'f6-title':'PIN Security','f6-desc':'Protect your financial data with a 4-digit PIN. No one opens the app without it.',
+    'how-label':'How it works','how-title':'Up and running in 2 minutes',
+    'how-sub':'No complicated setup. Just sign in and start adding your income and bills.',
+    'step1-title':'Create your account','step1-desc':'Sign up with your email. Your data is private and secured from day one.',
+    'step2-title':'Add income & bills','step2-desc':'Enter your recurring income and monthly bills. TryFreed builds your financial picture automatically.',
+    'step3-title':'See the full picture','step3-desc':'Check your projected balance, upcoming bills and savings progress — anytime, anywhere.',
+    'price-label':'Pricing','price-title':'Simple, honest pricing','price-sub':'No hidden fees. Cancel anytime.',
+    'plan1-name':'Monthly','plan1-per':'/mo','plan1-btn':'Get started',
+    'plan2-badge':'Best value','plan2-name':'Annual','plan2-per':'/yr','plan2-save':'Save $29 vs monthly','plan2-btn':'Get started',
+    'pf1-1':'All features included','pf1-2':'Cloud sync across devices','pf1-3':'PIN security','pf1-4':'Cancel anytime',
+    'pf2-1':'All features included','pf2-2':'Cloud sync across devices','pf2-3':'PIN security','pf2-4':'Priority support',
+    'price-note':'Prices are placeholder — final pricing coming soon.',
+    'cta-h2':'Ready to take control of your money?',
+    'cta-p':'Join TryFreed and start building the financial future you deserve.',
+    'cta-btn':'Start for free →',
+    'footer-text':'© 2026 TryFreed. All rights reserved.','footer-login':'Sign in →',
+  },
+  pt:{
+    'hero-badge':'Disponível agora — comece grátis',
+    'hero-h1':'Seu dinheiro<br><span>com propósito.</span>',
+    'hero-sub':'Controle sua renda, despesas, dívidas e metas de poupança — tudo em um lugar. Sincroniza em todos os seus dispositivos.',
+    'stat1':'Nuvem','stat2':'Seguro','stat3':'PT/EN',
+    'hero-cta':'Começar grátis →','hero-login':'Entrar',
+    'nav-login':'Entrar','nav-cta':'Começar',
+    'fc1-label':'Renda mensal','fc2-label':'Meta salva',
+    'sc1-header':'Visão geral','sc1-sub':'Saldo projetado',
+    'sc1-income':'Renda','sc1-exp':'Despesas','sc1-margin':'Margem','sc1-weekly':'Semanal',
+    'sc2-month':'Maio 2026',
+    'sc3-title':'Metas de poupança','sc3-g1':'Viagem ao Brasil','sc3-g2':'Reserva de emergência','sc3-g3':'Carro novo',
+    'sc4-title':'Gerenciador de dívidas','sc4-d1':'Cartão de crédito','sc4-d2':'Financiamento do carro','sc4-rem':'Restante','sc4-rem2':'Restante',
+    'pn1-label':'Renda','pn2-label':'Calendário','pn3-label':'Metas','pn4-label':'Dívidas',
+    'feat-label':'Funcionalidades','feat-title':'Tudo que você precisa para ter controle',
+    'feat-sub':'Feito para quem quer uma visão real das finanças — não só uma lista de transações.',
+    'f1-title':'Visão financeira','f1-desc':'Veja sua renda, despesas e saldo projetados em tempo real — semanal, mensal ou anual.',
+    'f2-title':'Calendário inteligente','f2-desc':'Cada conta e renda plotada no calendário. Veja o que está chegando antes de acontecer.',
+    'f3-title':'Metas de poupança','f3-desc':'Defina um valor e uma data — o TryFreed calcula quanto você precisa guardar por semana.',
+    'f4-title':'Gerenciador de dívidas','f4-desc':'Controle cada dívida com juros, pagamento mínimo e cronograma completo de quitação.',
+    'f5-title':'Sincronização em nuvem','f5-desc':'Seus dados sincronizam instantaneamente em todos os seus dispositivos.',
+    'f6-title':'Segurança com PIN','f6-desc':'Proteja seus dados financeiros com um PIN de 4 dígitos. Ninguém acessa sem ele.',
+    'how-label':'Como funciona','how-title':'Pronto em 2 minutos',
+    'how-sub':'Sem configuração complicada. Só entre e comece a adicionar sua renda e contas.',
+    'step1-title':'Crie sua conta','step1-desc':'Cadastre-se com seu email. Seus dados são privados e seguros desde o primeiro dia.',
+    'step2-title':'Adicione renda e contas','step2-desc':'Insira sua renda recorrente e contas mensais. O TryFreed monta seu quadro financeiro automaticamente.',
+    'step3-title':'Veja o quadro completo','step3-desc':'Confira seu saldo projetado, contas próximas e progresso das metas — a qualquer hora, em qualquer lugar.',
+    'price-label':'Preços','price-title':'Preço simples e honesto','price-sub':'Sem taxas escondidas. Cancele quando quiser.',
+    'plan1-name':'Mensal','plan1-per':'/mês','plan1-btn':'Começar',
+    'plan2-badge':'Melhor custo','plan2-name':'Anual','plan2-per':'/ano','plan2-save':'Economize $29 vs mensal','plan2-btn':'Começar',
+    'pf1-1':'Todas as funcionalidades','pf1-2':'Sincronização em nuvem','pf1-3':'Segurança com PIN','pf1-4':'Cancele quando quiser',
+    'pf2-1':'Todas as funcionalidades','pf2-2':'Sincronização em nuvem','pf2-3':'Segurança com PIN','pf2-4':'Suporte prioritário',
+    'price-note':'Preços são provisórios — valores finais em breve.',
+    'cta-h2':'Pronto para controlar seu dinheiro?',
+    'cta-p':'Entre para o TryFreed e comece a construir o futuro financeiro que você merece.',
+    'cta-btn':'Começar grátis →',
+    'footer-text':'© 2026 TryFreed. Todos os direitos reservados.','footer-login':'Entrar →',
+  }
+};
+
+let lang='en';
+function setLang(l){
+  lang=l;
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  document.getElementById('btn-pt').classList.toggle('on',l==='pt');
+  document.getElementById('htmlRoot').lang=l==='pt'?'pt-BR':'en';
+  const tr=TR[l];
+  Object.entries(tr).forEach(([id,val])=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=val;
+  });
+}
+</script>
+</body>
+</html>
