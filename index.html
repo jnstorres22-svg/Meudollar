@@ -2397,16 +2397,18 @@ async function loadFromSupabase(){
   if(!_user){console.warn('[load] _user null, abortando');return;}
   const uid = _user.id;
   console.log('[load] iniciando para user:',uid);
-  const [r,b,m,dv] = await Promise.all([
+  const [r,b,m,dv,prof] = await Promise.all([
     _supa.from('rendas').select('*').eq('user_id',uid),
     _supa.from('bills').select('*').eq('user_id',uid),
     _supa.from('metas').select('*').eq('user_id',uid),
     _supa.from('dividas').select('*').eq('user_id',uid),
+    _supa.from('profiles').select('initial_balance').eq('user_id',uid).maybeSingle(),
   ]);
   console.log('[load] rendas  →',r.data?.length??'null','itens | erro:',r.error);
   console.log('[load] bills   →',b.data?.length??'null','itens | erro:',b.error);
   console.log('[load] metas   →',m.data?.length??'null','itens | erro:',m.error);
   console.log('[load] dividas →',dv.data?.length??'null','itens | erro:',dv.error);
+  console.log('[load] profile →',prof.data,'erro:',prof.error);
   if(r.error||b.error||m.error||dv.error){
     const errs=[r.error,b.error,m.error,dv.error].filter(Boolean);
     console.error('[load] ERROS nas queries:',errs);
@@ -2438,9 +2440,14 @@ async function loadFromSupabase(){
     parcelas:x.parcelas||[]
   }));
   console.log('[load] arrays finais → rendas:',rendas.length,'bills:',bills.length,'metas:',metas.length,'dividas:',dividas.length);
-  // load initial balance from localStorage per user
-  const saved=localStorage.getItem('ib_'+_user.id);
-  if(saved!=null) initialBalance=parseFloat(saved)||0;
+  // load initial balance from Supabase profiles, fallback to localStorage for migration
+  if(prof.data?.initial_balance!=null){
+    initialBalance=parseFloat(prof.data.initial_balance)||0;
+  } else {
+    const saved=localStorage.getItem('ib_'+uid);
+    if(saved!=null) initialBalance=parseFloat(saved)||0;
+  }
+  console.log('[load] initialBalance →',initialBalance);
 }
 
 function _showToast(msg,color){
@@ -3636,10 +3643,15 @@ function closeDrawer(){
   document.getElementById('drawer').classList.remove('open');
   document.getElementById('drawerOverlay').classList.remove('open');
 }
-function saveInitialBalance(){
+async function saveInitialBalance(){
   const val=parseFloat(document.getElementById('drawerIB').value)||0;
   initialBalance=val;
-  if(_user) localStorage.setItem('ib_'+_user.id, val);
+  if(_user){
+    localStorage.setItem('ib_'+_user.id,val); // keep as local fallback
+    const {error}=await _supa.from('profiles').upsert({user_id:_user.id,initial_balance:val},{onConflict:'user_id'});
+    if(error){console.error('[saveIB] erro:',error);_showToast('Erro ao salvar saldo: '+error.message,'#ef4444');}
+    else _showToast('✓ Saldo inicial salvo!','#10b981');
+  }
   document.querySelector('.sub').innerHTML=`${t('starting_balance_label')} ${fmt(initialBalance)}`;
   closeDrawer();
   rebuild();
