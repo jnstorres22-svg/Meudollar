@@ -2218,43 +2218,6 @@ const SUPA_URL = 'https://nyicbxrbabudbwahrjzx.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55aWNieHJiYWJ1ZGJ3YWhyanp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMjg1MDYsImV4cCI6MjA5NDcwNDUwNn0.C8r8MdY3i12Q9fX1DSJTdopDf_mBepFp0ft9skluD4I';
 const _supa = supabase.createClient(SUPA_URL, SUPA_KEY);
 let _user = null;
-window._testLoad = async function(){
-  if(!_user){alert('Não está logado! _user = null');return;}
-  const uid=_user.id;
-  console.log('[testLoad] buscando dados para user:',uid);
-  const [r,b,m,dv]=await Promise.all([
-    _supa.from('rendas').select('*').eq('user_id',uid),
-    _supa.from('bills').select('*').eq('user_id',uid),
-    _supa.from('metas').select('*').eq('user_id',uid),
-    _supa.from('dividas').select('*').eq('user_id',uid),
-  ]);
-  console.log('[testLoad] rendas  data:',r.data,'error:',r.error);
-  console.log('[testLoad] bills   data:',b.data,'error:',b.error);
-  console.log('[testLoad] metas   data:',m.data,'error:',m.error);
-  console.log('[testLoad] dividas data:',dv.data,'error:',dv.error);
-  const erros=[r.error,b.error,m.error,dv.error].filter(Boolean);
-  alert(
-    'rendas: '+(r.data?.length??'ERRO')+'\n'+
-    'bills: '+(b.data?.length??'ERRO')+'\n'+
-    'metas: '+(m.data?.length??'ERRO')+'\n'+
-    'dividas: '+(dv.data?.length??'ERRO')+
-    (erros.length?'\n\nERROS:\n'+JSON.stringify(erros,null,2):'')
-  );
-};
-window._testSave = async function(){
-  if(!_user){alert('Não está logado!');return;}
-  const id = crypto.randomUUID();
-  console.log('=== _testSave: inserindo renda teste, user_id='+_user.id);
-  const {data,error} = await _supa.from('rendas').insert({
-    id, user_id:_user.id, name:'_TESTE_', val:1,
-    type:'monthly', dow:0, day:1, month:1, year:2026, locked:false
-  }).select();
-  console.log('data:', JSON.stringify(data));
-  console.log('error:', JSON.stringify(error));
-  if(error) alert('ERRO:\n'+JSON.stringify(error,null,2));
-  else if(!data||!data.length) alert('AVISO: inseriu sem erro mas 0 linhas retornadas.\nIsso indica RLS bloqueando silenciosamente.');
-  else alert('SUCESSO! Linha salva:\n'+JSON.stringify(data[0],null,2));
-};
 
 // ── Auth navigation ───────────────────────────────────────────────
 // Invite-only: only these emails can sign up. Add emails here to grant access.
@@ -2394,9 +2357,8 @@ async function handleLogout(){
 
 // ── Supabase data sync ────────────────────────────────────────────
 async function loadFromSupabase(){
-  if(!_user){console.warn('[load] _user null, abortando');return;}
+  if(!_user) return;
   const uid = _user.id;
-  console.log('[load] iniciando para user:',uid);
   const [r,b,m,dv,prof] = await Promise.all([
     _supa.from('rendas').select('*').eq('user_id',uid),
     _supa.from('bills').select('*').eq('user_id',uid),
@@ -2404,11 +2366,6 @@ async function loadFromSupabase(){
     _supa.from('dividas').select('*').eq('user_id',uid),
     _supa.from('profiles').select('initial_balance').eq('user_id',uid).maybeSingle(),
   ]);
-  console.log('[load] rendas  →',r.data?.length??'null','itens | erro:',r.error);
-  console.log('[load] bills   →',b.data?.length??'null','itens | erro:',b.error);
-  console.log('[load] metas   →',m.data?.length??'null','itens | erro:',m.error);
-  console.log('[load] dividas →',dv.data?.length??'null','itens | erro:',dv.error);
-  console.log('[load] profile →',prof.data,'erro:',prof.error);
   if(r.error||b.error||m.error||dv.error){
     const errs=[r.error,b.error,m.error,dv.error].filter(Boolean);
     console.error('[load] ERROS nas queries:',errs);
@@ -2439,7 +2396,6 @@ async function loadFromSupabase(){
     target_date:x.target_date||null, payments:x.payments||[],
     parcelas:x.parcelas||[]
   }));
-  console.log('[load] arrays finais → rendas:',rendas.length,'bills:',bills.length,'metas:',metas.length,'dividas:',dividas.length);
   // load initial balance from Supabase profiles, fallback to localStorage for migration
   if(prof.data?.initial_balance!=null){
     initialBalance=parseFloat(prof.data.initial_balance)||0;
@@ -2447,7 +2403,6 @@ async function loadFromSupabase(){
     const saved=localStorage.getItem('ib_'+uid);
     if(saved!=null) initialBalance=parseFloat(saved)||0;
   }
-  console.log('[load] initialBalance →',initialBalance);
 }
 
 function _showToast(msg,color){
@@ -2457,21 +2412,18 @@ function _showToast(msg,color){
   clearTimeout(el._t);el._t=setTimeout(()=>{el.style.opacity='0';},4000);
 }
 async function saveRenda(r){
-  if(!_user){console.warn('[saveRenda] _user é null');return;}
+  if(!_user) return;
   let payload={id:r.id,user_id:_user.id,name:r.name,val:r.val,type:r.type,dow:r.dow,day:r.day,day2:r.day2??null,month:r.month,year:r.year,locked:r.locked};
-  console.log('[saveRenda] SAVING:',JSON.stringify(payload));
   let {data,error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'}).select();
-  console.log('[saveRenda] RESULT data:',data,'error:',error);
   for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
     const col=error.message?.match(/["']([\w]+)["']/)?.[1];
     if(!col||!(col in payload))break;
     payload={...payload};delete payload[col];
     ({data,error}=await _supa.from('rendas').upsert(payload,{onConflict:'id'}).select());
-    console.log('[saveRenda] retry:',data,error);
   }
-  if(error){console.error('[saveRenda] ERRO:',error);_showToast('Erro ao salvar renda: '+error.message);}
-  else if(!data?.length){console.error('[saveRenda] 0 linhas — RLS bloqueando INSERT');_showToast('⚠️ Renda não salva (RLS). Execute o SQL de políticas no Supabase.');}
-  else{console.log('[saveRenda] ✓ salvo');_showToast('✓ Renda salva!','#10b981');}
+  if(error){console.error('[saveRenda]',error);_showToast('Erro ao salvar renda: '+error.message);}
+  else if(!data?.length) _showToast('⚠️ Renda não salva. Verifique as permissões.');
+  else _showToast('✓ Renda salva!','#10b981');
 }
 async function deleteRenda(id){
   if(!_user) return;
@@ -2479,21 +2431,18 @@ async function deleteRenda(id){
   if(error) console.error('deleteRenda error:',error);
 }
 async function saveBill(b){
-  if(!_user){console.warn('[saveBill] _user é null');return;}
+  if(!_user) return;
   let payload={id:b.id,user_id:b.user_id||_user.id,name:b.name,val:b.val,type:b.type,day:b.day,month:b.month??null,year:b.year??null,cat:b.cat,note:b.note||null,locked:b.locked,meta_id:b.metaId||null,meta_end:b.metaEnd||null,pagamentos:b.pagamentos||[]};
-  console.log('[saveBill] SAVING:',JSON.stringify(payload));
   let {data,error}=await _supa.from('bills').upsert(payload,{onConflict:'id'}).select();
-  console.log('[saveBill] RESULT data:',data,'error:',error);
   for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
     const col=error.message?.match(/["']([\w]+)["']/)?.[1];
     if(!col||!(col in payload))break;
     payload={...payload};delete payload[col];
     ({data,error}=await _supa.from('bills').upsert(payload,{onConflict:'id'}).select());
-    console.log('[saveBill] retry:',data,error);
   }
-  if(error){console.error('[saveBill] ERRO:',error);_showToast('Erro ao salvar despesa: '+error.message);}
-  else if(!data?.length){console.error('[saveBill] 0 linhas — RLS bloqueando INSERT');_showToast('⚠️ Despesa não salva (RLS). Execute o SQL de políticas no Supabase.');}
-  else{console.log('[saveBill] ✓ salvo');_showToast('✓ Despesa salva!','#10b981');}
+  if(error){console.error('[saveBill]',error);_showToast('Erro ao salvar despesa: '+error.message);}
+  else if(!data?.length) _showToast('⚠️ Despesa não salva. Verifique as permissões.');
+  else _showToast('✓ Despesa salva!','#10b981');
 }
 async function deleteBill(id){
   if(!_user) return;
@@ -2501,20 +2450,16 @@ async function deleteBill(id){
   if(error) console.error('deleteBill error:',error);
 }
 async function saveMeta(m){
-  if(!_user){console.warn('[saveMeta] _user é null');return;}
+  if(!_user) return;
   let payload={id:m.id,user_id:_user.id,name:m.name,val:m.val,day:m.day,month:m.month,year:m.year,descricao:m.desc||null,done:m.done,bill_id:m.billId||null,need_per_week:m.needPerWeek,weeks_left:m.weeksLeft,checkins:m.checkins||[]};
-  console.log('[saveMeta] SAVING:',JSON.stringify(payload));
   let {data,error}=await _supa.from('metas').upsert(payload,{onConflict:'id'}).select();
-  console.log('[saveMeta] RESULT data:',data,'error:',error);
   for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
     const col=error.message?.match(/["']([\w]+)["']/)?.[1];
     if(!col||!(col in payload))break;
     payload={...payload};delete payload[col];
     ({data,error}=await _supa.from('metas').upsert(payload,{onConflict:'id'}).select());
-    console.log('[saveMeta] retry:',data,error);
   }
-  if(error){console.error('[saveMeta] ERRO:',error);_showToast('Erro ao salvar meta: '+error.message);}
-  else if(!data?.length){console.warn('[saveMeta] 0 linhas retornadas — verifique políticas RLS no Supabase (INSERT/UPDATE em metas)');}
+  if(error){console.error('[saveMeta]',error);_showToast('Erro ao salvar meta: '+error.message);}
 }
 async function deleteMeta(id){
   if(!_user) return;
@@ -4453,20 +4398,16 @@ function toggleMetaCheckin(metaId,weekIdx){
 
 // ── DÍVIDAS ───────────────────────────────────────────────────────
 async function saveDivida(d){
-  if(!_user){console.warn('[saveDivida] _user é null');return;}
+  if(!_user) return;
   let payload={id:d.id,user_id:_user.id,name:d.name,total:d.total,remaining:d.remaining,juros:d.juros,min_payment:d.min_payment,frequencia:d.frequencia||'monthly',target_date:d.target_date||null,payments:d.payments||[],parcelas:d.parcelas||[]};
-  console.log('[saveDivida] SAVING:',JSON.stringify(payload));
   let {data,error}=await _supa.from('dividas').upsert(payload,{onConflict:'id'}).select();
-  console.log('[saveDivida] RESULT data:',data,'error:',error);
   for(let i=0;error&&(error.code==='42703'||error.code==='PGRST204')&&i<8;i++){
     const col=error.message?.match(/["']([\w]+)["']/)?.[1];
     if(!col||!(col in payload))break;
     payload={...payload};delete payload[col];
     ({data,error}=await _supa.from('dividas').upsert(payload,{onConflict:'id'}).select());
-    console.log('[saveDivida] retry:',data,error);
   }
-  if(error){console.error('[saveDivida] ERRO:',error);_showToast('Erro ao salvar dívida: '+error.message);}
-  else if(!data?.length){console.warn('[saveDivida] 0 linhas retornadas — verifique políticas RLS no Supabase (INSERT/UPDATE em dividas)');}
+  if(error){console.error('[saveDivida]',error);_showToast('Erro ao salvar dívida: '+error.message);}
 }
 async function deleteDividaDB(id){
   if(!_user) return;
