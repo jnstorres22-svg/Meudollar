@@ -2791,8 +2791,12 @@ function buildRendaList(){
   const list=document.getElementById('rendaList');
   if(!list) return;
   list.innerHTML='';
-  const rec=rendas.filter(r=>r.type!=='once');
-  const uni=rendas.filter(r=>r.type==='once');
+  const rec=rendas.filter(r=>r.type!=='once').sort((a,b)=>{
+    const da=a.type==='weekly'?Number(a.dow||0):Number(a.day||1);
+    const db=b.type==='weekly'?Number(b.dow||0):Number(b.day||1);
+    return da-db;
+  });
+  const uni=rendas.filter(r=>r.type==='once').sort((a,b)=>new Date(a.year,a.month,a.day)-new Date(b.year,b.month,b.day));
   if(!rec.length&&!uni.length){
     list.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--sub);font-size:13px">${t('renda_empty')}</div>`;
     return;
@@ -2900,8 +2904,12 @@ function addRenda(){
 // DESPESAS
 function renderBills(){
   const list=document.getElementById('billsList');list.innerHTML='';
-  const rec=bills.filter(b=>b.type!=='once'&&!b.metaId);
-  const uni=bills.filter(b=>b.type==='once');
+  const rec=bills.filter(b=>b.type!=='once'&&!b.metaId).sort((a,b)=>{
+    const da=Number(a.day===99?31:a.day)||1;
+    const db=Number(b.day===99?31:b.day)||1;
+    return da-db;
+  });
+  const uni=bills.filter(b=>b.type==='once').sort((a,b)=>new Date(a.year,a.month,a.day)-new Date(b.year,b.month,b.day));
   const metaBills=bills.filter(b=>b.metaId);
   if(!rec.length&&!uni.length&&!metaBills.length){
     list.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--sub);font-size:13px">${t('bills_empty')}</div>`;
@@ -2956,42 +2964,77 @@ function openDayEditModal(itemType,id){
   _dayEdit={itemType,id,type:item.type};
   const isEN=lang==='en';
   document.getElementById('dayEditTitle').textContent=isEN?'Edit schedule':'Editar agenda';
-  let body='';
-  if(item.type==='weekly'){
+  const typeOpts=itemType==='renda'
+    ?[['monthly',t('type_monthly')],['biweekly',t('type_biweekly')],['weekly',t('type_weekly')],['once',t('type_once')]]
+    :[['monthly',t('type_monthly')],['weekly',t('type_weekly')],['extra',t('type_extra')],['once',t('type_once')]];
+  const typeRow=`<div style="margin-bottom:14px"><label>${isEN?'Frequency':'Frequência'}</label>
+    <select id="dei-type" onchange="onDayEditTypeChange('${itemType}','${id}',this.value)">
+      ${typeOpts.map(([v,l])=>`<option value="${v}"${item.type===v?' selected':''}>${l}</option>`).join('')}
+    </select></div>`;
+  const catRow=itemType==='bill'?`<div style="margin-bottom:14px"><label>${isEN?'Category':'Categoria'}</label>
+    <select id="dei-cat">
+      ${Object.entries(CATS).map(([k,c])=>`<option value="${k}"${(item.cat||'outros')===k?' selected':''}>${c.icon} ${c.label}</option>`).join('')}
+    </select></div>`:'';
+  document.getElementById('dayEditBody').innerHTML=typeRow+catRow+`<div id="dei-day-area"></div>`;
+  _renderDayArea(item.type,item,isEN,itemType);
+  document.getElementById('dayEditModal').style.display='flex';
+}
+function _renderDayArea(type,item,isEN,itemType){
+  const area=document.getElementById('dei-day-area');
+  if(!area)return;
+  if(type==='weekly'){
     const days=t('days_long');
-    const field=itemType==='renda'?item.dow:item.day;
-    body=`<label>${isEN?'Day of week':'Dia da semana'}</label>
+    const field=itemType==='renda'?(item.dow||0):(item.day||0);
+    area.innerHTML=`<label>${isEN?'Day of week':'Dia da semana'}</label>
       <select id="dei0">${days.map((d,i)=>`<option value="${i}"${field===i?' selected':''}>${d}</option>`).join('')}</select>`;
-  } else if(item.type==='monthly'||item.type==='extra'){
-    body=`<label>${isEN?'Day of month (1–31)':'Dia do mês (1–31)'}</label>
-      <input id="dei0" type="number" min="1" max="31" value="${item.day}" inputmode="numeric">`;
-  } else if(item.type==='biweekly'){
-    body=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div><label>${isEN?'1st payment':'1º pagamento'}</label><input id="dei0" type="number" min="1" max="31" value="${item.day}" inputmode="numeric"></div>
+  } else if(type==='monthly'||type==='extra'){
+    area.innerHTML=`<label>${isEN?'Day of month (1–31)':'Dia do mês (1–31)'}</label>
+      <input id="dei0" type="number" min="1" max="31" value="${item.day||1}" inputmode="numeric">`;
+  } else if(type==='biweekly'){
+    area.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><label>${isEN?'1st payment':'1º pagamento'}</label><input id="dei0" type="number" min="1" max="31" value="${item.day||1}" inputmode="numeric"></div>
       <div><label>${isEN?'2nd payment':'2º pagamento'}</label><input id="dei1" type="number" min="1" max="31" value="${item.day2||''}" inputmode="numeric"></div>
     </div>`;
-  } else return;
-  document.getElementById('dayEditBody').innerHTML=body;
-  document.getElementById('dayEditModal').style.display='flex';
+  } else if(type==='once'){
+    const mo=String((item.month!=null?item.month+1:new Date().getMonth()+1)).padStart(2,'0');
+    const dy=String(item.day||1).padStart(2,'0');
+    const yr=item.year||new Date().getFullYear();
+    area.innerHTML=`<label>${isEN?'Date':'Data'}</label>
+      <input id="dei0" type="date" value="${yr}-${mo}-${dy}">`;
+  }
+}
+function onDayEditTypeChange(itemType,id,newType){
+  const item=itemType==='renda'?rendas.find(x=>x.id===id):bills.find(x=>x.id===id);
+  if(!item)return;
+  _dayEdit.type=newType;
+  _renderDayArea(newType,item,lang==='en',itemType);
 }
 function saveDayEdit(){
   if(!_dayEdit)return;
   const{itemType,id,type}=_dayEdit;
+  const item=itemType==='renda'?rendas.find(x=>x.id===id):bills.find(x=>x.id===id);
+  if(!item)return;
   const v0=document.getElementById('dei0');
   if(!v0)return;
+  item.type=type;
   if(type==='weekly'){
     const val=parseInt(v0.value);
-    if(itemType==='renda')updateRenda(id,'dow',val);
-    else updateBill(id,'day',val);
+    if(itemType==='renda')item.dow=val; else item.day=val;
   } else if(type==='monthly'||type==='extra'){
-    const val=parseInt(v0.value)||1;
-    if(itemType==='renda')updateRenda(id,'day',val);
-    else updateBill(id,'day',val);
+    item.day=parseInt(v0.value)||1;
   } else if(type==='biweekly'){
     const v1=document.getElementById('dei1');
-    updateRenda(id,'day',parseInt(v0.value)||1);
-    if(v1)updateRenda(id,'day2',parseInt(v1.value)||null);
+    item.day=parseInt(v0.value)||1;
+    if(v1)item.day2=parseInt(v1.value)||null;
+  } else if(type==='once'){
+    const pts=v0.value.split('-');
+    if(pts.length===3){item.year=parseInt(pts[0]);item.month=parseInt(pts[1])-1;item.day=parseInt(pts[2]);}
   }
+  const catEl=document.getElementById('dei-cat');
+  if(catEl&&itemType==='bill') item.cat=catEl.value;
+  if(itemType==='renda'){saveRenda(item);buildRendaList();}
+  else{saveBill(item);renderBills();}
+  rebuild();
   closeDayEditModal();
 }
 function closeDayEditModal(){
