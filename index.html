@@ -2350,7 +2350,7 @@ async function handleReset(){
 async function handleLogout(){
   closeDrawer();
   await _supa.auth.signOut();
-  _user=null;rendas=[];bills=[];metas=[];dividas=[];
+  _user=null;rendas=[];bills=[];metas=[];dividas=[];initialBalance=0;
   document.getElementById('userEmail').textContent='';
   showHome();
 }
@@ -2483,7 +2483,7 @@ let weekStart=new Date(START);
 let overviewPeriod={renda:'weekly',desp:'monthly',margem:'monthly',semrenda:'weekly'};
 let charts={};
 
-function fmt(v){const n=Math.round(v);return(n<0?'-$':'$')+Math.abs(n).toLocaleString('pt-BR')}
+function fmt(v){if(v==null||isNaN(v))return '$0';const n=Math.round(v);return(n<0?'-$':'$')+Math.abs(n).toLocaleString('pt-BR')}
 function weeklyIncome(){
   const weekly=rendas.filter(r=>r.type==='weekly').reduce((s,r)=>s+r.val,0);
   const biweekly=rendas.filter(r=>r.type==='biweekly').reduce((s,r)=>s+r.val*2/4.33,0);
@@ -2521,16 +2521,9 @@ function getEventsForDate(date,isFirstWeek){
     }
     if(b.type==='once'&&b.year===y&&b.month===m&&b.day===d)
       evs.push({l:'-$'+b.val+' '+b.name,t:'u',a:-b.val,cat:b.cat});
-    if(b.type==='weekly'){
-      if(b.name==='Mercado'&&dow===0&&!isFirstWeek) evs.push({l:'-$'+b.val+' mercado',t:'o',a:-b.val,cat:b.cat});
-      if(b.name==='Gasolina'&&dow===1&&!isFirstWeek) evs.push({l:'-$'+b.val+' gasolina',t:'o',a:-b.val,cat:b.cat});
-      if(b.name==='Assinaturas'&&dow===2){const wk=Math.ceil(d/7);if(wk<=4)evs.push({l:'-$'+b.val+' assinaturas',t:'o',a:-b.val,cat:b.cat});}
-      // Custom weekly bills (meta saques etc)
-      if(b.name!=='Mercado'&&b.name!=='Gasolina'&&b.name!=='Assinaturas'&&b.day===dow){
-        // respect metaEnd if set
-        const withinEnd=!b.metaEnd||date<=new Date(b.metaEnd);
-        if(withinEnd) evs.push({l:'-$'+b.val+' '+b.name,t:'pp',a:-b.val,cat:b.cat});
-      }
+    if(b.type==='weekly'&&dow===b.day){
+      const withinEnd=!b.metaEnd||date<=new Date(b.metaEnd);
+      if(withinEnd) evs.push({l:'-$'+b.val+' '+b.name,t:'o',a:-b.val,cat:b.cat});
     }
   });
   return evs;
@@ -2559,16 +2552,16 @@ function computeFull(){
 }
 
 // OVERVIEW
-let ovFrom=new Date(2026,4,11);
-let ovTo=new Date(2028,11,31);
+let ovFrom=new Date(START);
+let ovTo=new Date(END);
 let activePicker=null;
-let pickerNav={from:{y:2026,m:4},to:{y:2028,m:11}};
+let pickerNav={from:{y:START.getFullYear(),m:START.getMonth()},to:{y:END.getFullYear(),m:END.getMonth()}};
 
 function getPeriodDates(){return{from:ovFrom,to:ovTo};}
 function fmtDate(d){return (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();}
 function resetPeriod(){
-  ovFrom=new Date(2026,4,11);
-  ovTo=new Date(2028,11,31);
+  ovFrom=new Date(START);
+  ovTo=new Date(END);
   buildTopCards();
 }
 // ── WEEK NOTIFICATION BANNER ─────────────────────────────────────
@@ -3100,7 +3093,9 @@ function buildWeek(){
   for(let i=0;i<7;i++){
     const date=new Date(weekStart);date.setDate(date.getDate()+i);
     const inRange=date>=START&&date<=END;
-    const isFirst=date.getTime()===new Date(2026,4,11).getTime()||date.getTime()===new Date(2026,4,12).getTime();
+    const dow2=date.getDay();
+    const isFirst=(!pFS&&dow2===0)||(!pFM&&dow2===1);
+    if(dow2===0)pFS=true;if(dow2===1)pFM=true;
     const evs=inRange?getEventsForDate(date,isFirst):[];
     evs.forEach(e=>{if(e.a>0)wIn+=e.a;else{wOut+=Math.abs(e.a);weekBillsList.push({name:e.l.replace(/^-\$\d+ /,''),val:Math.abs(e.a),cat:e.cat});}});
     bal+=evs.reduce((s,e)=>s+e.a,0);
@@ -3179,7 +3174,9 @@ function buildCal(){
   for(let d=1;d<=daysInMonth;d++){
     const date=new Date(calYear,calMonth,d);
     const inRange=date>=START&&date<=END;
-    const isFirst=date.getTime()===new Date(2026,4,11).getTime()||date.getTime()===new Date(2026,4,12).getTime();
+    const dow2=date.getDay();
+    const isFirst=(!pFS&&dow2===0)||(!pFM&&dow2===1);
+    if(dow2===0)pFS=true;if(dow2===1)pFM=true;
     const evs=inRange?getEventsForDate(date,isFirst):[];
     evs.forEach(e=>{if(e.a>0)mIn+=e.a;else mOut+=Math.abs(e.a);});
     bal+=evs.reduce((s,e)=>s+e.a,0);
@@ -3223,8 +3220,8 @@ function buildCal(){
     <div><div class="sb-label">${t('week_summary_balance')}</div><div class="sb-val b">${fmt(bal)}</div></div>
   </div>`;
 }
-function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}if(calYear<2026||(calYear===2026&&calMonth<4)){calYear=2026;calMonth=4;}buildCal();}
-function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}if(calYear>2028||(calYear===2028&&calMonth>4)){calYear=2028;calMonth=4;}buildCal();}
+function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}if(calYear<START.getFullYear()||(calYear===START.getFullYear()&&calMonth<START.getMonth())){calYear=START.getFullYear();calMonth=START.getMonth();}buildCal();}
+function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}if(calYear>END.getFullYear()||(calYear===END.getFullYear()&&calMonth>END.getMonth())){calYear=END.getFullYear();calMonth=END.getMonth();}buildCal();}
 
 // METAS
 function buildMetas(){
@@ -3839,7 +3836,7 @@ function tourReset(){
 function tourShow(){
   if(_tourStep>=TOUR_STEPS.length){tourSkip();return;}
   const step=TOUR_STEPS[_tourStep];
-  const isMobile=window.innerWidth<768;
+  const isMobile=window.innerWidth<641;
   if(step.tab) showTab(step.tab);
   const sel=isMobile?step.mSel:step.dSel;
   const el=sel?document.querySelector(sel):null;
@@ -3910,11 +3907,9 @@ function tourSkip(){
 
 // ── INLINE NAME EDITING ──────────────────────────────────────────
 function startInlineEdit(el, type, id){
-  // already editing
   if(el.querySelector('input')) return;
   const item = type==='renda' ? rendas.find(x=>x.id===id) : bills.find(x=>x.id===id);
   if(!item) return;
-  // preserve badge/icon HTML for restore
   const originalHTML = el.innerHTML;
   const inp = document.createElement('input');
   inp.type='text'; inp.value=item.name;
@@ -3922,7 +3917,9 @@ function startInlineEdit(el, type, id){
   el.innerHTML='';
   el.appendChild(inp);
   inp.focus();inp.select();
+  let _cancelled=false;
   const save=()=>{
+    if(_cancelled){el.innerHTML=originalHTML;return;}
     const newName=inp.value.trim();
     if(newName && newName!==item.name){
       item.name=newName;
@@ -3935,7 +3932,7 @@ function startInlineEdit(el, type, id){
   inp.addEventListener('blur',save);
   inp.addEventListener('keydown',e=>{
     if(e.key==='Enter'){e.preventDefault();inp.blur();}
-    if(e.key==='Escape'){e.preventDefault();el.innerHTML=originalHTML;}
+    if(e.key==='Escape'){e.preventDefault();_cancelled=true;el.innerHTML=originalHTML;}
   });
 }
 
@@ -3950,8 +3947,11 @@ function startInlineEditVal(el, type, id){
   el.innerHTML='';
   el.appendChild(inp);
   inp.focus(); inp.select();
+  let _cancelled=false;
   const save=()=>{
-    const newVal=parseFloat(inp.value)||0;
+    if(_cancelled){el.innerHTML=originalHTML;return;}
+    const newVal=parseFloat(inp.value);
+    if(newVal==null||isNaN(newVal)||newVal<=0){el.innerHTML=originalHTML;return;}
     if(newVal!==item.val){
       item.val=newVal;
       if(type==='renda'){saveRenda(item);buildRendaList();rebuild();}
@@ -3963,7 +3963,7 @@ function startInlineEditVal(el, type, id){
   inp.addEventListener('blur',save);
   inp.addEventListener('keydown',e=>{
     if(e.key==='Enter'){e.preventDefault();inp.blur();}
-    if(e.key==='Escape'){e.preventDefault();el.innerHTML=originalHTML;}
+    if(e.key==='Escape'){e.preventDefault();_cancelled=true;el.innerHTML=originalHTML;}
   });
 }
 
@@ -4276,7 +4276,10 @@ function renderCalDayPanel(year,month,day){
   const body=document.getElementById('calDayPanelBody');
   if(!body) return;
   const dateD=new Date(year,month,day);
-  const isFirst=dateD.getTime()===new Date(2026,4,11).getTime()||dateD.getTime()===new Date(2026,4,12).getTime();
+  let _pFS=false,_pFM=false,_cur=new Date(START);
+  while(_cur<dateD){const _d=_cur.getDay();if(_d===0)_pFS=true;if(_d===1)_pFM=true;_cur.setDate(_cur.getDate()+1);}
+  const _dow=dateD.getDay();
+  const isFirst=(!_pFS&&_dow===0)||(!_pFM&&_dow===1);
   const incomeEvs=getEventsForDate(dateD,isFirst).filter(e=>e.a>0);
   const billsDue=getBillsDueOnDay(year,month,day);
   // meta-linked bills (savings for goals) excluded from getBillsDueOnDay
