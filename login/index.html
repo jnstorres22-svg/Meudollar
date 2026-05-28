@@ -47,6 +47,47 @@
   --nav-bg: #1a1a28;
   --nav-active: #f97316; /* Laranja da imagem */
 }
+body.dark{
+  --bg:#0f0f1a;
+  --card:#1a1a2e;
+  --border:rgba(124,58,237,0.22);
+  --panel:#1e1e35;
+  --text:#e8e4f5;
+  --sub:#9b92b8;
+  --label:#9b92b8;
+  --accent-dim:rgba(124,58,237,0.15);
+  --tab-on-bg:rgba(124,58,237,0.22);
+  --input-bg:#1f1f35;
+  --input-border:rgba(124,58,237,0.28);
+  --nav-btn-bg:#1a1a2e;
+  --nav-btn-hover:#242444;
+  --row-border:rgba(124,58,237,0.12);
+  --summary-bg:#0f0f1a;
+  --weekbills-bg:#1a1a2e;
+  --weekbills-border:rgba(124,58,237,0.2);
+  --goal-bg:#1a1a2e;
+  --goal-border:rgba(124,58,237,0.2);
+  --report-bg:#1a1a2e;
+  --report-border:rgba(124,58,237,0.2);
+  --extrato-border:rgba(124,58,237,0.12);
+  --wb-border:rgba(124,58,237,0.12);
+  --dc-bg:#1a1a2e;
+  --dc-border:rgba(124,58,237,0.2);
+  --dc-neu:#0f0f1a;
+  --icon-btn-hover:#242444;
+  --picker-bg:#0f0f1a;
+  --shadow:0 2px 8px rgba(0,0,0,0.5),0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:0 8px 24px rgba(0,0,0,0.6);
+  --shadow-lg:0 12px 32px rgba(0,0,0,0.7);
+  --cal-inc-bg:rgba(16,185,129,0.12);
+  --cal-inc-bdr:rgba(16,185,129,0.28);
+  --cal-exp-bg:rgba(239,68,68,0.1);
+  --cal-exp-bdr:rgba(239,68,68,0.25);
+  --cal-bth-bg:rgba(245,158,11,0.1);
+  --cal-bth-bdr:rgba(245,158,11,0.25);
+  --cal-pur-bg:rgba(124,58,237,0.12);
+  --cal-pur-bdr:rgba(124,58,237,0.28);
+}
 
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -701,6 +742,11 @@ body.dark .confirm-delete{background:#dc2626}
 .day-edit-overlay{position:absolute;inset:0}
 .day-edit-sheet{position:relative;background:var(--card);border:.5px solid var(--border);border-radius:16px 16px 0 0;padding:1.2rem 1.2rem calc(1.2rem + env(safe-area-inset-bottom));width:100%;max-width:480px;animation:slideUp .22s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@media(min-width:641px){
+  #dayEditModal{align-items:center}
+  .day-edit-sheet{border-radius:12px;max-width:420px;padding:1.4rem;animation:fadeIn .18s ease}
+  @keyframes fadeIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+}
 .day-edit-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
 .day-edit-title{font-size:14px;font-weight:600;color:var(--text)}
 .day-edit-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--sub);padding:2px 6px;border-radius:6px;line-height:1}
@@ -1719,7 +1765,7 @@ body:not(.dark) .tab.on{color:#7c3aed}
       <button class="day-edit-close" onclick="closeDayEditModal()">✕</button>
     </div>
     <div id="dayEditBody" class="day-edit-body"></div>
-    <button class="day-edit-save" onclick="saveDayEdit()">Confirmar</button>
+    <button id="dayEditSaveBtn" class="day-edit-save" onclick="saveDayEdit()">Confirmar</button>
   </div>
 </div>
 
@@ -2856,7 +2902,7 @@ function makeRendaRow(r){
     <div class="rval" onclick="startInlineEditVal(this,'renda','${r.id}')" title="${lang==='en'?'Click to edit value':'Clique para editar o valor'}">${fmt(r.val)}</div>
     <div>
       ${r.locked
-        ? `<span style="font-size:11px;color:#888">${dl}</span>`
+        ? `<span style="font-size:11px;color:var(--sub)">${dl}</span>`
         : r.type==='weekly'
           ? `<select class="sel-sm" onchange="updateRenda('${r.id}','dow',this.value)">${t('days_long').map((d,i)=>`<option value="${i}"${r.dow===i?' selected':''}>${d}</option>`).join('')}</select>`
           : r.type==='monthly'
@@ -2866,7 +2912,7 @@ function makeRendaRow(r){
                    <input class="inp-sm" type="number" min="1" max="31" value="${r.day}" placeholder="1º" title="${lang==='en'?'1st payment':'1º pagamento'}" onchange="updateRenda('${r.id}','day',this.value)">
                    <input class="inp-sm" type="number" min="1" max="31" value="${r.day2||''}" placeholder="2º" title="${lang==='en'?'2nd payment':'2º pagamento'}" onchange="updateRenda('${r.id}','day2',this.value)">
                  </div>`
-              : `<span style="font-size:11px;color:#888">${dl}</span>`
+              : `<span style="font-size:11px;color:var(--sub)">${dl}</span>`
       }
     </div>
     <div class="row-act">
@@ -2961,8 +3007,10 @@ function makeBillRow(b){
   const row=document.createElement('div');row.className='row';
   const tm={monthly:['bm',t('type_monthly')],weekly:['bw',t('type_weekly')],extra:['be',t('type_extra')],once:['bu',t('type_once')]};
   const [bc,bl]=tm[b.type]||['bm',t('type_monthly')];
-  const dn=b.day===99?'último dia':'dia '+b.day;
-  const dl=b.type==='once'?`${b.day}/${MS(b.month||4)}/${b.year||2026}`:(b.note||dn);
+  let dn;
+  if(b.type==='weekly') dn=`${t('dow_label')} ${DAYS_PT(Number(b.day))}`;
+  else dn=Number(b.day)===99?(lang==='en'?'last day of month':'último dia'):`${t('day_label')} ${b.day}`;
+  const dl=b.type==='once'?`${b.day}/${MS(b.month||4)}/${b.year||2026}`:(b.type==='weekly'?dn:(b.note||dn));
   const cat=CATS[b.cat||'outros'];
   row.innerHTML=`
     <div>
@@ -2972,7 +3020,7 @@ function makeBillRow(b){
     <div class="rval" onclick="startInlineEditVal(this,'bill','${b.id}')" title="${lang==='en'?'Click to edit value':'Clique para editar o valor'}">${fmt(b.val)}</div>
     <div>
       ${b.locked||b.type==='once'
-        ?`<span style="font-size:11px;color:#888">${dl}</span>`
+        ?`<span style="font-size:11px;color:var(--sub)">${dl}</span>`
         :`<input class="inp-sm" type="number" min="1" max="31" value="${b.day===99?31:b.day}" onchange="updateBill('${b.id}','day',this.value)">`
       }
     </div>
@@ -2994,6 +3042,8 @@ function openDayEditModal(itemType,id){
   _dayEdit={itemType,id,type:item.type};
   const isEN=lang==='en';
   document.getElementById('dayEditTitle').textContent=isEN?'Edit schedule':'Editar agenda';
+  const _saveBtn=document.getElementById('dayEditSaveBtn');
+  if(_saveBtn)_saveBtn.textContent=isEN?'Save':'Confirmar';
   const typeOpts=itemType==='renda'
     ?[['monthly',t('type_monthly')],['biweekly',t('type_biweekly')],['weekly',t('type_weekly')],['once',t('type_once')]]
     :[['monthly',t('type_monthly')],['weekly',t('type_weekly')],['extra',t('type_extra')],['once',t('type_once')]];
@@ -3014,7 +3064,7 @@ function _renderDayArea(type,item,isEN,itemType){
   if(!area)return;
   if(type==='weekly'){
     const days=t('days_long');
-    const field=itemType==='renda'?(item.dow||0):(item.day||0);
+    const field=itemType==='renda'?Number(item.dow||0):Number(item.day||0);
     area.innerHTML=`<label>${isEN?'Day of week':'Dia da semana'}</label>
       <select id="dei0">${days.map((d,i)=>`<option value="${i}"${field===i?' selected':''}>${d}</option>`).join('')}</select>`;
   } else if(type==='monthly'||type==='extra'){
@@ -3172,7 +3222,7 @@ function buildWeek(){
     billsHtml=`<div class="week-bills"><h4>${t('week_bills_title')}</h4>`;
     weekBillsList.forEach(b=>{
       const cat=CATS[b.cat||'outros'];
-      billsHtml+=`<div class="wb-row"><span>${cat.icon} ${b.name}</span><span style="color:#A32D2D;font-weight:500">-${fmt(b.val)}</span></div>`;
+      billsHtml+=`<div class="wb-row"><span>${cat.icon} ${b.name}</span><span style="color:var(--red);font-weight:500">-${fmt(b.val)}</span></div>`;
     });
     billsHtml+='</div>';
   }
@@ -3306,40 +3356,40 @@ function buildMetas(){
       <div class="goal-header">
         <div>
           <div style="font-size:15px;font-weight:500">${meta.name}</div>
-          ${meta.desc?`<div style="font-size:11px;color:#888;margin-top:1px">${meta.desc}</div>`:''}
-          <div style="font-size:11px;color:#888;margin-top:3px">${meta.month+1}/${meta.day}/${meta.year}</div>
+          ${meta.desc?`<div style="font-size:11px;color:var(--sub);margin-top:1px">${meta.desc}</div>`:''}
+          <div style="font-size:11px;color:var(--sub);margin-top:3px">${meta.month+1}/${meta.day}/${meta.year}</div>
         </div>
         <div style="text-align:right">
           <span class="goal-status ${sc}">${status}</span>
-          <div style="font-size:18px;font-weight:500;color:#185FA5;margin-top:5px">${fmt(saved)} <span style="font-size:13px;color:#888;font-weight:400">/ ${fmt(meta.val)}</span></div>
+          <div style="font-size:18px;font-weight:500;color:var(--accent);margin-top:5px">${fmt(saved)} <span style="font-size:13px;color:var(--sub);font-weight:400">/ ${fmt(meta.val)}</span></div>
         </div>
       </div>
 
       <div class="bar-bg"><div class="bar-fill" style="width:${pctDone}%;background:${barColor}"></div></div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:3px margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--sub);margin-top:3px;margin-bottom:8px">
         <span>${pctDone}${t('meta_pct_done')}</span><span>${t('meta_missing')} ${fmt(falta)}</span>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin:12px 0">
-        <div style="background:#f5f5f2;border-radius:8px;padding:8px 10px">
-          <div style="font-size:10px;color:#888">${t('meta_saved')}</div>
-          <div style="font-size:16px;font-weight:500;color:#3B6D11">${fmt(saved)}</div>
+        <div style="background:var(--panel);border-radius:8px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--sub)">${t('meta_saved')}</div>
+          <div style="font-size:16px;font-weight:500;color:var(--green)">${fmt(saved)}</div>
         </div>
-        <div style="background:#f5f5f2;border-radius:8px;padding:8px 10px">
-          <div style="font-size:10px;color:#888">${t('meta_left')}</div>
-          <div style="font-size:16px;font-weight:500;color:${falta>0?'#A32D2D':'#3B6D11'}">${fmt(falta)}</div>
+        <div style="background:var(--panel);border-radius:8px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--sub)">${t('meta_left')}</div>
+          <div style="font-size:16px;font-weight:500;color:${falta>0?'var(--red)':'var(--green)'}">${fmt(falta)}</div>
         </div>
-        <div style="background:#f5f5f2;border-radius:8px;padding:8px 10px">
-          <div style="font-size:10px;color:#888">${t('meta_weeks')}</div>
-          <div style="font-size:16px;font-weight:500;color:#185FA5">${weeksLeft}</div>
+        <div style="background:var(--panel);border-radius:8px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--sub)">${t('meta_weeks')}</div>
+          <div style="font-size:16px;font-weight:500;color:var(--accent)">${weeksLeft}</div>
         </div>
-        <div style="background:#f5f5f2;border-radius:8px;padding:8px 10px">
-          <div style="font-size:10px;color:#888">${t('meta_per_week')}</div>
-          <div style="font-size:16px;font-weight:500;color:${needPerWeek>sobraSem?'#A32D2D':'#854F0B'}">${fmt(needPerWeek)}</div>
+        <div style="background:var(--panel);border-radius:8px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--sub)">${t('meta_per_week')}</div>
+          <div style="font-size:16px;font-weight:500;color:${needPerWeek>sobraSem?'var(--red)':'var(--amber)'}">${fmt(needPerWeek)}</div>
         </div>
       </div>
 
-      ${alertMsg?`<div style="padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:10px;background:${sc==='gs-ok'?'#EAF3DE':sc==='gs-warn'?'#FAEEDA':'#FCEBEB'};color:${sc==='gs-ok'?'#27500A':sc==='gs-warn'?'#633806':'#8B1A1A'}">${alertMsg}</div>`:''}
+      ${alertMsg?`<div style="padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:10px;background:${sc==='gs-ok'?'var(--cal-inc-bg)':sc==='gs-warn'?'var(--cal-bth-bg)':'var(--cal-exp-bg)'};border:1px solid ${sc==='gs-ok'?'var(--cal-inc-bdr)':sc==='gs-warn'?'var(--cal-bth-bdr)':'var(--cal-exp-bdr)'};color:${sc==='gs-ok'?'var(--green)':sc==='gs-warn'?'var(--amber)':'var(--red)'}">${alertMsg}</div>`:''}
 
       ${buildMetaCheckinsHTML(meta)}
 
