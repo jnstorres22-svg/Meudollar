@@ -756,6 +756,9 @@ body.dark .confirm-delete{background:#dc2626}
 .day-edit-save{width:100%;padding:13px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer}
 .rsub-edit{cursor:pointer;border-bottom:1px dotted var(--sub);display:inline;padding-bottom:1px}
 .rsub-edit:hover{opacity:.75}
+/* Notification toggle active state */
+.toggle-track.notif-on{background:var(--accent)}
+.toggle-track.notif-on .toggle-dot{transform:translateX(18px)}
 
 /* ── CALENDAR DAY PANEL ───────────────────────────────────────── */
 #calDayOverlay{position:fixed;inset:0;z-index:490;display:none}
@@ -1442,6 +1445,16 @@ body:not(.dark) .tab.on{color:#7c3aed}
   <div class="drawer-section">
     <button onclick="openChangePassModal()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerChangePassBtn">Mudar senha / Change password</button>
   </div>
+  <div class="drawer-section" id="drawerNotifSection">
+    <div class="drawer-section-label" id="drawerNotifSectionLabel">Notificações / Notifications</div>
+    <div class="drawer-theme">
+      <span id="drawerNotifLabel">Lembretes desativados</span>
+      <div class="theme-toggle" onclick="toggleNotifications()" style="margin:0">
+        <div id="notifToggleTrack" class="toggle-track"><div class="toggle-dot"></div></div>
+      </div>
+    </div>
+    <div id="drawerNotifHint" style="font-size:11px;color:var(--sub);margin-top:6px;line-height:1.4"></div>
+  </div>
   <div class="drawer-section">
     <button class="drawer-logout" onclick="handleLogout()">Sair / Sign out</button>
   </div>
@@ -1963,6 +1976,13 @@ const TRANSLATIONS = {
     change_pass_mismatch:'Senhas não coincidem',
     change_pass_success:'Senha alterada com sucesso!',
     change_pass_empty:'Digite a nova senha',
+    // Notifications
+    drawer_notif:'Notificações',
+    notif_on:'Lembretes ativos',
+    notif_off:'Lembretes desativados',
+    notif_denied:'Permissão bloqueada. Ative nas configurações do browser.',
+    notif_ios:'No iOS, instale o app na tela inicial para receber notificações.',
+    notif_unsupported:'Notificações não suportadas neste browser.',
   },
   en: {
     tab_renda:'Income', tab_bills:'Expenses', tab_semana:'Week',
@@ -2127,6 +2147,13 @@ const TRANSLATIONS = {
     change_pass_mismatch:"Passwords don't match",
     change_pass_success:'Password updated successfully!',
     change_pass_empty:'Enter a new password',
+    // Notifications
+    drawer_notif:'Notifications',
+    notif_on:'Reminders active',
+    notif_off:'Reminders off',
+    notif_denied:'Permission denied. Enable it in browser settings.',
+    notif_ios:'On iOS, install the app to your home screen to receive notifications.',
+    notif_unsupported:'Notifications not supported in this browser.',
   }
 };
 function t(key){ return TRANSLATIONS[lang][key] ?? TRANSLATIONS['pt'][key] ?? key; }
@@ -2239,6 +2266,9 @@ function applyLang(){
   if(dtb) dtb.textContent=t('tour_replay');
   const dcpb=document.getElementById('drawerChangePassBtn');
   if(dcpb) dcpb.textContent=t('drawer_change_pass');
+  const dnsl=document.getElementById('drawerNotifSectionLabel');
+  if(dnsl) dnsl.textContent=t('drawer_notif');
+  updateNotifDrawer();
   // Collapsible form toggle labels
   ['renda','bills','metas'].forEach(k=>{
     const lbl=document.getElementById(k+'ToggleLabel');
@@ -3637,6 +3667,130 @@ function buildRelatorio(){
 
 function rebuild(){buildTopCards();buildPeriodRow();buildNotifBanner();buildWeek();buildCal();buildMetas();buildDividas();buildRelatorio();}
 
+// ── NOTIFICATIONS ────────────────────────────────────────────────
+let _swReg = null;
+
+async function registerSW(){
+  if(!('serviceWorker' in navigator)) return null;
+  try{
+    _swReg = await navigator.serviceWorker.register('/login/sw.js',{scope:'/login/'});
+    return _swReg;
+  }catch(e){ console.warn('[SW]',e); return null; }
+}
+
+function getBillsDueSoon(daysAhead){
+  const result=[];
+  const today=new Date();today.setHours(0,0,0,0);
+  const seen=new Set();
+  const isEN=lang==='en';
+  for(let i=0;i<=daysAhead;i++){
+    const d=new Date(today);d.setDate(today.getDate()+i);
+    const day=d.getDate(),mon=d.getMonth(),yr=d.getFullYear(),dow=d.getDay();
+    const lastDay=new Date(yr,mon+1,0).getDate();
+    bills.forEach(b=>{
+      if(b.metaId) return;
+      const key=b.id+':'+i;
+      if(seen.has(key)) return;
+      let isDue=false;
+      if(b.type==='monthly'||b.type==='extra'){
+        const bd=Number(b.day);
+        isDue=bd===day||(bd===99&&day===lastDay);
+      } else if(b.type==='weekly'){
+        isDue=Number(b.day)===dow;
+      } else if(b.type==='once'){
+        isDue=Number(b.day)===day&&Number(b.month)===mon&&Number(b.year)===yr;
+      }
+      if(isDue){
+        seen.add(key);
+        const val='$'+Number(b.val).toFixed(2);
+        let body;
+        if(i===0) body=isEN?`Due today — ${val}`:`Vence hoje — ${val}`;
+        else if(i===1) body=isEN?`Due tomorrow — ${val}`:`Vence amanhã — ${val}`;
+        else body=isEN?`Due in ${i} days — ${val}`:`Vence em ${i} dias — ${val}`;
+        result.push({id:b.id,title:b.name,body});
+      }
+    });
+  }
+  return result;
+}
+
+async function doNotifCheck(){
+  const today=new Date().toDateString();
+  if(localStorage.getItem('lastNotifDate')===today) return;
+  const reg=_swReg||(await registerSW());
+  if(!reg) return;
+  await navigator.serviceWorker.ready;
+  const sw=reg.active||reg.installing||reg.waiting;
+  if(!sw) return;
+  const upcoming=getBillsDueSoon(3);
+  if(upcoming.length) sw.postMessage({type:'SHOW_NOTIFS',bills:upcoming});
+  localStorage.setItem('lastNotifDate',today);
+}
+
+function updateNotifDrawer(){
+  const enabled=localStorage.getItem('notifEnabled')==='true';
+  const perm='Notification' in window?Notification.permission:'unsupported';
+  const track=document.getElementById('notifToggleTrack');
+  const label=document.getElementById('drawerNotifLabel');
+  const hint=document.getElementById('drawerNotifHint');
+  const sec=document.getElementById('drawerNotifSection');
+  if(!('Notification' in window)||!('serviceWorker' in navigator)){
+    if(sec) sec.style.display='none';
+    return;
+  }
+  if(sec) sec.style.display='';
+  if(track) track.classList.toggle('notif-on',enabled&&perm==='granted');
+  if(label) label.textContent=(enabled&&perm==='granted')?t('notif_on'):t('notif_off');
+  if(hint){
+    if(perm==='denied'){
+      hint.textContent=t('notif_denied');
+    } else if(/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.matchMedia('(display-mode: standalone)').matches&&!window.navigator.standalone){
+      hint.textContent=t('notif_ios');
+    } else {
+      hint.textContent='';
+    }
+  }
+}
+
+async function toggleNotifications(){
+  if(!('Notification' in window)||!('serviceWorker' in navigator)){
+    _showToast(t('notif_unsupported'));return;
+  }
+  const enabled=localStorage.getItem('notifEnabled')==='true';
+  if(enabled){
+    localStorage.setItem('notifEnabled','false');
+    updateNotifDrawer();
+    return;
+  }
+  const perm=await Notification.requestPermission();
+  if(perm==='granted'){
+    localStorage.setItem('notifEnabled','true');
+    updateNotifDrawer();
+    await registerSW();
+    localStorage.removeItem('lastNotifDate');
+    await doNotifCheck();
+    _showToast(t('notif_on'),'#10b981');
+  } else {
+    localStorage.setItem('notifEnabled','false');
+    updateNotifDrawer();
+    if(perm==='denied') _showToast(t('notif_denied'));
+  }
+}
+
+async function initNotifications(){
+  if(!('Notification' in window)||!('serviceWorker' in navigator)){
+    updateNotifDrawer();return;
+  }
+  updateNotifDrawer();
+  if(localStorage.getItem('notifEnabled')!=='true') return;
+  if(Notification.permission!=='granted'){
+    localStorage.setItem('notifEnabled','false');
+    updateNotifDrawer();return;
+  }
+  await registerSW();
+  setTimeout(doNotifCheck,3000);
+}
+
 // DARK MODE
 let dark = false;
 function toggleTheme(){
@@ -3761,6 +3915,8 @@ function initApp(){
   requestAnimationFrame(()=>updateBnShape('renda',true));
   // Show onboarding for first-time users
   obStart();
+  // Push notifications daily check
+  initNotifications();
 }
 
 function setUserUI(user){
