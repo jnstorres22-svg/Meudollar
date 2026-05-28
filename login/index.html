@@ -3729,33 +3729,39 @@ async function doNotifCheck(){
 
 function updateNotifDrawer(){
   const enabled=localStorage.getItem('notifEnabled')==='true';
-  const perm='Notification' in window?Notification.permission:'unsupported';
+  const hasNotif='Notification' in window;
+  const hasSW='serviceWorker' in navigator;
+  const perm=hasNotif?Notification.permission:'unsupported';
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+  const isPWA=window.matchMedia('(display-mode: standalone)').matches||!!window.navigator.standalone;
+  const notSupported=!hasNotif||!hasSW;
   const track=document.getElementById('notifToggleTrack');
   const label=document.getElementById('drawerNotifLabel');
   const hint=document.getElementById('drawerNotifHint');
   const sec=document.getElementById('drawerNotifSection');
-  if(!('Notification' in window)||!('serviceWorker' in navigator)){
-    if(sec) sec.style.display='none';
-    return;
-  }
+  // Always show the section — just dim the toggle if unsupported
   if(sec) sec.style.display='';
-  if(track) track.classList.toggle('notif-on',enabled&&perm==='granted');
-  if(label) label.textContent=(enabled&&perm==='granted')?t('notif_on'):t('notif_off');
+  if(track){
+    track.classList.toggle('notif-on',!notSupported&&enabled&&perm==='granted');
+    track.style.opacity=notSupported?'0.4':'';
+    track.style.pointerEvents=notSupported?'none':'';
+  }
+  if(label) label.textContent=(!notSupported&&enabled&&perm==='granted')?t('notif_on'):t('notif_off');
   if(hint){
-    if(perm==='denied'){
-      hint.textContent=t('notif_denied');
-    } else if(/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.matchMedia('(display-mode: standalone)').matches&&!window.navigator.standalone){
-      hint.textContent=t('notif_ios');
-    } else {
-      hint.textContent='';
-    }
+    if(isIOS&&!isPWA)hint.textContent=t('notif_ios');
+    else if(perm==='denied')hint.textContent=t('notif_denied');
+    else if(notSupported)hint.textContent=t('notif_unsupported');
+    else hint.textContent='';
   }
 }
 
 async function toggleNotifications(){
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+  const isPWA=window.matchMedia('(display-mode: standalone)').matches||!!window.navigator.standalone;
   if(!('Notification' in window)||!('serviceWorker' in navigator)){
-    _showToast(t('notif_unsupported'));return;
+    _showToast(isIOS?t('notif_ios'):t('notif_unsupported'));return;
   }
+  if(isIOS&&!isPWA){_showToast(t('notif_ios'));return;}
   const enabled=localStorage.getItem('notifEnabled')==='true';
   if(enabled){
     localStorage.setItem('notifEnabled','false');
