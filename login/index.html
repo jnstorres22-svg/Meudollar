@@ -992,28 +992,16 @@ body:not(.dark) .tab.on{color:#7c3aed}
 
 /* ─── Split Login Panel ──────────────────────────────────────── */
 #loginScreen{padding:0}
-.split-container{
-  position:relative;
-  width:min(800px,96vw);
-  min-height:500px;
-  overflow:hidden;
+.login-card{
+  width:min(420px,96vw);
   border-radius:20px;
   box-shadow:0 20px 60px rgba(0,0,0,.5);
   background:rgba(18,18,18,.98);
-}
-.split-form-panel{
-  position:absolute;top:0;left:0;
-  width:50%;height:100%;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
-  padding:36px 28px;
-  background:rgba(18,18,18,.98);
-  overflow-y:auto;
-  transition:transform .6s ease-in-out;
-  z-index:2;
+  padding:44px 36px 36px;
 }
-.split-container.right-panel-active .split-form-panel{transform:translateX(100%)}
-.split-form-inner{width:100%;max-width:270px;display:flex;flex-direction:column}
+.split-form-inner{width:100%;max-width:320px;display:flex;flex-direction:column}
 .split-logo-wrap{text-align:center;margin-bottom:18px}
 .split-logo-word{
   font-size:20px;font-weight:800;letter-spacing:-.5px;
@@ -1021,73 +1009,12 @@ body:not(.dark) .tab.on{color:#7c3aed}
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
   margin-top:5px;
 }
-/* Overlay wrapper */
-.split-ov-wrap{
-  position:absolute;top:0;left:50%;
-  width:50%;height:100%;
-  overflow:hidden;
-  transition:transform .6s ease-in-out;
-  z-index:10;
-}
-.split-container.right-panel-active .split-ov-wrap{transform:translateX(-100%)}
-/* Double-wide strip */
-.split-ov-strip{
-  position:relative;left:-100%;
-  height:100%;width:200%;
-  background:linear-gradient(135deg,#4c1d95 0%,#7c3aed 55%,#9d5cf6 100%);
-  display:flex;
-  transition:transform .6s ease-in-out;
-}
-.split-container.right-panel-active .split-ov-strip{transform:translateX(50%)}
-.split-ov-panel{
-  width:50%;height:100%;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  text-align:center;padding:40px 28px;
-  color:#fff;flex-shrink:0;
-  transition:transform .6s ease-in-out;
-}
-.split-ov-left{transform:translateX(-20%)}
-.split-ov-right{transform:translateX(0)}
-.split-container.right-panel-active .split-ov-left{transform:translateX(0)}
-.split-container.right-panel-active .split-ov-right{transform:translateX(20%)}
-.split-ov-title{font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:10px;line-height:1.2}
-.split-ov-desc{font-size:12.5px;opacity:.85;line-height:1.6;margin-bottom:26px;max-width:200px}
-.split-ghost-btn{
-  border:2px solid #fff;background:transparent;color:#fff;
-  padding:10px 28px;border-radius:24px;
-  font-size:13px;font-weight:600;cursor:pointer;
-  letter-spacing:.4px;text-transform:uppercase;
-  transition:background .2s,color .2s;
-}
-.split-ghost-btn:hover{background:#fff;color:#7c3aed}
-/* Mobile tabs */
-.split-tabs{
-  display:none;width:100%;
-  background:rgba(255,255,255,.06);
-  border-radius:10px;padding:3px;
-  margin-bottom:20px;
-}
-.split-tab{
-  flex:1;padding:8px 0;
-  border:none;border-radius:8px;
-  font-size:13px;font-weight:600;
-  cursor:pointer;background:transparent;color:#6b7280;
-  transition:all .2s;
-}
-.split-tab.active{background:rgba(124,58,237,.25);color:#c4b5fd;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 @media(max-width:640px){
-  .split-container{
-    width:100vw;height:100svh;
-    border-radius:0;box-shadow:none;min-height:100svh;
+  .login-card{
+    width:100vw;min-height:100svh;
+    border-radius:0;box-shadow:none;
+    justify-content:flex-start;padding:60px 28px 80px;
   }
-  .split-form-panel{
-    width:100%;height:auto;position:relative;left:auto;
-    transform:none!important;min-height:100svh;
-    justify-content:flex-start;padding:48px 24px 80px;
-  }
-  .split-ov-wrap{display:none}
-  .split-tabs{display:flex}
 }
 
 </style>
@@ -1147,73 +1074,48 @@ body:not(.dark) .tab.on{color:#7c3aed}
 
 <!-- LOGIN SCREEN -->
 <div id="loginScreen" style="display:none">
-  <div class="split-container" id="splitContainer">
-    <!-- Form panel (left in login mode, right in signup mode) -->
-    <div class="split-form-panel">
-      <div class="split-form-inner">
-        <!-- Mobile tabs -->
-        <div class="split-tabs">
-          <button class="split-tab active" id="mobileTabLogin" onclick="if(_authMode!=='login')toggleAuthMode()">Entrar</button>
-          <button class="split-tab" id="mobileTabSignup" onclick="if(_authMode!=='signup')toggleAuthMode()">Cadastrar</button>
-        </div>
-        <!-- Logo -->
-        <div class="split-logo-wrap">
-          <svg width="48" height="48" viewBox="60 40 160 160" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="lgBg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#4c1d95"/></linearGradient>
-              <linearGradient id="lgArr" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="100%" stop-color="rgba(255,255,255,1)"/></linearGradient>
-            </defs>
-            <rect x="60" y="40" width="160" height="160" rx="32" fill="url(#lgBg)"/>
-            <rect x="78" y="158" width="22" height="22" rx="4" fill="rgba(255,255,255,0.22)"/>
-            <rect x="108" y="138" width="22" height="42" rx="4" fill="rgba(255,255,255,0.35)"/>
-            <rect x="138" y="118" width="22" height="62" rx="4" fill="rgba(255,255,255,0.48)"/>
-            <path d="M89 152 Q130 190 168 110" fill="none" stroke="url(#lgArr)" stroke-width="4" stroke-linecap="round"/>
-            <path d="M157 112 L169 106 L175 118" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="178" y1="52" x2="178" y2="88" stroke="white" stroke-width="7" stroke-linecap="round"/>
-            <line x1="160" y1="64" x2="196" y2="64" stroke="white" stroke-width="7" stroke-linecap="round"/>
-          </svg>
-          <div class="split-logo-word">tryfreed</div>
-        </div>
-        <div class="login-sub" id="loginSubtitle">Entre na sua conta</div>
-        <div class="login-error" id="loginError"></div>
-        <div class="login-field"><label id="loginEmailLabel">Email</label><input id="authEmail" type="email" placeholder="seu@email.com" autocomplete="email"></div>
-        <div class="login-field">
-          <label id="loginPwdLabel">Senha</label>
-          <div style="position:relative">
-            <input id="authPassword" type="password" placeholder="••••••••" autocomplete="current-password" style="padding-right:40px">
-            <button type="button" onclick="togglePwdVisibility()" id="pwdEyeBtn" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:#6b7280;display:flex;align-items:center;justify-content:center;line-height:0">
-              <svg id="pwdEyeOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <svg id="pwdEyeClosed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-            </button>
-          </div>
-        </div>
-        <div class="login-forgot" id="forgotRow"><a onclick="showReset()" id="loginForgotLink">Esqueci minha senha</a></div>
-        <button class="login-btn" id="authBtn" onclick="handleAuth()">Entrar</button>
-        <div style="text-align:center;margin-top:14px">
-          <a onclick="showHome()" style="font-size:11px;color:#6b7280;cursor:pointer" id="loginBackLink">← Voltar</a>
-        </div>
-        <!-- Hidden placeholders to keep JS references intact -->
-        <span id="loginSwitchText" style="display:none"></span>
-        <span id="loginSwitchLink" style="display:none"></span>
-        <span id="loginOrLabel" style="display:none"></span>
+  <div class="login-card">
+    <div class="split-form-inner">
+      <!-- Logo -->
+      <div class="split-logo-wrap">
+        <svg width="48" height="48" viewBox="60 40 160 160" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="lgBg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#4c1d95"/></linearGradient>
+            <linearGradient id="lgArr" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="100%" stop-color="rgba(255,255,255,1)"/></linearGradient>
+          </defs>
+          <rect x="60" y="40" width="160" height="160" rx="32" fill="url(#lgBg)"/>
+          <rect x="78" y="158" width="22" height="22" rx="4" fill="rgba(255,255,255,0.22)"/>
+          <rect x="108" y="138" width="22" height="42" rx="4" fill="rgba(255,255,255,0.35)"/>
+          <rect x="138" y="118" width="22" height="62" rx="4" fill="rgba(255,255,255,0.48)"/>
+          <path d="M89 152 Q130 190 168 110" fill="none" stroke="url(#lgArr)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M157 112 L169 106 L175 118" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="178" y1="52" x2="178" y2="88" stroke="white" stroke-width="7" stroke-linecap="round"/>
+          <line x1="160" y1="64" x2="196" y2="64" stroke="white" stroke-width="7" stroke-linecap="round"/>
+        </svg>
+        <div class="split-logo-word">tryfreed</div>
       </div>
-    </div>
-    <!-- Overlay: purple gradient sliding panel -->
-    <div class="split-ov-wrap">
-      <div class="split-ov-strip">
-        <!-- Left panel — visible in signup mode -->
-        <div class="split-ov-panel split-ov-left">
-          <div class="split-ov-title">Bem-vindo de volta!</div>
-          <p class="split-ov-desc">Já tem uma conta? Entre para continuar sua jornada financeira.</p>
-          <button class="split-ghost-btn" onclick="toggleAuthMode()">Entrar</button>
-        </div>
-        <!-- Right panel — visible in login mode -->
-        <div class="split-ov-panel split-ov-right">
-          <div class="split-ov-title">Olá, bem-vindo!</div>
-          <p class="split-ov-desc">Ainda não tem conta? Cadastre-se e tome controle das suas finanças.</p>
-          <button class="split-ghost-btn" onclick="toggleAuthMode()">Cadastrar</button>
+      <div class="login-sub" id="loginSubtitle">Entre na sua conta</div>
+      <div class="login-error" id="loginError"></div>
+      <div class="login-field"><label id="loginEmailLabel">Email</label><input id="authEmail" type="email" placeholder="seu@email.com" autocomplete="email"></div>
+      <div class="login-field">
+        <label id="loginPwdLabel">Senha</label>
+        <div style="position:relative">
+          <input id="authPassword" type="password" placeholder="••••••••" autocomplete="current-password" style="padding-right:40px">
+          <button type="button" onclick="togglePwdVisibility()" id="pwdEyeBtn" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:#6b7280;display:flex;align-items:center;justify-content:center;line-height:0">
+            <svg id="pwdEyeOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="pwdEyeClosed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
         </div>
       </div>
+      <div class="login-forgot" id="forgotRow"><a onclick="showReset()" id="loginForgotLink">Esqueci minha senha</a></div>
+      <button class="login-btn" id="authBtn" onclick="handleAuth()">Entrar</button>
+      <div style="text-align:center;margin-top:14px">
+        <a onclick="showHome()" style="font-size:11px;color:#6b7280;cursor:pointer" id="loginBackLink">← Voltar</a>
+      </div>
+      <!-- Hidden placeholders to keep JS references intact -->
+      <span id="loginSwitchText" style="display:none"></span>
+      <span id="loginSwitchLink" style="display:none"></span>
+      <span id="loginOrLabel" style="display:none"></span>
     </div>
   </div>
 </div>
