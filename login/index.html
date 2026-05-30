@@ -2653,7 +2653,7 @@ let bills = [];
 let metas=[];
 let dividas=[];
 let calYear=_today.getFullYear(), calMonth=_today.getMonth();
-let weekStart=new Date(START);
+let weekStart=sunOf(START);
 let overviewPeriod={renda:'weekly',desp:'monthly',margem:'monthly',semrenda:'weekly'};
 let charts={};
 
@@ -2671,7 +2671,8 @@ function totalMonthly(){
   });
   return t;
 }
-function weeksBetween(a,b){return Math.max(1,Math.round((b-a)/(7*24*3600*1000)))}
+function weeksBetween(a,b){return Math.round((b-a)/(7*24*3600*1000));}
+function sunOf(d){const nd=new Date(d);nd.setDate(nd.getDate()-nd.getDay());nd.setHours(0,0,0,0);return nd;}
 
 function getEventsForDate(date,isFirstWeek){
   const d=date.getDate(),m=date.getMonth(),y=date.getFullYear(),dow=date.getDay();
@@ -3245,7 +3246,7 @@ function addBill(){
 // SEMANA
 function buildWeek(){
   const wEnd=new Date(weekStart);wEnd.setDate(wEnd.getDate()+6);
-  const wNum=weeksBetween(START,weekStart)+1;
+  const wNum=Math.round((weekStart-sunOf(START))/(7*24*3600*1000))+1;
   const wTitle = lang==='en'
     ? `Week ${wNum} — ${weekStart.getMonth()+1}/${weekStart.getDate()}/${weekStart.getFullYear()} to ${wEnd.getMonth()+1}/${wEnd.getDate()}/${wEnd.getFullYear()}`
     : `Semana ${wNum} — ${weekStart.getDate()}/${weekStart.getMonth()+1}/${weekStart.getFullYear()} a ${wEnd.getDate()}/${wEnd.getMonth()+1}/${wEnd.getFullYear()}`;
@@ -3323,7 +3324,7 @@ function buildWeek(){
 }
 function weekPrev(){
   const nd=new Date(weekStart);nd.setDate(nd.getDate()-7);
-  if(nd>=START){weekStart=nd;buildWeek();}
+  if(nd>=sunOf(START)){weekStart=nd;buildWeek();}
 }
 function weekNext(){
   const nd=new Date(weekStart);nd.setDate(nd.getDate()+7);
@@ -3981,7 +3982,7 @@ function initApp(){
   const ry0=document.getElementById('rep-y0');const ry1=document.getElementById('rep-y1');const ry2=document.getElementById('rep-y2');
   if(ry0)ry0.textContent=_y1;if(ry1)ry1.textContent=_y1+1;if(ry2)ry2.textContent=_y1+2;
   // Sync navigation
-  weekStart=new Date(START);
+  weekStart=sunOf(START);
   calYear=START.getFullYear();calMonth=START.getMonth();
   ovFrom=new Date(START);ovTo=new Date(END);
   buildRendaList();renderBills();buildTopCards();buildPeriodRow();buildNotifBanner();buildWeek();buildCal();buildMetas();buildDividas();buildRelatorio();
