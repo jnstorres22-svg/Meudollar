@@ -5172,7 +5172,11 @@ async function aiSend(){
     const { data, error:fnErr } = await _supa.functions.invoke('ia-chat',{
       body:{ system:_aiSystemPrompt(), messages:_aiHistory },
     });
-    if(fnErr) throw new Error(fnErr.message||String(fnErr));
+    if(fnErr){
+      console.error('[AI] Edge function error:', fnErr, JSON.stringify(fnErr));
+      throw new Error(JSON.stringify(fnErr));
+    }
+    console.log('[AI] response:', data);
     const raw = data?.content?.[0]?.text || '';
     _aiHistory.push({role:'assistant', content:raw});
     typingEl.remove();
@@ -5180,6 +5184,7 @@ async function aiSend(){
   } catch(err){
     typingEl.remove();
     _aiMsg('ai',(lang==='en'?'Error: ':'Erro: ')+err.message,'err');
+    console.error('[AI] catch error:', err);
     console.error('[AI]',err);
   } finally{
     sendBtn.disabled=false;
