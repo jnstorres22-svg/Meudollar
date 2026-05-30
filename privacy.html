@@ -109,37 +109,65 @@ footer p{font-size:12px;color:var(--sub)}
   <h2>8. Changes to This Policy</h2>
   <p>We may update this Privacy Policy from time to time. We will notify you of significant changes by email or via an in-app notice. The "Last updated" date at the top of this page reflects the most recent revision.</p>
 
-  <h2>9. AI Assistant: Image and Audio Processing</h2>
+  <h2 id="ia-section">9. AI Assistant — External Data Processing / Assistente IA — Processamento Externo</h2>
   <div class="card">
     <p><strong>EN — What happens when you use the AI Assistant</strong></p>
-    <p>When you send images (receipt photos, screenshots) or audio recordings to the AI Assistant, the following applies:</p>
+    <p>When you send images (receipt photos, screenshots), audio recordings, or spreadsheets to the AI Assistant, the following applies:</p>
     <ul>
       <li>Images are converted to base64 format <strong>on your device</strong> before transmission.</li>
       <li>All data is sent over <strong>HTTPS (TLS)</strong> — never in plain text.</li>
-      <li>The content is processed by the <strong>Claude API (Anthropic)</strong> to extract financial information.</li>
+      <li>The content is processed by the <strong>Claude API (Anthropic Inc.)</strong> to extract financial information.</li>
       <li>Images and audio are <strong>not stored on our servers</strong>. They are discarded immediately after the AI response is returned to your device.</li>
       <li>Excel and CSV files are parsed <strong>entirely in your browser</strong> using SheetJS; only the extracted text content is sent to the AI.</li>
-      <li>Anthropic may process this data in accordance with their own privacy policy: <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener">anthropic.com/privacy</a>.</li>
+      <li>Conversation history is stored <strong>locally in your app session only</strong> — not on TryFreed servers.</li>
+      <li>Anthropic may process this data in accordance with their own privacy policy: <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">anthropic.com/legal/privacy</a>.</li>
     </ul>
-    <p style="margin-bottom:0">We do not use your images, audio, or spreadsheet content for training purposes. All AI interactions are ephemeral.</p>
+    <p>We do not use your images, audio, or spreadsheet content for training purposes. All AI interactions are ephemeral.</p>
+    <p><strong>Consent:</strong> By clicking the ✨ AI Assistant button, you acknowledge that your input may be sent to Anthropic for processing. You may decline at any time simply by not using the AI Assistant feature.</p>
   </div>
   <div class="card" style="margin-top:0">
     <p><strong>PT — O que acontece quando você usa o Assistente IA</strong></p>
-    <p>Quando você envia imagens (fotos de boletos, prints) ou gravações de áudio para o Assistente IA, o seguinte se aplica:</p>
+    <p>Quando você envia imagens (fotos de boletos, prints), gravações de áudio ou planilhas para o Assistente IA, o seguinte se aplica:</p>
     <ul>
       <li>As imagens são convertidas para base64 <strong>no seu dispositivo</strong> antes de serem transmitidas.</li>
       <li>Todos os dados são enviados via <strong>HTTPS (TLS)</strong> — nunca em texto puro.</li>
-      <li>O conteúdo é processado pela <strong>API Claude (Anthropic)</strong> para extrair informações financeiras.</li>
+      <li>O conteúdo é processado pela <strong>API Claude (Anthropic Inc.)</strong> para extrair informações financeiras.</li>
       <li>Imagens e áudio <strong>não são armazenados nos nossos servidores</strong>. São descartados imediatamente após a resposta da IA ser retornada ao seu dispositivo.</li>
       <li>Arquivos Excel e CSV são analisados <strong>inteiramente no seu navegador</strong> usando SheetJS; apenas o conteúdo de texto extraído é enviado para a IA.</li>
-      <li>A Anthropic pode processar esses dados conforme sua própria política de privacidade: <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener">anthropic.com/privacy</a>.</li>
+      <li>O histórico de conversa é armazenado <strong>localmente na sua sessão do app</strong> — não nos servidores do TryFreed.</li>
+      <li>A Anthropic pode processar esses dados conforme sua própria política de privacidade: <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">anthropic.com/legal/privacy</a>.</li>
     </ul>
-    <p style="margin-bottom:0">Não utilizamos suas imagens, áudio ou planilhas para fins de treinamento. Todas as interações com a IA são efêmeras.</p>
+    <p>Não utilizamos suas imagens, áudio ou planilhas para fins de treinamento. Todas as interações com a IA são efêmeras.</p>
+    <p><strong>Consentimento:</strong> Ao clicar no botão ✨ Assistente IA, você reconhece que seus dados podem ser enviados à Anthropic para processamento. Você pode recusar a qualquer momento simplesmente não usando o recurso Assistente IA.</p>
+  </div>
+
+  <h2>10. Your Rights — LGPD / GDPR</h2>
+  <div class="card">
+    <p><strong>EN — Your data rights</strong></p>
+    <ul>
+      <li><strong>Right of Access:</strong> You may request a copy of all personal data we hold about you by emailing <a href="mailto:support@tryfreed.com">support@tryfreed.com</a>.</li>
+      <li><strong>Right to Erasure:</strong> You may delete your account and all associated data at any time from app Settings → ··· → Delete Account. Data is permanently purged within 30 days.</li>
+      <li><strong>Right to Rectification:</strong> You may correct or update any financial entry directly within the app at any time.</li>
+      <li><strong>Right to Portability:</strong> You may export your data in Excel format from Dashboard → Export at any time.</li>
+      <li><strong>Right to Object / Restrict Processing:</strong> Contact us to request restriction of processing or to object to any specific use of your data.</li>
+    </ul>
+    <p>For formal LGPD or GDPR requests, email <a href="mailto:support@tryfreed.com">support@tryfreed.com</a> with subject <strong>"Data Rights Request"</strong> and a copy of a valid identity document. We will respond within 30 days.</p>
+  </div>
+  <div class="card" style="margin-top:0">
+    <p><strong>PT — Seus direitos sobre os dados</strong></p>
+    <ul>
+      <li><strong>Direito de Acesso:</strong> Você pode solicitar uma cópia de todos os dados pessoais que mantemos sobre você enviando e-mail para <a href="mailto:support@tryfreed.com">support@tryfreed.com</a>.</li>
+      <li><strong>Direito de Exclusão:</strong> Você pode deletar sua conta e todos os dados associados a qualquer momento em Configurações → ··· → Deletar Conta. Os dados são excluídos permanentemente em até 30 dias.</li>
+      <li><strong>Direito de Retificação:</strong> Você pode corrigir ou atualizar qualquer registro financeiro diretamente no app a qualquer momento.</li>
+      <li><strong>Direito de Portabilidade:</strong> Você pode exportar seus dados em formato Excel em Dashboard → Exportar a qualquer momento.</li>
+      <li><strong>Direito de Oposição / Restrição:</strong> Entre em contato para solicitar restrição de processamento ou para se opor a qualquer uso específico dos seus dados.</li>
+    </ul>
+    <p>Para pedidos formais de LGPD ou GDPR, envie e-mail para <a href="mailto:support@tryfreed.com">support@tryfreed.com</a> com o assunto <strong>"Pedido de Direitos sobre Dados"</strong> e cópia de documento de identidade válido. Responderemos em até 30 dias.</p>
   </div>
 
   <div class="divider"></div>
 
-  <h2>10. Contact Us</h2>
+  <h2>11. Contact Us</h2>
   <p>If you have any questions or concerns about this Privacy Policy or your data, please contact us:</p>
   <p><strong>TryFreed</strong><br>
   Massachusetts, USA<br>

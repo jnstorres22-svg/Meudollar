@@ -1155,6 +1155,20 @@ body:not(.dark) .tab.on{color:#7c3aed}
 .ai-mic-btn.ai-mic-active{background:#ef4444;color:#fff;border-color:#ef4444;animation:micPulse .8s ease-in-out infinite}
 @keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)}50%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
 .ai-img-preview-bar{display:none;padding:6px 16px 4px;flex-wrap:wrap;gap:8px}
+/* ── AI CONSENT MODAL ──────────────────────────────────────────── */
+#aiConsentModal{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .2s}
+#aiConsentModal.open{opacity:1;pointer-events:all}
+.ai-consent-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 24px 22px;width:100%;max-width:360px;box-shadow:0 16px 48px rgba(0,0,0,.18);transform:translateY(8px) scale(.98);transition:transform .2s}
+#aiConsentModal.open .ai-consent-card{transform:translateY(0) scale(1)}
+.ai-consent-icon{font-size:32px;margin-bottom:12px;text-align:center}
+.ai-consent-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;text-align:center}
+.ai-consent-body{font-size:13px;color:var(--sub);line-height:1.6;margin-bottom:14px;text-align:center}
+.ai-consent-link{display:block;font-size:12px;color:var(--accent);text-align:center;margin-bottom:18px;text-decoration:underline}
+.ai-consent-actions{display:flex;gap:10px}
+.ai-consent-refuse{flex:1;padding:11px;border-radius:10px;border:1px solid var(--border);background:transparent;font-size:14px;font-weight:600;color:var(--sub);cursor:pointer;font-family:inherit;transition:background .12s}
+.ai-consent-refuse:hover{background:var(--panel)}
+.ai-consent-accept{flex:1;padding:11px;border-radius:10px;border:none;background:var(--accent);font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;transition:opacity .12s}
+.ai-consent-accept:hover{opacity:.88}
 .ai-img-preview-bar.show{display:flex}
 .ai-attach-item{position:relative;flex-shrink:0;display:flex;flex-direction:column;align-items:center}
 .ai-img-thumb{width:52px;height:52px;border-radius:8px;object-fit:cover;border:1px solid var(--border);display:block}
@@ -1754,6 +1768,20 @@ body:not(.dark) .tab.on{color:#7c3aed}
     </button>
   </nav>
 
+  <!-- AI CONSENT MODAL -->
+  <div id="aiConsentModal">
+    <div class="ai-consent-card">
+      <div class="ai-consent-icon">✨</div>
+      <div class="ai-consent-title" id="aiConsentTitle">Usar Assistente IA / Use AI Assistant</div>
+      <div class="ai-consent-body" id="aiConsentBody">A IA pode cometer erros. Sempre revise antes de confirmar.<br><br>AI can make mistakes. Always review before confirming.</div>
+      <a href="/privacy.html#ia-section" target="_blank" class="ai-consent-link" id="aiConsentLink">Veja nossa política / See our policy →</a>
+      <div class="ai-consent-actions">
+        <button class="ai-consent-refuse" onclick="aiConsentRefuse()" id="aiConsentRefuse">Recusar / Refuse</button>
+        <button class="ai-consent-accept" onclick="aiConsentAccept()" id="aiConsentAccept">Aceitar / Accept</button>
+      </div>
+    </div>
+  </div>
+
   <!-- AI ASSISTANT -->
   <button class="ai-fab" id="aiFab" onclick="aiToggle()" style="display:none" title="Assistente IA">✨</button>
   <div class="ai-overlay" id="aiOverlay" onclick="aiClose()"></div>
@@ -2223,6 +2251,11 @@ const TRANSLATIONS = {
     notif_denied:'Permissão bloqueada. Ative nas configurações do browser.',
     notif_ios:'No iOS, instale o app na tela inicial para receber notificações.',
     notif_unsupported:'Notificações não suportadas neste browser.',
+    ai_consent_title:'Usar Assistente IA',
+    ai_consent_body:'A IA pode cometer erros ao interpretar valores, datas e categorias. Sempre revise cada ação antes de confirmar. Seus dados podem ser enviados à Anthropic para processamento.',
+    ai_consent_link:'Ver política de privacidade →',
+    ai_consent_refuse:'Recusar',
+    ai_consent_accept:'Aceitar',
   },
   en: {
     tab_renda:'Income', tab_bills:'Expenses', tab_semana:'Week',
@@ -2394,6 +2427,11 @@ const TRANSLATIONS = {
     notif_denied:'Permission denied. Enable it in browser settings.',
     notif_ios:'On iOS, install the app to your home screen to receive notifications.',
     notif_unsupported:'Notifications not supported in this browser.',
+    ai_consent_title:'Use AI Assistant',
+    ai_consent_body:'AI can make mistakes when interpreting values, dates and categories. Always review each action before confirming. Your input may be sent to Anthropic for processing.',
+    ai_consent_link:'View privacy policy →',
+    ai_consent_refuse:'Refuse',
+    ai_consent_accept:'Accept',
   }
 };
 function t(key){ return TRANSLATIONS[lang][key] ?? TRANSLATIONS['pt'][key] ?? key; }
@@ -2530,6 +2568,12 @@ function applyLang(){
   // Subtitle
   const sub=document.querySelector('.sub');
   if(sub&&_user) sub.innerHTML=`${t('starting_balance_label')} ${fmt(initialBalance)}`;
+  // AI Consent Modal
+  const act=document.getElementById('aiConsentTitle');if(act)act.textContent=t('ai_consent_title');
+  const acb=document.getElementById('aiConsentBody');if(acb)acb.textContent=t('ai_consent_body');
+  const acl=document.getElementById('aiConsentLink');if(acl)acl.textContent=t('ai_consent_link');
+  const acr=document.getElementById('aiConsentRefuse');if(acr)acr.textContent=t('ai_consent_refuse');
+  const aca=document.getElementById('aiConsentAccept');if(aca)aca.textContent=t('ai_consent_accept');
 }
 function _qry(sel,attr,val){const el=document.querySelector(sel);if(el)el[attr]=val;}
 
@@ -5359,8 +5403,24 @@ function aiMicToggle(){
     } catch(e){ aiMicStop(); }
   }).catch(() => { aiMicStop(); });
 }
+let _aiConsentGiven = localStorage.getItem('ai_consent_v1') === 'true';
 function aiToggle(){
-  document.getElementById('aiPanel').classList.contains('open') ? aiClose() : aiOpen();
+  if(document.getElementById('aiPanel').classList.contains('open')){
+    aiClose();
+  } else if(_aiConsentGiven){
+    aiOpen();
+  } else {
+    document.getElementById('aiConsentModal').classList.add('open');
+  }
+}
+function aiConsentAccept(){
+  _aiConsentGiven = true;
+  localStorage.setItem('ai_consent_v1','true');
+  document.getElementById('aiConsentModal').classList.remove('open');
+  aiOpen();
+}
+function aiConsentRefuse(){
+  document.getElementById('aiConsentModal').classList.remove('open');
 }
 function aiOpen(){
   document.getElementById('aiOverlay').classList.add('open');
