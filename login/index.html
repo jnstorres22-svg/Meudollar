@@ -1117,6 +1117,10 @@ body:not(.dark) .tab.on{color:#7c3aed}
 .ai-send-btn:hover{opacity:.88}.ai-send-btn:active{transform:scale(.92)}.ai-send-btn:disabled{opacity:.35;cursor:not-allowed}
 .ai-img-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(124,58,237,0.35);background:var(--accent-dim);color:var(--accent);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;font-size:16px;transition:background .15s,border-color .15s}
 .ai-img-btn:hover{background:rgba(124,58,237,0.15);border-color:var(--accent)}
+.ai-mic-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--input-bg);color:var(--sub);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;font-size:16px;transition:all .15s}
+.ai-mic-btn:hover{background:var(--accent-dim);color:var(--accent)}
+.ai-mic-btn.ai-mic-active{background:#ef4444;color:#fff;border-color:#ef4444;animation:micPulse .8s ease-in-out infinite}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)}50%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
 .ai-img-preview-bar{display:none;padding:6px 16px 4px;flex-wrap:wrap;gap:8px}
 .ai-img-preview-bar.show{display:flex}
 .ai-attach-item{position:relative;flex-shrink:0;display:flex;flex-direction:column;align-items:center}
@@ -1656,6 +1660,7 @@ body:not(.dark) .tab.on{color:#7c3aed}
     <div class="ai-inp-row">
       <input type="file" id="aiImgInput" accept="image/*,.xlsx,.xls,.csv" multiple style="display:none" onchange="aiImgSelect(event)">
       <button class="ai-img-btn" id="aiImgBtn" onclick="document.getElementById('aiImgInput').click()" title="Anexar imagem / Attach image" style="width:36px;height:36px;min-width:36px;border-radius:50%;border:2px solid #7c3aed;background:rgba(124,58,237,0.1);color:#7c3aed;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;font-size:18px;padding:0">📎</button>
+      <button class="ai-mic-btn" id="aiMicBtn" onclick="aiMicToggle()" title="Gravar voz / Record voice">🎤</button>
       <textarea class="ai-textarea" id="aiInput" rows="1"
         placeholder="Descreva sua renda, despesa, meta ou dívida..."
         onkeydown="aiKeyDown(event)"
@@ -4065,6 +4070,7 @@ function initApp(){
   initNotifications();
   // Show AI FAB
   const fab=document.getElementById('aiFab');if(fab)fab.style.display='flex';
+  aiMicInit();
   // Sync AI header language
   const hdr=document.getElementById('aiHdrTitle');if(hdr)hdr.textContent=lang==='en'?'Financial Assistant':'Assistente financeiro';
   const ita=document.getElementById('aiInput');if(ita)ita.placeholder=lang==='en'?'Describe your income, expense, goal or debt...':'Descreva sua renda, despesa, meta ou dívida...';
@@ -5150,8 +5156,53 @@ document.getElementById('debtPayModal').addEventListener('click',e=>{if(e.target
 // ── AI FINANCIAL ASSISTANT ────────────────────────────────────────
 let _aiHistory = [];
 let _aiImgList = []; // [{ id, type:'image'|'sheet', base64?, mediaType?, dataUrl?, text?, name }]
+let _aiMicRecording = false;
+let _aiMicRecognition = null;
 let _aiWelcomed = false;
 
+function aiMicInit(){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = document.getElementById('aiMicBtn');
+  if(!SpeechRecognition || !btn){ if(btn) btn.style.display='none'; return; }
+  _aiMicRecognition = new SpeechRecognition();
+  _aiMicRecognition.continuous = false;
+  _aiMicRecognition.interimResults = true;
+  _aiMicRecognition.onresult = e => {
+    const inp = document.getElementById('aiInput');
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    inp.value = transcript;
+    inp.style.height = ''; inp.style.height = Math.min(inp.scrollHeight, 90) + 'px';
+    inp.style.fontStyle = e.results[e.results.length-1].isFinal ? 'normal' : 'italic';
+    inp.style.opacity = e.results[e.results.length-1].isFinal ? '1' : '0.6';
+  };
+  _aiMicRecognition.onend = () => {
+    _aiMicRecording = false;
+    btn.classList.remove('ai-mic-active');
+    const inp = document.getElementById('aiInput');
+    inp.style.fontStyle = 'normal'; inp.style.opacity = '1';
+    inp.focus();
+  };
+  _aiMicRecognition.onerror = () => {
+    _aiMicRecording = false;
+    btn.classList.remove('ai-mic-active');
+    const inp = document.getElementById('aiInput');
+    inp.style.fontStyle = 'normal'; inp.style.opacity = '1';
+  };
+}
+function aiMicToggle(){
+  if(!_aiMicRecognition) return;
+  const btn = document.getElementById('aiMicBtn');
+  if(_aiMicRecording){
+    _aiMicRecognition.stop();
+  } else {
+    _aiMicRecognition.lang = lang === 'en' ? 'en-US' : 'pt-BR';
+    try{
+      _aiMicRecognition.start();
+      _aiMicRecording = true;
+      btn.classList.add('ai-mic-active');
+    } catch(e){ /* já estava rodando */ }
+  }
+}
 function aiToggle(){
   document.getElementById('aiPanel').classList.contains('open') ? aiClose() : aiOpen();
 }
