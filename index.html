@@ -284,6 +284,29 @@ footer p{font-size:12px;color:var(--sub)}
 .feat-card:hover .feat-icon{transform:scale(1.12) rotate(-4deg);transition:transform .25s}
 .feat-icon{transition:transform .25s}
 
+/* ── AI FEATURE CARD ──────────────────── */
+.feat-ai-card{
+  background:linear-gradient(135deg,#5b21b6 0%,#7c3aed 52%,#2563eb 100%);
+  border-radius:20px;padding:40px 36px;
+  max-width:900px;margin:32px auto 0;
+  position:relative;overflow:hidden;
+}
+.feat-ai-card::after{
+  content:'';position:absolute;top:-80px;right:-80px;
+  width:320px;height:320px;border-radius:50%;
+  background:rgba(255,255,255,.05);pointer-events:none;
+}
+.feat-ai-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:18px;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(255,255,255,.2)}
+.feat-ai-title{font-size:clamp(20px,2.8vw,26px);font-weight:800;color:#fff;letter-spacing:-.4px;margin-bottom:10px;line-height:1.2}
+.feat-ai-desc{font-size:15px;color:rgba(255,255,255,.8);line-height:1.6;margin-bottom:28px;max-width:540px}
+.feat-ai-subs{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px;position:relative;z-index:1}
+.feat-ai-sub{display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,.1);border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,.12);transition:background .15s}
+.feat-ai-sub:hover{background:rgba(255,255,255,.18)}
+.feat-ai-sub-icon{font-size:22px;flex-shrink:0;line-height:1.2}
+.feat-ai-sub-text{font-size:13px;color:rgba(255,255,255,.9);font-weight:500;line-height:1.45}
+@media(max-width:600px){.feat-ai-card{padding:28px 22px}.feat-ai-subs{grid-template-columns:1fr 1fr}}
+@media(max-width:380px){.feat-ai-subs{grid-template-columns:1fr}}
+
 /* ── ANNOUNCE BAR ─────────────────────── */
 .announce-bar{background:linear-gradient(90deg,#5b21b6,#7c3aed,#9d5cf6);color:#fff;text-align:center;padding:0 48px;height:64px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;position:relative;z-index:300;letter-spacing:.01em}
 .announce-bar a{color:#fff;text-underline-offset:3px}
@@ -703,6 +726,30 @@ footer p{font-size:12px;color:var(--sub)}
     <div class="feat-card"><div class="feat-icon">☁️</div><div class="feat-title" id="f5-title">Cloud Sync</div><p class="feat-desc" id="f5-desc">Add a bill on your phone, check it on your computer. Your data follows you everywhere.</p></div>
     <div class="feat-card"><div class="feat-icon">🔐</div><div class="feat-title" id="f6-title">PIN Security</div><p class="feat-desc" id="f6-desc">Keep your finances private with a 4-digit PIN. Nobody opens the app without it.</p></div>
   </div>
+
+  <div class="feat-ai-card">
+    <div class="feat-ai-tag">✨ AI Assistant</div>
+    <div class="feat-ai-title" id="feat-ai-title">AI Assistant that understands you</div>
+    <p class="feat-ai-desc" id="feat-ai-desc">Speak, upload a receipt photo, or paste a spreadsheet. AI creates everything automatically.</p>
+    <div class="feat-ai-subs">
+      <div class="feat-ai-sub">
+        <span class="feat-ai-sub-icon">🎤</span>
+        <span class="feat-ai-sub-text" id="feat-ai-f1">Record your voice → auto transcription</span>
+      </div>
+      <div class="feat-ai-sub">
+        <span class="feat-ai-sub-icon">📸</span>
+        <span class="feat-ai-sub-text" id="feat-ai-f2">Receipt photo → extracts amounts</span>
+      </div>
+      <div class="feat-ai-sub">
+        <span class="feat-ai-sub-icon">📊</span>
+        <span class="feat-ai-sub-text" id="feat-ai-f3">Excel spreadsheet → imports data</span>
+      </div>
+      <div class="feat-ai-sub">
+        <span class="feat-ai-sub-icon">💬</span>
+        <span class="feat-ai-sub-text" id="feat-ai-f4">Natural language → creates entries</span>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- CALCULATOR -->
@@ -1009,6 +1056,12 @@ const TR={
     'f4-title':'Debt Manager','f4-desc':'See every debt, its interest rate, minimum payment and when you\'ll pay it off — all in one place.',
     'f5-title':'Cloud Sync','f5-desc':'Add a bill on your phone, check it on your computer. Your data follows you everywhere.',
     'f6-title':'PIN Security','f6-desc':'Keep your finances private with a 4-digit PIN. Nobody opens the app without it.',
+    'feat-ai-title':'AI Assistant that understands you',
+    'feat-ai-desc':'Speak, upload a receipt photo, or paste a spreadsheet. AI creates everything automatically.',
+    'feat-ai-f1':'Record your voice → auto transcription',
+    'feat-ai-f2':'Receipt photo → extracts amounts',
+    'feat-ai-f3':'Excel spreadsheet → imports data',
+    'feat-ai-f4':'Natural language → creates entries',
     'how-label':'How it works','how-title':'Up and running in 2 minutes','how-sub':'No spreadsheets. No complicated setup. Just sign in and start.',
     'step1-title':'Create your account','step1-desc':'Sign up with your email. Your data is private, encrypted and secured from day one.',
     'step2-title':'Add your income & bills','step2-desc':'Tell TryFreed how much you earn and what you pay. It builds your full financial picture automatically.',
@@ -1075,6 +1128,12 @@ const TR={
     'f4-title':'Gerenciador de dívidas','f4-desc':'Veja cada dívida, seus juros, pagamento mínimo e quando você vai quitar — tudo em um lugar.',
     'f5-title':'Sincronização em nuvem','f5-desc':'Adicione uma conta no celular, veja no computador. Seus dados te seguem em todo lugar.',
     'f6-title':'Segurança com PIN','f6-desc':'Mantenha suas finanças privadas com um PIN de 4 dígitos. Ninguém abre o app sem ele.',
+    'feat-ai-title':'Assistente IA que entende você',
+    'feat-ai-desc':'Fale, envie foto de boleto ou cole planilha. A IA cria tudo automaticamente.',
+    'feat-ai-f1':'Grave sua voz → transcrição automática',
+    'feat-ai-f2':'Foto de conta/boleto → extrai valores',
+    'feat-ai-f3':'Planilha Excel → importa dados',
+    'feat-ai-f4':'Linguagem natural → cria registros',
     'how-label':'Como funciona','how-title':'Pronto em 2 minutos','how-sub':'Sem planilhas. Sem configuração complicada. Só entre e comece.',
     'step1-title':'Crie sua conta','step1-desc':'Cadastre-se com seu email. Seus dados são privados, criptografados e seguros desde o primeiro dia.',
     'step2-title':'Adicione sua renda e contas','step2-desc':'Diga ao TryFreed quanto você ganha e o que você paga. Ele monta seu quadro financeiro automaticamente.',
