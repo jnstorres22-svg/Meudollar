@@ -1129,15 +1129,15 @@ body:not(.dark) .tab.on{color:#7c3aed}
   position:fixed;bottom:72px;right:16px;width:46px;height:46px;
   border-radius:50%;background:linear-gradient(135deg,#7c3aed,#b47bff);
   border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  font-size:20px;z-index:200;box-shadow:0 4px 18px rgba(124,58,237,0.45);
+  font-size:20px;z-index:1005;box-shadow:0 4px 18px rgba(124,58,237,0.45);
   transition:transform .15s,box-shadow .15s;
 }
 .ai-fab:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(124,58,237,0.55)}
 .ai-fab:active{transform:scale(.95)}
-.ai-overlay{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,0.45);backdrop-filter:blur(2px)}
+.ai-overlay{display:none;position:fixed;inset:0;z-index:1010;background:rgba(0,0,0,0.45);backdrop-filter:blur(2px)}
 .ai-overlay.open{display:block}
 .ai-panel{
-  position:fixed;bottom:0;left:0;right:0;z-index:801;background:var(--card);
+  position:fixed;bottom:0;left:0;right:0;z-index:1011;background:var(--card);
   border-radius:18px 18px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,0.28);
   display:flex;flex-direction:column;max-height:72vh;
   transform:translateY(100%);transition:transform .32s cubic-bezier(0.34,1.2,0.64,1);
@@ -1702,8 +1702,8 @@ body:not(.dark) .tab.on{color:#7c3aed}
 
     <div class="dr-footer">
       <div class="dr-footer-links">
-        <a href="#" class="dr-footer-link">Privacidade</a>
-        <a href="#" class="dr-footer-link">Termos</a>
+        <a href="/privacy.html" class="dr-footer-link" id="drawerFooterPrivacy">Privacidade</a>
+        <a href="/terms.html" class="dr-footer-link" id="drawerFooterTerms">Termos</a>
       </div>
       <span class="dr-footer-ver">TryFreed v1.0</span>
     </div>
@@ -2096,7 +2096,7 @@ const TRANSLATIONS = {
     bn_renda:'Renda', bn_bills:'Despesas', bn_semana:'Semana',
     bn_cal:'Calendário', bn_metas:'Metas', bn_relatorio:'Relatório',
     // Header / drawer
-    theme_light:'Light', theme_dark:'Dark',
+    theme_light:'Claro', theme_dark:'Escuro',
     drawer_appearance:'Aparência / Appearance',
     drawer_initial_balance:'Saldo inicial / Initial balance',
     drawer_ib_hint:'Quanto você já tem guardado hoje?',
@@ -2280,6 +2280,8 @@ const TRANSLATIONS = {
     ai_consent_link:'Ver política de privacidade →',
     ai_consent_refuse:'Recusar',
     ai_consent_accept:'Aceitar',
+    drawer_footer_privacy:'Privacidade',
+    drawer_footer_terms:'Termos',
   },
   en: {
     tab_renda:'Income', tab_bills:'Expenses', tab_semana:'Week',
@@ -2459,6 +2461,8 @@ const TRANSLATIONS = {
     ai_consent_link:'View privacy policy →',
     ai_consent_refuse:'Refuse',
     ai_consent_accept:'Accept',
+    drawer_footer_privacy:'Privacy',
+    drawer_footer_terms:'Terms',
   }
 };
 function t(key){ return TRANSLATIONS[lang][key] ?? TRANSLATIONS['pt'][key] ?? key; }
@@ -2468,11 +2472,12 @@ function setLang(l){
   document.getElementById('htmlRoot').lang = l==='en'?'en':'pt-BR';
   applyLang();
   rebuild();
+  obApplyLang();
 }
 function applyLang(){
   // ── Home screen ──
   const homeTagline=document.getElementById('homeTagline');
-  if(homeTagline) homeTagline.textContent='Your money. Your control.';
+  if(homeTagline) homeTagline.textContent=t('home_tagline');
   const homeEnter=document.getElementById('homeEnterLabel');
   if(homeEnter) homeEnter.textContent=lang==='en'?'Enter':'Entrar';
 
@@ -2595,6 +2600,9 @@ function applyLang(){
   // Subtitle
   const sub=document.querySelector('.sub');
   if(sub&&_user) sub.innerHTML=`${t('starting_balance_label')} ${fmt(initialBalance)}`;
+  // Drawer footer links
+  const dfp=document.getElementById('drawerFooterPrivacy');if(dfp)dfp.textContent=t('drawer_footer_privacy');
+  const dft=document.getElementById('drawerFooterTerms');if(dft)dft.textContent=t('drawer_footer_terms');
   // AI Consent Modal
   const act=document.getElementById('aiConsentTitle');if(act)act.textContent=t('ai_consent_title');
   const acb=document.getElementById('aiConsentBody');if(acb)acb.textContent=t('ai_consent_body');
@@ -2774,6 +2782,10 @@ async function handleLogout(){
   await _supa.auth.signOut();
   _user=null;rendas=[];bills=[];metas=[];dividas=[];initialBalance=0;
   document.getElementById('userEmail').textContent='';
+  // Clear non-user-scoped keys so next user on this device gets a clean state
+  localStorage.removeItem('ai_consent_v1');
+  localStorage.removeItem('notifEnabled');
+  _aiConsentGiven=false;
   showHome();
 }
 
@@ -4567,7 +4579,7 @@ function tourNext(){
 
 function tourSkip(){
   document.getElementById('tourOverlay').style.display='none';
-  document.getElementById('tourHighlight').style.display='block';
+  document.getElementById('tourHighlight').style.display='none';
   showTab('renda');
   if(_user) localStorage.setItem('tour_done_v2_'+_user.id,'1');
 }
@@ -4787,6 +4799,7 @@ async function pinSetupSubmit(){
 
 function cancelPinSetup(){
   document.getElementById('pinSetupScreen').style.display='none';
+  if(_user) showHome(); else showLogin();
 }
 
 async function removePIN(){
@@ -4891,7 +4904,7 @@ function exportExcel(){
     const metasHeader=isEN
       ?['Name','Target Amount','Target Date','Description','Done']
       :['Nome','Valor Alvo','Data Alvo','Descrição','Concluída'];
-    const metasData=metas.map(m=>[m.name,m.val,`${m.day}/${m.month+1}/${m.year}`,m.desc||'',m.done?'Sim':'Não']);
+    const metasData=metas.map(m=>[m.name,m.val,`${m.day}/${m.month+1}/${m.year}`,m.desc||'',m.done?(isEN?'Yes':'Sim'):(isEN?'No':'Não')]);
     const wsM=XLSX.utils.aoa_to_sheet([metasHeader,...metasData]);
     wsM['!cols']=[{wch:24},{wch:14},{wch:14},{wch:24},{wch:10}];
     XLSX.utils.book_append_sheet(wb,wsM,isEN?'Goals':'Metas');
@@ -5416,12 +5429,16 @@ function aiMicInit(){
   document.addEventListener('visibilitychange', ()=>{ if(document.hidden && _aiMicRecording) aiMicStop(); });
   window.addEventListener('pagehide', ()=>{ if(_aiMicRecording) aiMicStop(); });
 }
+let _aiMicPending = false;
 function aiMicToggle(){
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if(!SR || !navigator.mediaDevices) return;
   const btn = document.getElementById('aiMicBtn');
   if(_aiMicRecording){ aiMicStop(); return; }
+  if(_aiMicPending) return;
+  _aiMicPending = true;
   navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+  _aiMicPending = false;
     window._aiMicStream = stream;
     const rec = new SR();
     _aiMicRecognition = rec;
@@ -5447,7 +5464,7 @@ function aiMicToggle(){
       _aiMicRecording = true;
       if(btn) btn.classList.add('ai-mic-active');
     } catch(e){ aiMicStop(); }
-  }).catch(() => { aiMicStop(); });
+  }).catch(() => { _aiMicPending = false; aiMicStop(); });
 }
 let _aiConsentGiven = localStorage.getItem('ai_consent_v1') === 'true';
 function aiToggle(){
@@ -5591,6 +5608,8 @@ async function aiSend(){
   const sheetNames = listSnapshot.filter(x => x.type === 'sheet').map(x => x.name);
   _aiMsg('user', finalText, '', previewUrls, sheetNames);
   _aiHistory.push({role:'user', content: userContent});
+  // Keep at most 20 messages (10 exchanges) to avoid hitting context/size limits
+  if(_aiHistory.length > 20) _aiHistory = _aiHistory.slice(_aiHistory.length - 20);
   _aiImgList = [];
   _aiRenderPreviewBar();
   const sendBtn = document.getElementById('aiSendBtn');
