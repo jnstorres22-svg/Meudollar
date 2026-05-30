@@ -708,46 +708,70 @@ body.dark .confirm-delete{background:#dc2626}
 
 /* Side drawer */
 #drawer{
-  position:fixed;top:0;right:-280px;width:280px;height:100%;
-  background:var(--card);border-left:0.5px solid var(--border);
-  z-index:998;transition:right .25s ease;padding:0;
-  box-shadow:-8px 0 32px rgba(0,0,0,.15);
+  position:fixed;top:0;right:-300px;width:300px;height:100%;
+  background:var(--bg);z-index:998;
+  transition:right .28s cubic-bezier(.32,1,.64,1);
+  box-shadow:-12px 0 40px rgba(0,0,0,.2);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
 }
 #drawer.open{right:0}
 #drawerOverlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.4);
-  z-index:997;display:none;backdrop-filter:blur(2px);
+  position:fixed;inset:0;background:rgba(0,0,0,.45);
+  z-index:997;display:none;backdrop-filter:blur(3px);
 }
 #drawerOverlay.open{display:block}
-.drawer-header{
-  padding:1.2rem 1.2rem .8rem;
-  border-bottom:0.5px solid var(--border);
+.dr-head{
   display:flex;align-items:center;justify-content:space-between;
+  padding:22px 18px 16px;
+  background:var(--card);border-bottom:0.5px solid var(--border);
+  position:sticky;top:0;z-index:1;
 }
-.drawer-logo{
-  font-size:18px;font-weight:800;letter-spacing:-0.5px;
-  background:linear-gradient(135deg,#7c3aed,#b47bff);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+.dr-greeting{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.4px;line-height:1.1}
+.dr-email-sub{font-size:11px;color:var(--sub);margin-top:3px;word-break:break-all}
+.dr-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--sub);padding:6px;border-radius:8px;line-height:1;flex-shrink:0}
+.dr-close:hover{background:var(--panel)}
+.dr-body{padding:14px 12px 32px;display:flex;flex-direction:column;gap:10px}
+.dr-card{border-radius:14px;background:var(--card);border:1px solid var(--border);overflow:hidden}
+.dr-card-ai{background:var(--accent);border-color:transparent}
+.dr-card-ai .dr-item:hover{background:rgba(255,255,255,.08)!important}
+.dr-card-ai .dr-icon{background:rgba(255,255,255,.2)!important;color:#fff!important}
+.dr-card-ai .dr-label{color:#fff!important}
+.dr-card-ai .dr-chev{color:rgba(255,255,255,.55)!important}
+.dr-item{
+  width:100%;display:flex;align-items:center;gap:12px;
+  padding:13px 16px;background:transparent;border:none;
+  cursor:pointer;text-align:left;font-family:inherit;
+  transition:background .12s;
 }
-.drawer-close{
-  background:none;border:none;font-size:20px;cursor:pointer;
-  color:var(--sub);padding:4px;border-radius:6px;
+.dr-item:hover{background:var(--panel)}
+.dr-icon{
+  width:36px;height:36px;border-radius:10px;background:var(--accent-dim);
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;flex-shrink:0;
 }
-.drawer-close:hover{background:var(--panel)}
-.drawer-user{
-  padding:.8rem 1.2rem;border-bottom:0.5px solid var(--border);
-}
-.drawer-email{font-size:12px;color:var(--sub);word-break:break-all;margin-bottom:8px}
-.drawer-logout{
-  width:100%;padding:8px;border-radius:8px;
-  border:0.5px solid var(--border);background:transparent;
-  color:var(--red);font-size:13px;cursor:pointer;
-}
-.drawer-logout:hover{background:var(--cal-exp-bg)}
-.drawer-section{padding:.8rem 1.2rem;border-bottom:0.5px solid var(--border)}
+.dr-label{flex:1;font-size:14px;font-weight:500;color:var(--text);line-height:1}
+.dr-chev{font-size:18px;color:var(--sub);line-height:1;transition:transform .18s;flex-shrink:0}
+.dr-chev.open{transform:rotate(90deg)}
+.dr-sep{height:.5px;background:var(--border);margin:0 16px}
+.dr-lang-row{display:flex;gap:5px}
+.dr-lang-btn{padding:4px 10px;border-radius:7px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:12px;font-weight:600;color:var(--sub);font-family:inherit;transition:all .12s}
+.dr-expand{max-height:0;overflow:hidden;transition:max-height .22s ease}
+.dr-expand.open{max-height:200px}
+.dr-expand-inner{padding:2px 16px 14px}
+.dr-expand-row{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.dr-input{flex:1;font-size:14px;padding:9px 11px;border-radius:8px;border:.5px solid var(--input-border);background:var(--input-bg);color:var(--text);font-family:inherit;outline:none;min-width:0}
+.dr-save-btn{padding:9px 14px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0}
+.dr-hint-text{font-size:11px;color:var(--sub);line-height:1.4}
+.dr-pin-section{padding:4px 0}
+.dr-footer{text-align:center;font-size:10px;color:var(--sub);padding-top:2px}
+/* Legacy classes kept for JS compat */
 .drawer-section-label{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.drawer-theme{display:flex;align-items:center;justify-content:space-between}
-.drawer-theme span{font-size:13px;color:var(--text)}
+.drawer-logout{
+  width:100%;padding:13px;border-radius:14px;
+  border:1.5px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);
+  color:#ef4444;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;
+}
+.drawer-logout:hover{background:rgba(239,68,68,.12)}
 
 /* Day edit bottom sheet */
 #dayEditModal{position:fixed;inset:0;z-index:1100;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(3px)}
@@ -1506,72 +1530,141 @@ body:not(.dark) .tab.on{color:#7c3aed}
 <!-- SIDE DRAWER -->
 <div id="drawerOverlay" onclick="closeDrawer()"></div>
 <div id="drawer">
-  <div class="drawer-header">
-    <div class="drawer-logo">TryFreed</div>
-    <button class="drawer-close" onclick="closeDrawer()">✕</button>
-  </div>
-  <div class="drawer-user">
-    <div class="drawer-email" id="drawerEmail"></div>
-  </div>
-  <div class="drawer-section">
-    <div class="drawer-section-label" data-i18n="drawer_initial_balance">Saldo inicial / Initial balance</div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <input id="drawerIB" type="number" placeholder="0" inputmode="decimal" style="flex:1;font-size:14px;padding:8px 10px;border-radius:8px;border:0.5px solid var(--input-border);background:var(--input-bg);color:var(--text)">
-      <button onclick="saveInitialBalance()" style="padding:8px 14px;border-radius:8px;border:none;background:#185FA5;color:#fff;font-size:13px;cursor:pointer">✓</button>
+
+  <!-- Sticky header -->
+  <div class="dr-head">
+    <div>
+      <div class="dr-greeting" id="drawerGreeting">Olá!</div>
+      <div class="dr-email-sub" id="drawerEmail"></div>
     </div>
-    <div style="font-size:11px;color:var(--sub);margin-top:6px" id="drawerIBhint" data-i18n="drawer_ib_hint">Quanto você já tem guardado hoje?</div>
+    <button class="dr-close" onclick="closeDrawer()">✕</button>
   </div>
-  <div class="drawer-section">
-    <div class="drawer-section-label" id="drawerStartDateLabel">Data de início / Start date</div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <input id="drawerStartDate" type="date" min="2020-01-01" style="flex:1;font-size:14px;padding:8px 10px;border-radius:8px;border:0.5px solid var(--input-border);background:var(--input-bg);color:var(--text);color-scheme:light dark">
-      <button onclick="saveDrawerStartDate()" style="padding:8px 14px;border-radius:8px;border:none;background:#185FA5;color:#fff;font-size:13px;cursor:pointer">✓</button>
-    </div>
-    <div style="font-size:11px;color:var(--sub);margin-top:6px" id="drawerStartDateHint">Define o início do histórico de navegação.</div>
-  </div>
-  <div class="drawer-section">
-    <div class="drawer-section-label" data-i18n="drawer_appearance">Aparência / Appearance</div>
-    <div class="drawer-theme">
-      <span id="drawerThemeLabel">Light mode</span>
-      <div class="theme-toggle" onclick="toggleTheme()" style="margin:0">
-        <div class="toggle-track"><div class="toggle-dot"></div></div>
+
+  <!-- Hidden spans: applyLang() uses querySelectorAll('.drawer-section-label')[0/1/2] by index -->
+  <span class="drawer-section-label" style="display:none"></span>
+  <span class="drawer-section-label" style="display:none"></span>
+  <span class="drawer-section-label" style="display:none"></span>
+
+  <div class="dr-body">
+
+    <!-- Card: Saldo & Data de início -->
+    <div class="dr-card">
+      <div class="dr-item" onclick="drToggle('drIBExpand',this)">
+        <div class="dr-icon">💰</div>
+        <span class="dr-label" data-i18n="drawer_initial_balance">Saldo inicial</span>
+        <span class="dr-chev">›</span>
+      </div>
+      <div class="dr-expand" id="drIBExpand">
+        <div class="dr-expand-inner">
+          <div class="dr-expand-row">
+            <input id="drawerIB" type="number" placeholder="0" inputmode="decimal" class="dr-input">
+            <button onclick="saveInitialBalance()" class="dr-save-btn">✓</button>
+          </div>
+          <div class="dr-hint-text" id="drawerIBhint" data-i18n="drawer_ib_hint">Quanto você já tem guardado hoje?</div>
+        </div>
+      </div>
+
+      <div class="dr-sep"></div>
+
+      <div class="dr-item" onclick="drToggle('drSDExpand',this)">
+        <div class="dr-icon">📅</div>
+        <span class="dr-label" id="drawerStartDateLabel">Data de início</span>
+        <span class="dr-chev">›</span>
+      </div>
+      <div class="dr-expand" id="drSDExpand">
+        <div class="dr-expand-inner">
+          <div class="dr-expand-row">
+            <input id="drawerStartDate" type="date" min="2020-01-01" class="dr-input" style="color-scheme:light dark">
+            <button onclick="saveDrawerStartDate()" class="dr-save-btn">✓</button>
+          </div>
+          <div class="dr-hint-text" id="drawerStartDateHint">Define o início do histórico.</div>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="drawer-section">
-    <div class="drawer-section-label" data-i18n="drawer_lang">Idioma / Language</div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <button id="langBtnPT" onclick="setLang('pt')" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:13px;color:var(--sub);font-weight:700;color:var(--blue)">🇧🇷 PT</button>
-      <button id="langBtnEN" onclick="setLang('en')" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:13px;color:var(--sub)">🇺🇸 EN</button>
-    </div>
-  </div>
-  <div class="drawer-section" id="drawerPinSection">
-    <!-- populated by updateDrawerPinSection() -->
-  </div>
-  <div class="drawer-section">
-    <button onclick="exportExcel();closeDrawer();" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerExportBtn">Exportar Excel</button>
-  </div>
-  <div class="drawer-section">
-    <button onclick="Object.keys(localStorage).forEach(k=>{if(k.startsWith('ob_done_'))localStorage.removeItem(k)});location.reload();" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)">Ver introdução novamente</button>
-  </div>
-  <div class="drawer-section">
-    <button onclick="tourReset()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerTourBtn">Ver tour novamente</button>
-  </div>
-  <div class="drawer-section">
-    <button onclick="openChangePassModal()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--sub)" id="drawerChangePassBtn">Mudar senha / Change password</button>
-  </div>
-  <div class="drawer-section" id="drawerNotifSection">
-    <div class="drawer-section-label" id="drawerNotifSectionLabel">Notificações / Notifications</div>
-    <div class="drawer-theme">
-      <span id="drawerNotifLabel">Lembretes desativados</span>
-      <div class="theme-toggle" onclick="toggleNotifications()" style="margin:0">
-        <div id="notifToggleTrack" class="toggle-track"><div class="toggle-dot"></div></div>
+
+    <!-- Card: Aparência & Idioma -->
+    <div class="dr-card">
+      <div class="dr-item">
+        <div class="dr-icon">🌙</div>
+        <span class="dr-label" id="drawerThemeLabel">Light mode</span>
+        <div class="theme-toggle" onclick="toggleTheme()" style="margin:0">
+          <div class="toggle-track"><div class="toggle-dot"></div></div>
+        </div>
+      </div>
+      <div class="dr-sep"></div>
+      <div class="dr-item" style="flex-wrap:wrap">
+        <div class="dr-icon">🌐</div>
+        <span class="dr-label" data-i18n="drawer_lang">Idioma</span>
+        <div class="dr-lang-row">
+          <button id="langBtnPT" onclick="setLang('pt')" class="dr-lang-btn" style="color:var(--blue);font-weight:700">🇧🇷 PT</button>
+          <button id="langBtnEN" onclick="setLang('en')" class="dr-lang-btn">🇺🇸 EN</button>
+        </div>
       </div>
     </div>
-    <div id="drawerNotifHint" style="font-size:11px;color:var(--sub);margin-top:6px;line-height:1.4"></div>
-  </div>
-  <div class="drawer-section">
+
+    <!-- Card: Segurança -->
+    <div class="dr-card">
+      <div id="drawerPinSection" class="dr-pin-section">
+        <!-- populated by updateDrawerPinSection() -->
+      </div>
+      <div class="dr-sep"></div>
+      <div class="dr-item" onclick="openChangePassModal()">
+        <div class="dr-icon">🔑</div>
+        <span class="dr-label" id="drawerChangePassBtn">Mudar senha</span>
+        <span class="dr-chev">›</span>
+      </div>
+    </div>
+
+    <!-- Card: Notificações -->
+    <div class="dr-card" id="drawerNotifSection">
+      <div class="dr-item">
+        <div class="dr-icon">🔔</div>
+        <span class="dr-label" id="drawerNotifSectionLabel">Notificações</span>
+        <div class="theme-toggle" onclick="toggleNotifications()" style="margin:0">
+          <div id="notifToggleTrack" class="toggle-track"><div class="toggle-dot"></div></div>
+        </div>
+      </div>
+      <div style="padding:0 16px 12px">
+        <span id="drawerNotifLabel" class="dr-hint-text"></span>
+        <div id="drawerNotifHint" class="dr-hint-text" style="margin-top:4px"></div>
+      </div>
+    </div>
+
+    <!-- Card: Assistente IA -->
+    <div class="dr-card dr-card-ai">
+      <div class="dr-item" onclick="aiOpen();closeDrawer()">
+        <div class="dr-icon">✨</div>
+        <span class="dr-label">Assistente IA</span>
+        <span class="dr-chev">›</span>
+      </div>
+    </div>
+
+    <!-- Card: Ferramentas -->
+    <div class="dr-card">
+      <div class="dr-item" onclick="exportExcel();closeDrawer()">
+        <div class="dr-icon">📊</div>
+        <span class="dr-label" id="drawerExportBtn">Exportar Excel</span>
+        <span class="dr-chev">›</span>
+      </div>
+      <div class="dr-sep"></div>
+      <div class="dr-item" onclick="tourReset()">
+        <div class="dr-icon">🗺️</div>
+        <span class="dr-label" id="drawerTourBtn">Ver tour</span>
+        <span class="dr-chev">›</span>
+      </div>
+      <div class="dr-sep"></div>
+      <div class="dr-item" onclick="Object.keys(localStorage).forEach(k=>{if(k.startsWith('ob_done_'))localStorage.removeItem(k)});location.reload()">
+        <div class="dr-icon">🎯</div>
+        <span class="dr-label">Ver introdução</span>
+        <span class="dr-chev">›</span>
+      </div>
+    </div>
+
+    <!-- Logout -->
     <button class="drawer-logout" onclick="handleLogout()">Sair / Sign out</button>
+
+    <div class="dr-footer">TryFreed</div>
+
   </div>
 </div>
 
@@ -4010,6 +4103,21 @@ function showTab(tabId){
 }
 
 // DRAWER
+function drToggle(secId,btn){
+  const sec=document.getElementById(secId);
+  if(!sec) return;
+  const wasOpen=sec.classList.contains('open');
+  const card=btn.closest('.dr-card');
+  if(card){
+    card.querySelectorAll('.dr-expand.open').forEach(el=>el.classList.remove('open'));
+    card.querySelectorAll('.dr-chev.open').forEach(el=>el.classList.remove('open'));
+  }
+  if(!wasOpen){
+    sec.classList.add('open');
+    const chev=btn.querySelector('.dr-chev');
+    if(chev) chev.classList.add('open');
+  }
+}
 function openDrawer(){
   document.getElementById('drawer').classList.add('open');
   document.getElementById('drawerOverlay').classList.add('open');
@@ -4021,6 +4129,8 @@ function openDrawer(){
     sd.value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     sd.max=`${_today.getFullYear()}-${String(_today.getMonth()+1).padStart(2,'0')}-${String(_today.getDate()).padStart(2,'0')}`;
   }
+  const dg=document.getElementById('drawerGreeting');
+  if(dg&&_user) dg.textContent=(lang==='en'?'Hi, ':'Olá, ')+((_user.email||'').split('@')[0]||'')+'!';
 }
 function closeDrawer(){
   document.getElementById('drawer').classList.remove('open');
@@ -4594,13 +4704,27 @@ function updateDrawerPinSection(){
   const sec=document.getElementById('drawerPinSection');
   if(!sec) return;
   const hasPin=!!getStoredPin(), isEN=lang==='en';
-  sec.innerHTML=`
-    <div class="drawer-section-label">${isEN?'Quick Access PIN':'PIN de acesso rápido'}</div>
-    ${hasPin
-      ?`<button onclick="startPinSetup('change')" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--sub);margin-bottom:6px">${isEN?'Change PIN':'Alterar PIN'}</button>
-        <button onclick="removePIN()" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--red)">${isEN?'Remove PIN':'Remover PIN'}</button>`
-      :`<button onclick="startPinSetup('create')" style="width:100%;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--blue)">${isEN?'Create PIN':'Criar PIN'}</button>`
-    }`;
+  const pinLabel=isEN?'Quick Access PIN':'PIN de acesso rápido';
+  if(hasPin){
+    sec.innerHTML=`
+      <div class="dr-item" onclick="startPinSetup('change')">
+        <div class="dr-icon">🔐</div>
+        <span class="dr-label">${pinLabel}</span>
+        <span style="font-size:11px;color:var(--sub)">${isEN?'Change':'Alterar'}</span>
+      </div>
+      <div class="dr-sep"></div>
+      <div class="dr-item" onclick="removePIN()">
+        <div class="dr-icon" style="background:rgba(239,68,68,.1);color:#ef4444">✕</div>
+        <span class="dr-label" style="color:#ef4444">${isEN?'Remove PIN':'Remover PIN'}</span>
+      </div>`;
+  } else {
+    sec.innerHTML=`
+      <div class="dr-item" onclick="startPinSetup('create')">
+        <div class="dr-icon">🔐</div>
+        <span class="dr-label">${pinLabel}</span>
+        <span class="dr-chev">›</span>
+      </div>`;
+  }
 }
 
 document.addEventListener('keydown',e=>{
