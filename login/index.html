@@ -293,6 +293,8 @@ body.dark .gs-done{color:#a78bfa;border-color:rgba(167,139,250,.3)}
 .ob-start-option.selected{border-color:#7c3aed;background:rgba(124,58,237,0.18)}
 .ob-start-option-title{font-size:15px;font-weight:700;color:#f9fafb;margin-bottom:3px}
 .ob-start-option-desc{font-size:12px;color:#9ca3af;line-height:1.5}
+.ob-date-input{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid rgba(124,58,237,0.4);background:rgba(255,255,255,0.06);color:#f9fafb;font-size:15px;font-family:inherit;color-scheme:dark;box-sizing:border-box}
+.ob-date-input:focus{outline:none;border-color:#7c3aed}
 
 /* ── TOUR ──────────────────────────────────────────────────────── */
 #tourOverlay{
@@ -1377,14 +1379,18 @@ body:not(.dark) .tab.on{color:#7c3aed}
       <div class="ob-slide-title" id="ob-s4-title">Quando você quer começar?</div>
       <div class="ob-slide-sub" id="ob-s4-sub">Escolha o ponto de início do seu histórico financeiro.</div>
       <div class="ob-start-options">
-        <button class="ob-start-option" id="ob-s4-opt-jan" onclick="obSetStartDate('jan2026')">
-          <div class="ob-start-option-title" id="ob-s4-opt-jan-title">Inserir dados desde Janeiro 2026</div>
-          <div class="ob-start-option-desc" id="ob-s4-opt-jan-desc">Ideal para quem quer registrar transações passadas e ver o histórico completo.</div>
-        </button>
-        <button class="ob-start-option" id="ob-s4-opt-today" onclick="obSetStartDate('today')">
+        <button class="ob-start-option" id="ob-s4-opt-today" onclick="obPickStart('today')">
           <div class="ob-start-option-title" id="ob-s4-opt-today-title">Começar de hoje</div>
           <div class="ob-start-option-desc" id="ob-s4-opt-today-desc">Rastreie suas finanças a partir de agora, sem dados anteriores.</div>
         </button>
+        <button class="ob-start-option" id="ob-s4-opt-custom" onclick="obPickStart('custom')">
+          <div class="ob-start-option-title" id="ob-s4-opt-custom-title">Escolher uma data</div>
+          <div class="ob-start-option-desc" id="ob-s4-opt-custom-desc">Selecione qualquer data a partir de 01/01/2020.</div>
+        </button>
+        <div id="ob-s4-date-wrap" style="display:none;width:100%;max-width:300px;margin-top:4px">
+          <input type="date" id="ob-s4-date-input" class="ob-date-input" min="2020-01-01" value="2026-01-01"/>
+          <button class="ob-cta-btn" onclick="obConfirmCustomDate()" id="ob-s4-date-confirm" style="margin-top:10px;font-size:14px;padding:11px 20px">Confirmar →</button>
+        </div>
       </div>
       <div class="ob-nav" style="justify-content:center;margin-top:.5rem">
         <button class="ob-nav-btn" onclick="obGoSlide(3)" id="ob-s4-back" style="flex:unset;padding:8px 16px;font-size:12px">← Voltar</button>
@@ -1456,6 +1462,14 @@ body:not(.dark) .tab.on{color:#7c3aed}
       <button onclick="saveInitialBalance()" style="padding:8px 14px;border-radius:8px;border:none;background:#185FA5;color:#fff;font-size:13px;cursor:pointer">✓</button>
     </div>
     <div style="font-size:11px;color:var(--sub);margin-top:6px" id="drawerIBhint" data-i18n="drawer_ib_hint">Quanto você já tem guardado hoje?</div>
+  </div>
+  <div class="drawer-section">
+    <div class="drawer-section-label" id="drawerStartDateLabel">Data de início / Start date</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input id="drawerStartDate" type="date" min="2020-01-01" style="flex:1;font-size:14px;padding:8px 10px;border-radius:8px;border:0.5px solid var(--input-border);background:var(--input-bg);color:var(--text);color-scheme:light dark">
+      <button onclick="saveDrawerStartDate()" style="padding:8px 14px;border-radius:8px;border:none;background:#185FA5;color:#fff;font-size:13px;cursor:pointer">✓</button>
+    </div>
+    <div style="font-size:11px;color:var(--sub);margin-top:6px" id="drawerStartDateHint">Define o início do histórico de navegação.</div>
   </div>
   <div class="drawer-section">
     <div class="drawer-section-label" data-i18n="drawer_appearance">Aparência / Appearance</div>
@@ -3916,9 +3930,14 @@ function showTab(tabId){
 function openDrawer(){
   document.getElementById('drawer').classList.add('open');
   document.getElementById('drawerOverlay').classList.add('open');
-  // populate initial balance field
   const ib=document.getElementById('drawerIB');
   if(ib) ib.value=initialBalance||'';
+  const sd=document.getElementById('drawerStartDate');
+  if(sd){
+    const d=START;
+    sd.value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    sd.max=`${_today.getFullYear()}-${String(_today.getMonth()+1).padStart(2,'0')}-${String(_today.getDate()).padStart(2,'0')}`;
+  }
 }
 function closeDrawer(){
   document.getElementById('drawer').classList.remove('open');
@@ -4081,11 +4100,14 @@ function obApplyLang(){
   if(el('ob-s4-badge')) el('ob-s4-badge').textContent='Tracking';
   if(el('ob-s4-title')) el('ob-s4-title').textContent='When do you want to start?';
   if(el('ob-s4-sub')) el('ob-s4-sub').textContent='Choose the starting point for your financial history.';
-  if(el('ob-s4-opt-jan-title')) el('ob-s4-opt-jan-title').textContent='Enter data since January 2026';
-  if(el('ob-s4-opt-jan-desc')) el('ob-s4-opt-jan-desc').textContent='Great if you want to log past transactions and see your full history.';
   if(el('ob-s4-opt-today-title')) el('ob-s4-opt-today-title').textContent='Start from today';
   if(el('ob-s4-opt-today-desc')) el('ob-s4-opt-today-desc').textContent='Track your finances from now on, no past data needed.';
+  if(el('ob-s4-opt-custom-title')) el('ob-s4-opt-custom-title').textContent='Choose a date';
+  if(el('ob-s4-opt-custom-desc')) el('ob-s4-opt-custom-desc').textContent='Select any date starting from 01/01/2020.';
+  if(el('ob-s4-date-confirm')) el('ob-s4-date-confirm').textContent='Confirm →';
   if(el('ob-s4-back')) el('ob-s4-back').textContent='← Back';
+  if(el('drawerStartDateLabel')) el('drawerStartDateLabel').textContent='Start date';
+  if(el('drawerStartDateHint')) el('drawerStartDateHint').textContent='Sets the beginning of your navigation history.';
   if(el('ob-s5-badge')) el('ob-s5-badge').textContent='Ready!';
   if(el('ob-s5-title')) el('ob-s5-title').textContent='Your control starts now';
   if(el('ob-s5-sub')) el('ob-s5-sub').textContent='Add your income, expenses and goals. All in one place — fast, simple, beautiful.';
@@ -4100,17 +4122,46 @@ function obReset(){
   obStart();
 }
 
-async function obSetStartDate(choice){
+function _dateToStr(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+async function _saveStartDate(d){
+  START=d;
+  if(_user) _supa.from('profiles').upsert({user_id:_user.id,start_date:_dateToStr(d)},{onConflict:'user_id'});
+}
+function obPickStart(mode){
   document.querySelectorAll('.ob-start-option').forEach(b=>b.classList.remove('selected'));
-  const btn=document.getElementById(choice==='jan2026'?'ob-s4-opt-jan':'ob-s4-opt-today');
-  if(btn) btn.classList.add('selected');
-  START=choice==='jan2026'?new Date(2026,0,1):new Date(_today.getFullYear(),_today.getMonth(),_today.getDate());
-  if(_user){
-    const d=START;
-    const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    _supa.from('profiles').upsert({user_id:_user.id,start_date:ds},{onConflict:'user_id'});
+  const wrap=document.getElementById('ob-s4-date-wrap');
+  if(mode==='today'){
+    document.getElementById('ob-s4-opt-today').classList.add('selected');
+    if(wrap) wrap.style.display='none';
+    _saveStartDate(new Date(_today.getFullYear(),_today.getMonth(),_today.getDate()));
+    setTimeout(()=>obGoSlide(5),180);
+  } else {
+    document.getElementById('ob-s4-opt-custom').classList.add('selected');
+    if(wrap){
+      wrap.style.display='block';
+      const inp=document.getElementById('ob-s4-date-input');
+      if(inp) inp.max=_dateToStr(_today);
+    }
   }
-  setTimeout(()=>obGoSlide(5),180);
+}
+async function obConfirmCustomDate(){
+  const inp=document.getElementById('ob-s4-date-input');
+  if(!inp||!inp.value) return;
+  const d=new Date(inp.value+'T00:00:00');
+  if(isNaN(d.getTime())) return;
+  await _saveStartDate(d);
+  obGoSlide(5);
+}
+async function saveDrawerStartDate(){
+  const inp=document.getElementById('drawerStartDate');
+  if(!inp||!inp.value) return;
+  const d=new Date(inp.value+'T00:00:00');
+  if(isNaN(d.getTime())) return;
+  await _saveStartDate(d);
+  const isEN=lang==='en';
+  _showToast(isEN?'✓ Start date saved!':'✓ Data de início salva!','#10b981');
+  closeDrawer();
+  rebuild();
 }
 
 function obFinish(){
