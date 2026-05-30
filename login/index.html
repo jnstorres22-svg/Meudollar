@@ -5136,7 +5136,6 @@ document.getElementById('debtPayModal').addEventListener('click',e=>{if(e.target
 
 // ── AI FINANCIAL ASSISTANT ────────────────────────────────────────
 let _aiHistory = [];
-const _AI_ENDPOINT = 'https://nyicbxrbabudbwahrjzx.supabase.co/functions/v1/ia-chat';
 
 function aiToggle(){
   document.getElementById('aiPanel').classList.contains('open') ? aiClose() : aiOpen();
@@ -5170,24 +5169,11 @@ async function aiSend(){
   sendBtn.disabled = true;
   const typingEl = _aiTyping();
   try{
-    const { data:{ session } } = await _supa.auth.getSession();
-    const token = session?.access_token;
-    if(!token) throw new Error(lang==='en'?'Not authenticated':'Não autenticado');
-    const res = await fetch(_AI_ENDPOINT,{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer '+token,
-        'apikey': SUPA_KEY,
-      },
-      body:JSON.stringify({
-        system:_aiSystemPrompt(),
-        messages:_aiHistory,
-      }),
+    const { data, error:fnErr } = await _supa.functions.invoke('ia-chat',{
+      body:{ system:_aiSystemPrompt(), messages:_aiHistory },
     });
-    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${res.status}`);}
-    const data = await res.json();
-    const raw = data.content?.[0]?.text || '';
+    if(fnErr) throw new Error(fnErr.message||String(fnErr));
+    const raw = data?.content?.[0]?.text || '';
     _aiHistory.push({role:'assistant', content:raw});
     typingEl.remove();
     _aiHandleResponse(raw);
