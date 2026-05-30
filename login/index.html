@@ -1106,6 +1106,12 @@ body:not(.dark) .tab.on{color:#7c3aed}
 .ai-msg-ai{align-self:flex-start;background:var(--input-bg);color:var(--text);border:0.5px solid var(--border);border-bottom-left-radius:4px}
 .ai-msg-ai.ok{border-color:#10b981;background:rgba(16,185,129,0.07)}
 .ai-msg-ai.err{border-color:#ef4444;background:rgba(239,68,68,0.07)}
+.ai-confirm-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.ai-confirm-btn{font-size:12px;font-weight:600;padding:6px 16px;border-radius:20px;border:none;cursor:pointer;transition:all .15s;font-family:inherit}
+.ai-confirm-yes{background:#10b981;color:#fff}
+.ai-confirm-yes:hover{background:#059669}
+.ai-confirm-no{background:rgba(239,68,68,0.08);color:#ef4444;border:1px solid rgba(239,68,68,0.3)!important}
+.ai-confirm-no:hover{background:#ef4444;color:#fff}
 .ai-typing{align-self:flex-start;display:flex;gap:5px;padding:12px 14px;background:var(--input-bg);border:0.5px solid var(--border);border-radius:14px;border-bottom-left-radius:4px}
 .ai-dot{width:6px;height:6px;border-radius:50%;background:#9ca3af;animation:aiB .9s ease-in-out infinite}
 .ai-dot:nth-child(2){animation-delay:.15s}.ai-dot:nth-child(3){animation-delay:.3s}
@@ -5156,6 +5162,7 @@ document.getElementById('debtPayModal').addEventListener('click',e=>{if(e.target
 // ── AI FINANCIAL ASSISTANT ────────────────────────────────────────
 let _aiHistory = [];
 let _aiImgList = []; // [{ id, type:'image'|'sheet', base64?, mediaType?, dataUrl?, text?, name }]
+let _aiPendingActions = null; // { actions, reply } waiting for user confirmation
 let _aiMicRecording = false;
 let _aiMicRecognition = null;
 let _aiWelcomed = false;
@@ -5393,6 +5400,59 @@ function _aiHandleResponse(raw){
   const reply=parsed.reply||'';
   const actions=parsed.actions||[];
   if(!actions.length){ _aiMsg('ai',reply||(lang==='en'?'How can I help?':'Como posso ajudar?')); return; }
+  const needsConfirm=actions.some(a=>a.op==='delete'||a.op==='update');
+  if(needsConfirm){
+    _aiPendingActions={actions,reply};
+    _aiShowConfirmation(actions,reply);
+    return;
+  }
+  const results=_aiDoActions(actions);
+  let msg=reply;
+  if(results.length) msg+=(msg?'\n\n':'')+results.join('\n');
+  _aiMsg('ai',msg.trim(),'ok');
+}
+function _aiShowConfirmation(actions,reply){
+  const lines=actions.map(a=>{
+    const name=a.where?.name||a.data?.name||'?';
+    if(a.op==='delete') return(lang==='en'?'🗑 Delete: ':'🗑 Apagar: ')+name;
+    if(a.op==='update'){
+      const ch=Object.entries(a.data||{}).map(([k,v])=>`${k}: ${v}`).join(', ');
+      return(lang==='en'?'✏️ Update: ':'✏️ Atualizar: ')+name+(ch?' ('+ch+')':'');
+    }
+    return(lang==='en'?'➕ Add: ':'➕ Adicionar: ')+(a.data?.name||'?');
+  });
+  const summary=(reply?reply+'\n\n':'')
+    +(lang==='en'?'Confirm the following actions?':'Confirma as seguintes ações?')
+    +'\n'+lines.join('\n');
+  _aiMsgConfirm(summary);
+}
+function _aiMsgConfirm(text){
+  const msgs=document.getElementById('aiMsgs');
+  const el=document.createElement('div');
+  el.className='ai-msg ai-msg-ai';
+  const span=document.createElement('span');
+  span.style.whiteSpace='pre-line';
+  span.textContent=text;
+  el.appendChild(span);
+  const row=document.createElement('div');
+  row.className='ai-confirm-row';
+  const btnYes=document.createElement('button');
+  btnYes.className='ai-confirm-btn ai-confirm-yes';
+  btnYes.textContent=lang==='en'?'✓ Confirm':'✓ Confirmar';
+  btnYes.onclick=()=>{row.remove();aiConfirmActions(true);};
+  const btnNo=document.createElement('button');
+  btnNo.className='ai-confirm-btn ai-confirm-no';
+  btnNo.textContent=lang==='en'?'✕ Cancel':'✕ Cancelar';
+  btnNo.onclick=()=>{row.remove();aiConfirmActions(false);};
+  row.appendChild(btnYes);row.appendChild(btnNo);
+  el.appendChild(row);
+  msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;
+}
+function aiConfirmActions(confirmed){
+  if(!_aiPendingActions) return;
+  const {actions,reply}=_aiPendingActions;
+  _aiPendingActions=null;
+  if(!confirmed){_aiMsg('ai',lang==='en'?'Cancelled. Nothing was changed.':'Cancelado. Nada foi alterado.');return;}
   const results=_aiDoActions(actions);
   let msg=reply;
   if(results.length) msg+=(msg?'\n\n':'')+results.join('\n');
