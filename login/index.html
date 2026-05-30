@@ -1117,12 +1117,14 @@ body:not(.dark) .tab.on{color:#7c3aed}
 .ai-send-btn:hover{opacity:.88}.ai-send-btn:active{transform:scale(.92)}.ai-send-btn:disabled{opacity:.35;cursor:not-allowed}
 .ai-img-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(124,58,237,0.35);background:var(--accent-dim);color:var(--accent);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;font-size:16px;transition:background .15s,border-color .15s}
 .ai-img-btn:hover{background:rgba(124,58,237,0.15);border-color:var(--accent)}
-.ai-img-preview-bar{display:none;padding:6px 16px 0;align-items:center;gap:8px}
+.ai-img-preview-bar{display:none;padding:6px 16px 4px;flex-wrap:wrap;gap:8px}
 .ai-img-preview-bar.show{display:flex}
-.ai-img-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;border:1px solid var(--border)}
-.ai-img-remove{background:transparent;border:none;font-size:14px;color:var(--sub);cursor:pointer;padding:2px 6px;border-radius:6px}
-.ai-img-remove:hover{background:rgba(239,68,68,0.1);color:#ef4444}
-.ai-img-name{font-size:11px;color:var(--sub);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ai-attach-item{position:relative;flex-shrink:0;display:flex;flex-direction:column;align-items:center}
+.ai-img-thumb{width:52px;height:52px;border-radius:8px;object-fit:cover;border:1px solid var(--border);display:block}
+.ai-attach-icon{width:52px;height:52px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);display:flex;align-items:center;justify-content:center;font-size:24px}
+.ai-attach-name{font-size:9px;color:var(--sub);max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;text-align:center}
+.ai-img-remove{position:absolute;top:-5px;right:-5px;width:18px;height:18px;background:#ef4444;border:none;border-radius:50%;font-size:10px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.ai-img-remove:hover{background:#dc2626}
 
 </style>
 </head>
@@ -1650,13 +1652,9 @@ body:not(.dark) .tab.on{color:#7c3aed}
       <button class="ai-close-btn" onclick="aiClose()">✕</button>
     </div>
     <div class="ai-msgs" id="aiMsgs"></div>
-    <div class="ai-img-preview-bar" id="aiImgPreviewBar">
-      <img class="ai-img-thumb" src="" alt="">
-      <span class="ai-img-name"></span>
-      <button class="ai-img-remove" onclick="aiImgRemove()">✕</button>
-    </div>
+    <div class="ai-img-preview-bar" id="aiImgPreviewBar"></div>
     <div class="ai-inp-row">
-      <input type="file" id="aiImgInput" accept="image/*" style="display:none" onchange="aiImgSelect(event)">
+      <input type="file" id="aiImgInput" accept="image/*,.xlsx,.xls,.csv" style="display:none" onchange="aiImgSelect(event)">
       <button class="ai-img-btn" id="aiImgBtn" onclick="document.getElementById('aiImgInput').click()" title="Anexar imagem / Attach image" style="width:36px;height:36px;min-width:36px;border-radius:50%;border:2px solid #7c3aed;background:rgba(124,58,237,0.1);color:#7c3aed;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;font-size:18px;padding:0">📎</button>
       <textarea class="ai-textarea" id="aiInput" rows="1"
         placeholder="Descreva sua renda, despesa, meta ou dívida..."
@@ -5151,7 +5149,7 @@ document.getElementById('debtPayModal').addEventListener('click',e=>{if(e.target
 
 // ── AI FINANCIAL ASSISTANT ────────────────────────────────────────
 let _aiHistory = [];
-let _aiImgData = null; // { base64, mediaType, name }
+let _aiImgList = []; // [{ id, type:'image'|'sheet', base64?, mediaType?, dataUrl?, text?, name }]
 let _aiWelcomed = false;
 
 function aiToggle(){
@@ -5175,50 +5173,110 @@ function _aiWelcome(){
 function aiKeyDown(e){
   if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();aiSend();}
 }
+function _aiRenderPreviewBar(){
+  const bar = document.getElementById('aiImgPreviewBar');
+  bar.innerHTML = '';
+  _aiImgList.forEach(item => {
+    const wrap = document.createElement('div');
+    wrap.className = 'ai-attach-item';
+    if(item.type === 'image'){
+      const img = document.createElement('img');
+      img.className = 'ai-img-thumb';
+      img.src = item.dataUrl;
+      img.alt = item.name;
+      wrap.appendChild(img);
+    } else {
+      const icon = document.createElement('div');
+      icon.className = 'ai-attach-icon';
+      icon.textContent = '📊';
+      wrap.appendChild(icon);
+    }
+    const nameEl = document.createElement('div');
+    nameEl.className = 'ai-attach-name';
+    nameEl.textContent = item.name;
+    wrap.appendChild(nameEl);
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'ai-img-remove';
+    removeBtn.textContent = '✕';
+    removeBtn.onclick = () => aiImgRemove(item.id);
+    wrap.appendChild(removeBtn);
+    bar.appendChild(wrap);
+  });
+  bar.classList.toggle('show', _aiImgList.length > 0);
+}
 function aiImgSelect(e){
   const file = e.target.files[0];
   if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const dataUrl = ev.target.result;
-    const base64 = dataUrl.split(',')[1];
-    const mediaType = file.type || 'image/jpeg';
-    _aiImgData = { base64, mediaType, name: file.name, dataUrl };
-    const bar = document.getElementById('aiImgPreviewBar');
-    bar.classList.add('show');
-    bar.querySelector('.ai-img-thumb').src = dataUrl;
-    bar.querySelector('.ai-img-name').textContent = file.name;
-  };
-  reader.readAsDataURL(file);
+  const id = Date.now() + '_' + Math.random().toString(36).slice(2);
+  const ext = file.name.split('.').pop().toLowerCase();
+  if(ext === 'csv'){
+    const reader = new FileReader();
+    reader.onload = ev => {
+      _aiImgList.push({ id, type:'sheet', text: ev.target.result, name: file.name });
+      _aiRenderPreviewBar();
+    };
+    reader.readAsText(file);
+  } else if(ext === 'xlsx' || ext === 'xls'){
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try{
+        const wb = XLSX.read(ev.target.result, { type:'binary' });
+        const allText = wb.SheetNames.map(sn =>
+          `=== ${sn} ===\n` + XLSX.utils.sheet_to_csv(wb.Sheets[sn])
+        ).join('\n\n');
+        _aiImgList.push({ id, type:'sheet', text: allText, name: file.name });
+      } catch(err){
+        console.error('[AI] XLSX parse error', err);
+        _aiImgList.push({ id, type:'sheet', text: lang==='en'?'[Failed to parse file]':'[Erro ao ler arquivo]', name: file.name });
+      }
+      _aiRenderPreviewBar();
+    };
+    reader.readAsBinaryString(file);
+  } else {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const dataUrl = ev.target.result;
+      _aiImgList.push({ id, type:'image', base64: dataUrl.split(',')[1], mediaType: file.type || 'image/jpeg', dataUrl, name: file.name });
+      _aiRenderPreviewBar();
+    };
+    reader.readAsDataURL(file);
+  }
   e.target.value = '';
 }
-function aiImgRemove(){
-  _aiImgData = null;
-  const bar = document.getElementById('aiImgPreviewBar');
-  bar.classList.remove('show');
+function aiImgRemove(id){
+  _aiImgList = _aiImgList.filter(x => x.id !== id);
+  _aiRenderPreviewBar();
 }
 async function aiSend(){
   const inp = document.getElementById('aiInput');
   const text = inp.value.trim();
-  if(!text && !_aiImgData) return;
-  const imgSnapshot = _aiImgData;
+  if(!text && !_aiImgList.length) return;
+  const listSnapshot = [..._aiImgList];
   inp.value=''; inp.style.height='';
   const defaultText = lang==='en'
-    ? 'What does this image show? Identify expenses, amounts and dates.'
-    : 'O que está escrito nessa imagem? Identifique despesas, valores e datas.';
-  const finalText = text || (imgSnapshot ? defaultText : '');
+    ? 'What does this file show? Identify expenses, amounts and dates.'
+    : 'O que há neste arquivo? Identifique despesas, valores e datas.';
+  const finalText = text || defaultText;
   let userContent;
-  if(imgSnapshot){
-    userContent = [
-      { type:'image', source:{ type:'base64', media_type: imgSnapshot.mediaType, data: imgSnapshot.base64 } },
-      { type:'text', text: finalText }
-    ];
+  if(listSnapshot.length){
+    userContent = [];
+    listSnapshot.forEach(item => {
+      if(item.type === 'image'){
+        userContent.push({ type:'image', source:{ type:'base64', media_type: item.mediaType, data: item.base64 } });
+      } else {
+        userContent.push({ type:'text', text: `Arquivo: ${item.name}\n${item.text}` });
+      }
+    });
+    userContent.push({ type:'text', text: finalText });
   } else {
     userContent = finalText;
   }
-  _aiMsg('user', finalText, '', imgSnapshot ? imgSnapshot.dataUrl : null);
+  const previewUrls = listSnapshot.filter(x => x.type === 'image').map(x => x.dataUrl);
+  const sheetNames = listSnapshot.filter(x => x.type === 'sheet').map(x => x.name);
+  _aiMsg('user', finalText, '', previewUrls, sheetNames);
   _aiHistory.push({role:'user', content: userContent});
-  if(imgSnapshot) aiImgRemove();
+  _aiImgList = [];
+  _aiRenderPreviewBar();
   const sendBtn = document.getElementById('aiSendBtn');
   sendBtn.disabled = true;
   const typingEl = _aiTyping();
@@ -5251,16 +5309,23 @@ function _aiTyping(){
   msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;
   return el;
 }
-function _aiMsg(role, text, cls='', imageDataUrl=null){
+function _aiMsg(role, text, cls='', imageUrls=[], sheetNames=[]){
   const msgs=document.getElementById('aiMsgs');
   const el=document.createElement('div');
   el.className='ai-msg ai-msg-'+role+(cls?' '+cls:'');
-  if(imageDataUrl){
+  imageUrls.forEach(url=>{
     const img=document.createElement('img');
-    img.src=imageDataUrl;
-    img.style.cssText='display:block;max-width:180px;max-height:180px;border-radius:8px;margin-bottom:6px;object-fit:cover;border:1px solid var(--border)';
+    img.src=url;
+    img.style.cssText='display:block;max-width:160px;max-height:160px;border-radius:8px;margin-bottom:4px;object-fit:cover;border:1px solid var(--border)';
     el.appendChild(img);
-  }
+  });
+  sheetNames.forEach(name=>{
+    const chip=document.createElement('div');
+    chip.style.cssText='display:inline-flex;align-items:center;gap:4px;font-size:11px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:6px;padding:2px 7px;margin-bottom:4px;color:#7c3aed;white-space:nowrap';
+    chip.textContent='📊 '+name;
+    el.appendChild(chip);
+    el.appendChild(document.createElement('br'));
+  });
   const span=document.createElement('span');
   span.textContent=text;
   el.appendChild(span);
