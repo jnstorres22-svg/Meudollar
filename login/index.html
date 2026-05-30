@@ -242,7 +242,7 @@ body.dark .gs-done{color:#a78bfa;border-color:rgba(167,139,250,.3)}
 .ls{width:12px;height:12px;border-radius:3px}
 /* ── ONBOARDING SLIDES ─────────────────────────────────────────── */
 #onboardingScreen{
-  position:fixed;inset:0;z-index:1200;
+  position:fixed;inset:0;z-index:1100;
   display:flex;align-items:center;justify-content:center;
   background:#1a1025;
   background-image:radial-gradient(ellipse 70% 50% at 50% 0%, rgba(124,58,237,0.25) 0%, transparent 70%);
@@ -575,7 +575,7 @@ body.dark .confirm-delete{background:#dc2626}
 .pin-dots.shake{animation:pin-shake .35s ease}
 /* PIN OFFER MODAL */
 #pinOfferModal{
-  position:fixed;inset:0;z-index:1200;
+  position:fixed;inset:0;z-index:1100;
   display:none;align-items:flex-end;justify-content:center;
   padding:1rem;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
 }
@@ -1225,11 +1225,11 @@ body:not(.dark) .tab.on{color:#7c3aed}
       <span style="font-size:18px">→</span>
     </button>
     <div class="home-badge">
-      <span>Secure</span>
+      <span id="homeBadge1">Secure</span>
       <span style="color:#1f2937">·</span>
-      <span>Cloud sync</span>
+      <span id="homeBadge2">Cloud sync</span>
       <span style="color:#1f2937">·</span>
-      <span>Works anywhere</span>
+      <span id="homeBadge3">Works anywhere</span>
     </div>
 
     <!-- Language + Theme toggles -->
@@ -2178,9 +2178,9 @@ const TRANSLATIONS = {
     rep_bar_in:'Entradas', rep_bar_out:'Saídas', rep_saldo_label:'Saldo',
     rep_empty:'Nenhuma movimentação no período.',
     // Auth
-    home_tagline:'Your money. Your control.',
+    home_tagline:'Seu dinheiro. Seu controle.',
     home_enter:'Entrar / Enter',
-    home_secure:'Secure', home_cloud:'Cloud sync', home_mobile:'Works anywhere',
+    home_secure:'Seguro', home_cloud:'Sincronização na nuvem', home_mobile:'Funciona em qualquer lugar',
     login_subtitle:'Entre na sua conta / Sign in',
     login_email_label:'Email', login_pwd_label:'Senha / Password',
     login_forgot:'Esqueci minha senha / Forgot password',
@@ -2478,6 +2478,9 @@ function applyLang(){
   // ── Home screen ──
   const homeTagline=document.getElementById('homeTagline');
   if(homeTagline) homeTagline.textContent=t('home_tagline');
+  const hb1=document.getElementById('homeBadge1');if(hb1)hb1.textContent=t('home_secure');
+  const hb2=document.getElementById('homeBadge2');if(hb2)hb2.textContent=t('home_cloud');
+  const hb3=document.getElementById('homeBadge3');if(hb3)hb3.textContent=t('home_mobile');
   const homeEnter=document.getElementById('homeEnterLabel');
   if(homeEnter) homeEnter.textContent=lang==='en'?'Enter':'Entrar';
 
@@ -4915,6 +4918,10 @@ function exportExcel(){
   XLSX.writeFile(wb,fname);
 }
 
+// TODO: exportPDF() — PDF export not yet implemented.
+// Suggested approach: use jsPDF + jspdf-autotable to render the same
+// sheets as exportExcel() into a formatted PDF. Load via CDN when called.
+
 // ── BILL PAYMENT ─────────────────────────────────────────────────
 function isBillPaidThisMonth(b){
   const n=new Date();
@@ -5552,7 +5559,7 @@ function aiImgSelect(e){
       const reader = new FileReader();
       reader.onload = ev => {
         try{
-          const wb = XLSX.read(ev.target.result, { type:'binary' });
+          const wb = XLSX.read(new Uint8Array(ev.target.result), { type:'array' });
           const allText = wb.SheetNames.map(sn =>
             `=== ${sn} ===\n` + XLSX.utils.sheet_to_csv(wb.Sheets[sn])
           ).join('\n\n');
@@ -5563,7 +5570,7 @@ function aiImgSelect(e){
         }
         _aiRenderPreviewBar();
       };
-      reader.readAsBinaryString(file);
+      reader.readAsArrayBuffer(file);
     } else {
       const reader = new FileReader();
       reader.onload = ev => {
