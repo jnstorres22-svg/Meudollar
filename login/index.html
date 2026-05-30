@@ -1654,7 +1654,7 @@ body:not(.dark) .tab.on{color:#7c3aed}
     <div class="ai-msgs" id="aiMsgs"></div>
     <div class="ai-img-preview-bar" id="aiImgPreviewBar"></div>
     <div class="ai-inp-row">
-      <input type="file" id="aiImgInput" accept="image/*,.xlsx,.xls,.csv" style="display:none" onchange="aiImgSelect(event)">
+      <input type="file" id="aiImgInput" accept="image/*,.xlsx,.xls,.csv" multiple style="display:none" onchange="aiImgSelect(event)">
       <button class="ai-img-btn" id="aiImgBtn" onclick="document.getElementById('aiImgInput').click()" title="Anexar imagem / Attach image" style="width:36px;height:36px;min-width:36px;border-radius:50%;border:2px solid #7c3aed;background:rgba(124,58,237,0.1);color:#7c3aed;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;font-size:18px;padding:0">📎</button>
       <textarea class="ai-textarea" id="aiInput" rows="1"
         placeholder="Descreva sua renda, despesa, meta ou dívida..."
@@ -5205,42 +5205,44 @@ function _aiRenderPreviewBar(){
   bar.classList.toggle('show', _aiImgList.length > 0);
 }
 function aiImgSelect(e){
-  const file = e.target.files[0];
-  if(!file) return;
-  const id = Date.now() + '_' + Math.random().toString(36).slice(2);
-  const ext = file.name.split('.').pop().toLowerCase();
-  if(ext === 'csv'){
-    const reader = new FileReader();
-    reader.onload = ev => {
-      _aiImgList.push({ id, type:'sheet', text: ev.target.result, name: file.name });
-      _aiRenderPreviewBar();
-    };
-    reader.readAsText(file);
-  } else if(ext === 'xlsx' || ext === 'xls'){
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try{
-        const wb = XLSX.read(ev.target.result, { type:'binary' });
-        const allText = wb.SheetNames.map(sn =>
-          `=== ${sn} ===\n` + XLSX.utils.sheet_to_csv(wb.Sheets[sn])
-        ).join('\n\n');
-        _aiImgList.push({ id, type:'sheet', text: allText, name: file.name });
-      } catch(err){
-        console.error('[AI] XLSX parse error', err);
-        _aiImgList.push({ id, type:'sheet', text: lang==='en'?'[Failed to parse file]':'[Erro ao ler arquivo]', name: file.name });
-      }
-      _aiRenderPreviewBar();
-    };
-    reader.readAsBinaryString(file);
-  } else {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const dataUrl = ev.target.result;
-      _aiImgList.push({ id, type:'image', base64: dataUrl.split(',')[1], mediaType: file.type || 'image/jpeg', dataUrl, name: file.name });
-      _aiRenderPreviewBar();
-    };
-    reader.readAsDataURL(file);
-  }
+  const files = Array.from(e.target.files);
+  if(!files.length) return;
+  files.forEach(file => {
+    const id = Date.now() + '_' + Math.random().toString(36).slice(2);
+    const ext = file.name.split('.').pop().toLowerCase();
+    if(ext === 'csv'){
+      const reader = new FileReader();
+      reader.onload = ev => {
+        _aiImgList.push({ id, type:'sheet', text: ev.target.result, name: file.name });
+        _aiRenderPreviewBar();
+      };
+      reader.readAsText(file);
+    } else if(ext === 'xlsx' || ext === 'xls'){
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try{
+          const wb = XLSX.read(ev.target.result, { type:'binary' });
+          const allText = wb.SheetNames.map(sn =>
+            `=== ${sn} ===\n` + XLSX.utils.sheet_to_csv(wb.Sheets[sn])
+          ).join('\n\n');
+          _aiImgList.push({ id, type:'sheet', text: allText, name: file.name });
+        } catch(err){
+          console.error('[AI] XLSX parse error', err);
+          _aiImgList.push({ id, type:'sheet', text: lang==='en'?'[Failed to parse file]':'[Erro ao ler arquivo]', name: file.name });
+        }
+        _aiRenderPreviewBar();
+      };
+      reader.readAsBinaryString(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const dataUrl = ev.target.result;
+        _aiImgList.push({ id, type:'image', base64: dataUrl.split(',')[1], mediaType: file.type || 'image/jpeg', dataUrl, name: file.name });
+        _aiRenderPreviewBar();
+      };
+      reader.readAsDataURL(file);
+    }
+  });
   e.target.value = '';
 }
 function aiImgRemove(id){
