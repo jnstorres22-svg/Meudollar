@@ -5165,59 +5165,64 @@ let _aiImgList = []; // [{ id, type:'image'|'sheet', base64?, mediaType?, dataUr
 let _aiPendingActions = null; // { actions, reply } waiting for user confirmation
 let _aiMicRecording = false;
 let _aiMicRecognition = null;
+let _aiMicInited = false;
 let _aiWelcomed = false;
 
-function _aiMicReset(){
+function aiMicStop(){
+  // Null refs first — prevents re-entry if onend fires as result of abort()
+  const rec = _aiMicRecognition;
+  const stream = window._aiMicStream;
+  _aiMicRecognition = null;
+  window._aiMicStream = null;
   _aiMicRecording = false;
+  if(rec){ try{ rec.abort(); }catch(e){} }
+  if(stream) stream.getTracks().forEach(t=>{ try{ t.stop(); }catch(e){} });
   const btn = document.getElementById('aiMicBtn');
   if(btn) btn.classList.remove('ai-mic-active');
   const inp = document.getElementById('aiInput');
   if(inp){ inp.style.fontStyle='normal'; inp.style.opacity='1'; }
 }
 function aiMicInit(){
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(_aiMicInited) return;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const btn = document.getElementById('aiMicBtn');
-  if(!SpeechRecognition || !btn){ if(btn) btn.style.display='none'; return; }
-  _aiMicRecognition = new SpeechRecognition();
-  _aiMicRecognition.continuous = false;
-  _aiMicRecognition.interimResults = true;
-  _aiMicRecognition.onresult = e => {
-    const inp = document.getElementById('aiInput');
-    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
-    inp.value = transcript;
-    inp.style.height = ''; inp.style.height = Math.min(inp.scrollHeight, 90) + 'px';
-    inp.style.fontStyle = e.results[e.results.length-1].isFinal ? 'normal' : 'italic';
-    inp.style.opacity = e.results[e.results.length-1].isFinal ? '1' : '0.6';
-  };
-  _aiMicRecognition.onend = () => {
-    _aiMicReset();
-    const panel = document.getElementById('aiPanel');
-    if(panel && panel.classList.contains('open')) document.getElementById('aiInput').focus();
-  };
-  _aiMicRecognition.onerror = () => { _aiMicReset(); };
-  document.addEventListener('visibilitychange', () => {
-    if(document.hidden && _aiMicRecording){
-      _aiMicRecognition.abort();
-      _aiMicReset();
-    }
-  });
-  window.addEventListener('pagehide', () => {
-    if(_aiMicRecording) _aiMicRecognition.abort();
-  });
+  if(!SR || !navigator.mediaDevices){ if(btn) btn.style.display='none'; return; }
+  _aiMicInited = true;
+  document.addEventListener('visibilitychange', ()=>{ if(document.hidden && _aiMicRecording) aiMicStop(); });
+  window.addEventListener('pagehide', ()=>{ if(_aiMicRecording) aiMicStop(); });
 }
 function aiMicToggle(){
-  if(!_aiMicRecognition) return;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR || !navigator.mediaDevices) return;
   const btn = document.getElementById('aiMicBtn');
-  if(_aiMicRecording){
-    _aiMicRecognition.stop();
-  } else {
-    _aiMicRecognition.lang = lang === 'en' ? 'en-US' : 'pt-BR';
+  if(_aiMicRecording){ aiMicStop(); return; }
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+    window._aiMicStream = stream;
+    const rec = new SR();
+    _aiMicRecognition = rec;
+    rec.continuous = false;
+    rec.interimResults = true;
+    rec.lang = lang === 'en' ? 'en-US' : 'pt-BR';
+    rec.onresult = e => {
+      const inp = document.getElementById('aiInput');
+      const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+      inp.value = transcript;
+      inp.style.height = ''; inp.style.height = Math.min(inp.scrollHeight, 90) + 'px';
+      inp.style.fontStyle = e.results[e.results.length-1].isFinal ? 'normal' : 'italic';
+      inp.style.opacity = e.results[e.results.length-1].isFinal ? '1' : '0.6';
+    };
+    rec.onend = () => {
+      aiMicStop();
+      const panel = document.getElementById('aiPanel');
+      if(panel && panel.classList.contains('open')) document.getElementById('aiInput').focus();
+    };
+    rec.onerror = () => { aiMicStop(); };
     try{
-      _aiMicRecognition.start();
+      rec.start();
       _aiMicRecording = true;
-      btn.classList.add('ai-mic-active');
-    } catch(e){ /* já estava rodando */ }
-  }
+      if(btn) btn.classList.add('ai-mic-active');
+    } catch(e){ aiMicStop(); }
+  }).catch(() => { aiMicStop(); });
 }
 function aiToggle(){
   document.getElementById('aiPanel').classList.contains('open') ? aiClose() : aiOpen();
@@ -5229,7 +5234,7 @@ function aiOpen(){
   setTimeout(()=>document.getElementById('aiInput').focus(), 350);
 }
 function aiClose(){
-  if(_aiMicRecording && _aiMicRecognition){ _aiMicRecognition.abort(); _aiMicReset(); }
+  if(_aiMicRecording) aiMicStop();
   document.getElementById('aiOverlay').classList.remove('open');
   document.getElementById('aiPanel').classList.remove('open');
 }
