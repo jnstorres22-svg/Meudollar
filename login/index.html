@@ -5167,6 +5167,13 @@ let _aiMicRecording = false;
 let _aiMicRecognition = null;
 let _aiWelcomed = false;
 
+function _aiMicReset(){
+  _aiMicRecording = false;
+  const btn = document.getElementById('aiMicBtn');
+  if(btn) btn.classList.remove('ai-mic-active');
+  const inp = document.getElementById('aiInput');
+  if(inp){ inp.style.fontStyle='normal'; inp.style.opacity='1'; }
+}
 function aiMicInit(){
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const btn = document.getElementById('aiMicBtn');
@@ -5183,18 +5190,20 @@ function aiMicInit(){
     inp.style.opacity = e.results[e.results.length-1].isFinal ? '1' : '0.6';
   };
   _aiMicRecognition.onend = () => {
-    _aiMicRecording = false;
-    btn.classList.remove('ai-mic-active');
-    const inp = document.getElementById('aiInput');
-    inp.style.fontStyle = 'normal'; inp.style.opacity = '1';
-    inp.focus();
+    _aiMicReset();
+    const panel = document.getElementById('aiPanel');
+    if(panel && panel.classList.contains('open')) document.getElementById('aiInput').focus();
   };
-  _aiMicRecognition.onerror = () => {
-    _aiMicRecording = false;
-    btn.classList.remove('ai-mic-active');
-    const inp = document.getElementById('aiInput');
-    inp.style.fontStyle = 'normal'; inp.style.opacity = '1';
-  };
+  _aiMicRecognition.onerror = () => { _aiMicReset(); };
+  document.addEventListener('visibilitychange', () => {
+    if(document.hidden && _aiMicRecording){
+      _aiMicRecognition.abort();
+      _aiMicReset();
+    }
+  });
+  window.addEventListener('pagehide', () => {
+    if(_aiMicRecording) _aiMicRecognition.abort();
+  });
 }
 function aiMicToggle(){
   if(!_aiMicRecognition) return;
@@ -5220,6 +5229,7 @@ function aiOpen(){
   setTimeout(()=>document.getElementById('aiInput').focus(), 350);
 }
 function aiClose(){
+  if(_aiMicRecording && _aiMicRecognition){ _aiMicRecognition.abort(); _aiMicReset(); }
   document.getElementById('aiOverlay').classList.remove('open');
   document.getElementById('aiPanel').classList.remove('open');
 }
