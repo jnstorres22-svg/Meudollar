@@ -5170,7 +5170,7 @@ async function aiSend(){
   sendBtn.disabled = true;
   const typingEl = _aiTyping();
   try{
-    const { data:{ session } } = await supabase.auth.getSession();
+    const { data:{ session } } = await _supa.auth.getSession();
     const token = session?.access_token;
     if(!token) throw new Error(lang==='en'?'Not authenticated':'Não autenticado');
     const res = await fetch(_AI_ENDPOINT,{
