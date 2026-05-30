@@ -317,8 +317,14 @@ body.dark .gs-done{color:#a78bfa;border-color:rgba(167,139,250,.3)}
   width:280px;max-width:calc(100vw - 24px);
   box-shadow:0 16px 48px rgba(0,0,0,0.6);
   pointer-events:all;
-  transition:left .35s cubic-bezier(.4,0,.2,1),top .35s cubic-bezier(.4,0,.2,1),bottom .35s cubic-bezier(.4,0,.2,1);
+  transition:left .35s cubic-bezier(.4,0,.2,1),top .35s cubic-bezier(.4,0,.2,1),bottom .35s cubic-bezier(.4,0,.2,1),background .25s;
 }
+#tourTooltip.tour-ai{background:linear-gradient(135deg,#3b1a6e 0%,#5b21b6 52%,#1d4ed8 100%);border-color:rgba(167,139,250,0.45)}
+#tourTooltip.tour-ai #tourTitle{color:#fff}
+#tourTooltip.tour-ai #tourDesc{color:rgba(255,255,255,0.78)}
+#tourTooltip.tour-ai #tourBullets{color:rgba(255,255,255,0.78)}
+#tourTooltip.tour-ai #tourEmoji{font-size:30px;margin-bottom:10px}
+#tourBullets{display:none;flex-direction:column;gap:3px;margin-top:8px;font-size:11.5px;color:#9ca3af;line-height:1.5}
 #tourArrow{position:absolute;width:0;height:0;transition:left .35s cubic-bezier(.4,0,.2,1)}
 #tourArrow.up{
   top:-10px;
@@ -1533,7 +1539,9 @@ body:not(.dark) .tab.on{color:#7c3aed}
     <div id="tourArrow" class="up"></div>
     <div id="tourEmoji" style="font-size:22px;margin-bottom:5px"></div>
     <div id="tourTitle" style="font-size:14px;font-weight:700;color:#f9fafb;margin-bottom:4px"></div>
-    <div id="tourDesc" style="font-size:12px;color:#9ca3af;line-height:1.55;margin-bottom:12px"></div>
+    <div id="tourDesc" style="font-size:12px;color:#9ca3af;line-height:1.55;margin-bottom:0"></div>
+    <div id="tourBullets"></div>
+    <div style="height:12px" id="tourSpacer"></div>
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div id="tourCounter" style="font-size:11px;color:#6b7280"></div>
       <div style="display:flex;gap:8px">
@@ -2232,7 +2240,10 @@ const TRANSLATIONS = {
     tour_8_title:'Semana', tour_8_body:'Acompanhe seus gastos e recebimentos semana a semana.',
     tour_9_title:'Relatório', tour_9_body:'Veja gráficos e análises mensais das suas finanças.',
     tour_10_title:'PIN de segurança', tour_10_body:'Proteja o app com um PIN de 4 dígitos. Acesse pelo menu lateral.',
-    tour_11_title:'Tudo pronto!', tour_11_body:'Agora você conhece o TryFreed. Que sua jornada rumo à liberdade financeira comece hoje.',
+    tour_11_title:'Assistente IA ✨',
+    tour_11_body:'Fale uma despesa, envie foto de boleto ou planilha — a IA cria tudo automaticamente.',
+    tour_11_bullets:'<div>🎤 "Netflix $18 todo mês"</div><div>📸 Tire foto de contas/boletos</div><div>📊 Cole planilhas em Excel</div><div style="color:#6ee7b7">✓ Confirme antes de criar</div>',
+    tour_12_title:'Tudo pronto!', tour_12_body:'Agora você conhece o TryFreed. Que sua jornada rumo à liberdade financeira comece hoje.',
     tour_next:'Próximo →', tour_finish:'Começar', tour_skip:'Pular tour',
     tour_replay:'Ver tour novamente',
     // Change password
@@ -2408,7 +2419,10 @@ const TRANSLATIONS = {
     tour_8_title:'Week', tour_8_body:'Track your income and expenses week by week.',
     tour_9_title:'Report', tour_9_body:'View monthly charts and analysis of your finances.',
     tour_10_title:'Security PIN', tour_10_body:'Protect the app with a 4-digit PIN. Access it via the side menu.',
-    tour_11_title:'All set!', tour_11_body:"You're all set! Now you know TryFreed. May your journey to financial freedom begin today.",
+    tour_11_title:'AI Assistant ✨',
+    tour_11_body:'Say an expense, upload a receipt photo, or paste a spreadsheet — AI creates everything automatically.',
+    tour_11_bullets:'<div>🎤 "Netflix $18 every month"</div><div>📸 Take photos of receipts</div><div>📊 Paste Excel spreadsheets</div><div style="color:#6ee7b7">✓ Confirm before creating</div>',
+    tour_12_title:'All set!', tour_12_body:"You're all set! Now you know TryFreed. May your journey to financial freedom begin today.",
     tour_next:'Next →', tour_finish:'Get Started', tour_skip:'Skip tour',
     tour_replay:'Replay tour',
     // Change password
@@ -4435,7 +4449,8 @@ const TOUR_STEPS=[
   {tab:'semana',    emoji:'📆', dSel:'#tab-btn-semana',     mSel:'#bn-semana',     tk:'tour_8'},
   {tab:'relatorio', emoji:'📈', dSel:'#tab-btn-relatorio',  mSel:'#bn-relatorio',  tk:'tour_9'},
   {tab:null,        emoji:'🔐', dSel:'.hamburger',          mSel:'.hamburger',     tk:'tour_10'},
-  {tab:'renda',     emoji:'🎉', dSel:null,                  mSel:null,             tk:'tour_11'},
+  {tab:null,        emoji:'✨', dSel:null,                  mSel:null,             tk:'tour_11', special:true},
+  {tab:'renda',     emoji:'🎉', dSel:null,                  mSel:null,             tk:'tour_12'},
 ];
 
 function tourIsFirstTime(){
@@ -4512,6 +4527,17 @@ function tourShow(){
   document.getElementById('tourCounter').textContent=(_tourStep+1)+' / '+TOUR_STEPS.length;
   document.getElementById('tourNextBtn').textContent=isLast?t('tour_finish'):t('tour_next');
   document.getElementById('tourSkipBtn').textContent=t('tour_skip');
+  // Bullets (optional per-step)
+  const bulletsEl=document.getElementById('tourBullets');
+  const spacerEl=document.getElementById('tourSpacer');
+  const bKey=step.tk+'_bullets';
+  const bVal=t(bKey);
+  if(bulletsEl){
+    if(bVal!==bKey){bulletsEl.innerHTML=bVal;bulletsEl.style.display='flex';if(spacerEl)spacerEl.style.height='8px';}
+    else{bulletsEl.innerHTML='';bulletsEl.style.display='none';if(spacerEl)spacerEl.style.height='12px';}
+  }
+  // Special gradient style for AI step
+  document.getElementById('tourTooltip').classList.toggle('tour-ai',!!step.special);
 }
 
 function tourNext(){
