@@ -352,6 +352,120 @@ footer p{font-size:12px;color:var(--sub)}
 .hero-rating{display:flex;align-items:center;gap:8px;margin-bottom:20px}
 .hero-stars{color:#f59e0b;font-size:17px;letter-spacing:1px}
 .hero-rating-text{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ── DEMO SECTION ─────────────────────── */
+.demo-section{padding:100px 5%;background:var(--panel);text-align:center}
+.demo-wrapper{display:flex;justify-content:center;margin-top:48px}
+.demo-phone-outer{
+  background:linear-gradient(155deg,#2d2450 0%,#1a1535 100%);
+  border-radius:44px;padding:10px;
+  box-shadow:0 48px 100px rgba(26,21,53,.4),0 8px 24px rgba(26,21,53,.2),0 0 0 1px rgba(255,255,255,.06) inset;
+  position:relative;width:min(300px,85vw);
+}
+.demo-screen{
+  border-radius:36px;overflow:hidden;height:540px;
+  background:#f5f3fb;display:flex;flex-direction:column;position:relative;
+}
+.demo-notch{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:80px;height:22px;background:#1a1535;border-radius:0 0 16px 16px;z-index:10;
+}
+.demo-app-hdr{
+  background:linear-gradient(135deg,#5b21b6 0%,#7c3aed 100%);
+  padding:28px 14px 10px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.demo-app-logo{font-size:13px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.demo-app-menu{display:flex;flex-direction:column;gap:3.5px}
+.demo-app-menu span{display:block;width:16px;height:1.5px;background:rgba(255,255,255,.65);border-radius:2px}
+.demo-body{flex:1;padding:14px 12px 0;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.demo-balance-card{
+  background:#fff;border-radius:14px;padding:12px 14px;
+  border:1px solid var(--border);text-align:left;flex-shrink:0;
+}
+.demo-balance-label{font-size:9px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.demo-balance-val{font-size:22px;font-weight:900;color:var(--text);letter-spacing:-1px;transition:all .4s}
+.demo-exp-section{background:#fff;border-radius:14px;padding:10px 12px;border:1px solid var(--border);flex:1;overflow:hidden}
+.demo-exp-hdr{font-size:9px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.demo-exp-row{display:flex;align-items:center;padding:6px 0;border-bottom:.5px solid var(--border)}
+.demo-exp-row:last-child{border-bottom:none}
+.demo-exp-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-dim);border:1.5px solid var(--accent);flex-shrink:0;margin-right:7px}
+.demo-exp-name{font-size:11px;font-weight:500;color:var(--text);flex:1}
+.demo-exp-amt{font-size:11px;font-weight:600;color:var(--sub)}
+.demo-exp-amt-new{color:var(--accent)!important}
+.demo-exp-new{animation:demo-new-row .5s ease forwards}
+.demo-fab-area{position:absolute;bottom:14px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.demo-fab-hint{
+  background:#fff;color:var(--sub);font-size:10px;font-weight:500;
+  padding:4px 10px;border-radius:10px;border:1px solid var(--border);
+  white-space:nowrap;opacity:0;transition:opacity .4s;
+  box-shadow:0 2px 8px rgba(26,21,53,.08);
+}
+.demo-fab-hint.visible{opacity:1}
+.demo-fab{
+  width:42px;height:42px;border-radius:50%;border:none;
+  background:var(--accent);color:#fff;font-size:17px;
+  cursor:default;box-shadow:0 6px 16px rgba(124,58,237,.4);
+  display:flex;align-items:center;justify-content:center;transition:transform .2s;
+}
+.demo-fab.pulse{animation:demo-pulse-fab 1.3s ease-in-out infinite}
+.demo-ai-panel{
+  position:absolute;bottom:0;left:0;right:0;height:68%;
+  background:#fff;border-radius:18px 18px 0 0;
+  box-shadow:0 -6px 28px rgba(26,21,53,.15);
+  display:flex;flex-direction:column;
+  transform:translateY(100%);transition:transform .38s cubic-bezier(.32,1,.64,1);
+}
+.demo-ai-panel.open{transform:translateY(0)}
+.demo-ai-hdr{
+  padding:11px 12px 9px;display:flex;align-items:center;gap:6px;
+  border-bottom:.5px solid var(--border);flex-shrink:0;
+}
+.demo-ai-hdr-icon{font-size:13px}
+.demo-ai-hdr-title{font-size:11px;font-weight:700;color:var(--text);flex:1}
+.demo-ai-hdr-close{background:none;border:none;font-size:13px;color:var(--sub);cursor:default;padding:0 2px;line-height:1}
+.demo-ai-msgs{flex:1;overflow:hidden;padding:10px 11px;display:flex;flex-direction:column;gap:8px}
+.demo-ai-bubble{
+  padding:7px 10px;border-radius:11px;font-size:11px;line-height:1.5;
+  max-width:88%;opacity:0;transition:opacity .3s;
+}
+.demo-ai-bubble.visible{opacity:1}
+.demo-ai-bubble-bot{background:#f0ebff;color:var(--text);border-radius:11px 11px 11px 3px;align-self:flex-start}
+.demo-ai-bubble-user{background:var(--accent);color:#fff;border-radius:11px 11px 3px 11px;align-self:flex-end}
+.demo-ai-bubble-ok{background:#d1fae5!important;color:#065f46!important;font-weight:600!important}
+.demo-ai-inp-row{
+  padding:8px 10px;border-top:.5px solid var(--border);
+  display:flex;align-items:center;gap:6px;flex-shrink:0;
+}
+.demo-ai-inp-box{
+  flex:1;background:#f5f3fb;border-radius:8px;
+  padding:7px 10px;font-size:11px;color:var(--text);
+  min-height:28px;display:flex;align-items:center;
+  border:.5px solid var(--border);
+}
+.demo-cursor{display:inline-block;width:1.5px;height:11px;background:var(--accent);margin-left:1px;vertical-align:middle;animation:demo-cursor-blink .75s step-end infinite}
+.demo-cursor.off{opacity:0;animation:none}
+.demo-ai-send-btn{
+  width:28px;height:28px;border-radius:50%;border:none;
+  background:var(--accent);color:#fff;font-size:12px;
+  cursor:default;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+@keyframes demo-new-row{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+@keyframes demo-pulse-fab{
+  0%,100%{box-shadow:0 6px 16px rgba(124,58,237,.4),0 0 0 0 rgba(124,58,237,.35)}
+  60%{box-shadow:0 6px 16px rgba(124,58,237,.4),0 0 0 10px rgba(124,58,237,0)}
+}
+@keyframes demo-cursor-blink{0%,100%{opacity:1}50%{opacity:0}}
+@media(prefers-reduced-motion:reduce){
+  .demo-phone-outer *{animation:none!important;transition:none!important}
+  .demo-ai-panel{transform:translateY(0)!important}
+  .demo-ai-bubble{opacity:1!important}
+  .demo-fab-hint{opacity:1!important}
+}
+@media(max-width:600px){
+  .demo-section{padding:80px 5%}
+  .demo-screen{height:500px}
+}
 </style>
 </head>
 <body>
@@ -626,6 +740,76 @@ footer p{font-size:12px;color:var(--sub)}
   </div>
 </section>
 
+<!-- DEMO -->
+<section class="demo-section">
+  <div class="section-label" id="demo-label">See in action</div>
+  <h2 class="section-title" id="demo-title">Add expenses in seconds</h2>
+  <p class="section-sub" id="demo-sub">Voice, image or text — the AI assistant handles it all.</p>
+
+  <div class="demo-wrapper">
+    <div class="demo-phone-outer">
+      <div class="demo-screen">
+        <div class="demo-notch"></div>
+        <div class="demo-app-hdr">
+          <div class="demo-app-logo">TryFreed</div>
+          <div class="demo-app-menu"><span></span><span></span><span></span></div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-balance-card">
+            <div class="demo-balance-label" id="demo-bal-lbl">Balance</div>
+            <div class="demo-balance-val" id="demo-bal-val">$2,450.50</div>
+          </div>
+          <div class="demo-exp-section">
+            <div class="demo-exp-hdr" id="demo-exp-hdr">This month</div>
+            <div class="demo-exp-row">
+              <div class="demo-exp-dot"></div>
+              <span class="demo-exp-name">Netflix</span>
+              <span class="demo-exp-amt">-$18.00</span>
+            </div>
+            <div class="demo-exp-row">
+              <div class="demo-exp-dot"></div>
+              <span class="demo-exp-name" id="demo-rent-lbl">Rent</span>
+              <span class="demo-exp-amt">-$1,900.00</span>
+            </div>
+            <div class="demo-exp-row">
+              <div class="demo-exp-dot"></div>
+              <span class="demo-exp-name" id="demo-groc-lbl">Groceries</span>
+              <span class="demo-exp-amt">-$120.00</span>
+            </div>
+            <div class="demo-exp-row demo-exp-new" id="demo-spotify-row" style="display:none">
+              <div class="demo-exp-dot" style="border-color:var(--green)"></div>
+              <span class="demo-exp-name">Spotify</span>
+              <span class="demo-exp-amt demo-exp-amt-new">-$15.00</span>
+            </div>
+          </div>
+        </div>
+        <!-- FAB -->
+        <div class="demo-fab-area">
+          <div class="demo-fab-hint" id="demo-fab-hint">Say an expense...</div>
+          <div class="demo-fab" id="demo-fab">✨</div>
+        </div>
+        <!-- AI panel -->
+        <div class="demo-ai-panel" id="demo-ai-panel">
+          <div class="demo-ai-hdr">
+            <span class="demo-ai-hdr-icon">✨</span>
+            <span class="demo-ai-hdr-title" id="demo-ai-title">Financial assistant</span>
+            <span class="demo-ai-hdr-close">✕</span>
+          </div>
+          <div class="demo-ai-msgs">
+            <div class="demo-ai-bubble demo-ai-bubble-bot" id="demo-ai-welcome">How can I help you today?</div>
+            <div class="demo-ai-bubble demo-ai-bubble-user" id="demo-ai-user-msg" style="display:none"></div>
+            <div class="demo-ai-bubble demo-ai-bubble-bot demo-ai-bubble-ok" id="demo-ai-bot-reply" style="display:none"></div>
+          </div>
+          <div class="demo-ai-inp-row">
+            <div class="demo-ai-inp-box"><span id="demo-ai-inp-text"></span><span class="demo-cursor off" id="demo-cursor"></span></div>
+            <div class="demo-ai-send-btn">→</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- TESTIMONIALS -->
 <section class="testimonials">
   <div class="section-label" id="testi-label">Real people, real results</div>
@@ -860,6 +1044,11 @@ const TR={
     'faq-q4':'What if I want to cancel?','faq-a4':'Cancel anytime with one click. No cancellation fees, no hoops to jump through. Your data remains accessible and exportable even after cancellation.',
     'faq-q5':'Does it work on my phone and computer?','faq-a5':'Yes. TryFreed is a web app that works on any device — phone, tablet or desktop. Your data syncs automatically so you\'re always up to date.',
     'sticky-text':'Start free — no card needed','sticky-btn':'Get started →',
+    'demo-label':'See in action','demo-title':'Add expenses in seconds',
+    'demo-sub':'Voice, image or text — the AI assistant handles it all.',
+    'demo-ai-title':'Financial assistant','demo-ai-welcome':'How can I help you today?',
+    'demo-fab-hint':'Say an expense...','demo-bal-lbl':'Balance',
+    'demo-rent-lbl':'Rent','demo-groc-lbl':'Groceries','demo-exp-hdr':'This month',
   },
   pt:{
     'hero-badge':'Comece grátis — sem cartão de crédito',
@@ -921,6 +1110,11 @@ const TR={
     'faq-q4':'Posso cancelar a qualquer hora?','faq-a4':'Sim, cancele quando quiser com um clique. Sem taxas de cancelamento, sem complicação. Seus dados permanecem acessíveis e exportáveis mesmo após o cancelamento.',
     'faq-q5':'Funciona no celular e no computador?','faq-a5':'Sim. O TryFreed é um app web que funciona em qualquer dispositivo — celular, tablet ou desktop. Seus dados sincronizam automaticamente para você estar sempre atualizado.',
     'sticky-text':'Comece grátis — sem cartão','sticky-btn':'Começar →',
+    'demo-label':'Veja em ação','demo-title':'Adicione despesas em segundos',
+    'demo-sub':'Voz, imagem ou texto — o assistente cuida de tudo.',
+    'demo-ai-title':'Assistente financeiro','demo-ai-welcome':'Como posso te ajudar hoje?',
+    'demo-fab-hint':'Diga uma despesa...','demo-bal-lbl':'Saldo',
+    'demo-rent-lbl':'Aluguel','demo-groc-lbl':'Supermercado','demo-exp-hdr':'Este mês',
   }
 };
 
@@ -1083,6 +1277,90 @@ calcUpdate();
     });
   },{threshold:0.5});
   io.observe(bar);
+})();
+
+/* ── DEMO ANIMATION ── */
+(function(){
+  const STEPS=[3000,2500,3000,3500,2500,2500,3000];
+  const PT_TYPE='Spotify $15 todo mês', EN_TYPE='Spotify $15 every month';
+  const PT_REPLY='✓ Spotify $15 adicionado', EN_REPLY='✓ Spotify $15 added';
+  let stepIdx=0, stepTimer=null, typeTimer=null, started=false;
+
+  const $=id=>document.getElementById(id);
+
+  function resetDemo(){
+    if(typeTimer){clearInterval(typeTimer);typeTimer=null;}
+    $('demo-ai-panel').classList.remove('open');
+    ['demo-ai-welcome','demo-ai-user-msg','demo-ai-bot-reply'].forEach(id=>{
+      const el=$(id);if(!el)return;
+      el.classList.remove('visible');el.style.display='';
+    });
+    $('demo-ai-user-msg').style.display='none';
+    $('demo-ai-bot-reply').style.display='none';
+    $('demo-fab-hint').classList.remove('visible');
+    $('demo-fab').classList.remove('pulse');
+    $('demo-ai-inp-text').textContent='';
+    $('demo-cursor').classList.add('off');
+    $('demo-spotify-row').style.display='none';
+    $('demo-bal-val').textContent='$2,450.50';
+  }
+
+  function goStep(n){
+    stepIdx=n;
+    if(n===0){
+      resetDemo();
+    } else if(n===1){
+      $('demo-fab-hint').classList.add('visible');
+      $('demo-fab').classList.add('pulse');
+    } else if(n===2){
+      $('demo-ai-panel').classList.add('open');
+      setTimeout(()=>$('demo-ai-welcome').classList.add('visible'),380);
+      $('demo-cursor').classList.remove('off');
+    } else if(n===3){
+      const text=lang==='pt'?PT_TYPE:EN_TYPE;
+      let i=0;$('demo-ai-inp-text').textContent='';
+      typeTimer=setInterval(()=>{
+        if(i<text.length)$('demo-ai-inp-text').textContent+=text[i++];
+        else{clearInterval(typeTimer);typeTimer=null;}
+      },70);
+    } else if(n===4){
+      $('demo-cursor').classList.add('off');
+      const typed=$('demo-ai-inp-text').textContent||(lang==='pt'?PT_TYPE:EN_TYPE);
+      $('demo-ai-inp-text').textContent='';
+      const ub=$('demo-ai-user-msg');
+      ub.textContent=typed;ub.style.display='block';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>ub.classList.add('visible')));
+    } else if(n===5){
+      const rb=$('demo-ai-bot-reply');
+      rb.textContent=lang==='pt'?PT_REPLY:EN_REPLY;
+      rb.style.display='block';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>rb.classList.add('visible')));
+    } else if(n===6){
+      $('demo-ai-panel').classList.remove('open');
+      setTimeout(()=>{
+        const r=$('demo-spotify-row');r.style.display='flex';
+        $('demo-bal-val').textContent='$2,435.50';
+      },420);
+    }
+  }
+
+  function tick(){
+    const next=(stepIdx+1)%STEPS.length;
+    goStep(next);
+    stepTimer=setTimeout(tick,STEPS[next]);
+  }
+
+  function startDemo(){
+    goStep(0);
+    stepTimer=setTimeout(tick,STEPS[0]);
+  }
+
+  const section=document.querySelector('.demo-section');
+  if(!section)return;
+  const io=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting&&!started){started=true;startDemo();}
+  },{threshold:0.25});
+  io.observe(section);
 })();
 
 /* ── PHONE PARALLAX ── */
