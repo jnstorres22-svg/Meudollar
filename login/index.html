@@ -1078,6 +1078,46 @@ body:not(.dark) .tab.on{color:#7c3aed}
   }
 }
 
+/* ── AI ASSISTANT ─────────────────────────────────────────────── */
+.ai-fab{
+  position:fixed;bottom:72px;right:16px;width:46px;height:46px;
+  border-radius:50%;background:linear-gradient(135deg,#7c3aed,#b47bff);
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:20px;z-index:200;box-shadow:0 4px 18px rgba(124,58,237,0.45);
+  transition:transform .15s,box-shadow .15s;
+}
+.ai-fab:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(124,58,237,0.55)}
+.ai-fab:active{transform:scale(.95)}
+.ai-overlay{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,0.45);backdrop-filter:blur(2px)}
+.ai-overlay.open{display:block}
+.ai-panel{
+  position:fixed;bottom:0;left:0;right:0;z-index:801;background:var(--card);
+  border-radius:18px 18px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,0.28);
+  display:flex;flex-direction:column;max-height:72vh;
+  transform:translateY(100%);transition:transform .32s cubic-bezier(0.34,1.2,0.64,1);
+}
+.ai-panel.open{transform:translateY(0)}
+.ai-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:0.5px solid var(--border);flex-shrink:0}
+.ai-hdr-title{font-size:15px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px}
+.ai-close-btn{background:transparent;border:none;font-size:18px;color:var(--sub);cursor:pointer;padding:4px 8px;border-radius:8px}
+.ai-key-row{padding:8px 16px;border-bottom:0.5px solid var(--border);display:flex;gap:8px;align-items:center;flex-shrink:0}
+.ai-key-inp{flex:1;font-size:12px;padding:6px 10px;border-radius:8px;border:0.5px solid var(--input-border);background:var(--input-bg);color:var(--text);font-family:monospace}
+.ai-msgs{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px;min-height:100px}
+.ai-msg{max-width:86%;padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.55;word-break:break-word;white-space:pre-line}
+.ai-msg-user{align-self:flex-end;background:#7c3aed;color:#fff;border-bottom-right-radius:4px}
+.ai-msg-ai{align-self:flex-start;background:var(--input-bg);color:var(--text);border:0.5px solid var(--border);border-bottom-left-radius:4px}
+.ai-msg-ai.ok{border-color:#10b981;background:rgba(16,185,129,0.07)}
+.ai-msg-ai.err{border-color:#ef4444;background:rgba(239,68,68,0.07)}
+.ai-typing{align-self:flex-start;display:flex;gap:5px;padding:12px 14px;background:var(--input-bg);border:0.5px solid var(--border);border-radius:14px;border-bottom-left-radius:4px}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:#9ca3af;animation:aiB .9s ease-in-out infinite}
+.ai-dot:nth-child(2){animation-delay:.15s}.ai-dot:nth-child(3){animation-delay:.3s}
+@keyframes aiB{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-5px);opacity:1}}
+.ai-inp-row{display:flex;gap:8px;padding:10px 16px;border-top:0.5px solid var(--border);flex-shrink:0;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+.ai-textarea{flex:1;padding:10px 14px;border-radius:20px;border:0.5px solid var(--input-border);background:var(--input-bg);color:var(--text);font-size:14px;font-family:inherit;resize:none;max-height:90px;overflow-y:auto;line-height:1.4}
+.ai-textarea:focus{outline:none;border-color:#7c3aed}
+.ai-send-btn{width:42px;height:42px;border-radius:50%;border:none;background:linear-gradient(135deg,#7c3aed,#b47bff);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;transition:opacity .15s,transform .1s}
+.ai-send-btn:hover{opacity:.88}.ai-send-btn:active{transform:scale(.92)}.ai-send-btn:disabled{opacity:.35;cursor:not-allowed}
+
 </style>
 </head>
 <body>
@@ -1594,6 +1634,30 @@ body:not(.dark) .tab.on{color:#7c3aed}
       <span class="bn-label">Relatório</span>
     </button>
   </nav>
+
+  <!-- AI ASSISTANT -->
+  <button class="ai-fab" id="aiFab" onclick="aiToggle()" style="display:none" title="Assistente IA">✨</button>
+  <div class="ai-overlay" id="aiOverlay" onclick="aiClose()"></div>
+  <div class="ai-panel" id="aiPanel">
+    <div class="ai-hdr">
+      <div class="ai-hdr-title"><span>✨</span><span id="aiHdrTitle">Assistente financeiro</span></div>
+      <button class="ai-close-btn" onclick="aiClose()">✕</button>
+    </div>
+    <div class="ai-key-row" id="aiKeyRow">
+      <input class="ai-key-inp" id="aiKeyInp" type="password" placeholder="Cole sua chave Anthropic (sk-ant-...)"/>
+      <button onclick="aiSaveKey()" style="padding:6px 12px;border-radius:8px;border:none;background:#7c3aed;color:#fff;font-size:12px;cursor:pointer;white-space:nowrap" id="aiKeySaveBtn">Salvar</button>
+    </div>
+    <div class="ai-msgs" id="aiMsgs"></div>
+    <div class="ai-inp-row">
+      <textarea class="ai-textarea" id="aiInput" rows="1"
+        placeholder="Descreva sua renda, despesa, meta ou dívida..."
+        onkeydown="aiKeyDown(event)"
+        oninput="this.style.height='';this.style.height=Math.min(this.scrollHeight,90)+'px'"></textarea>
+      <button class="ai-send-btn" id="aiSendBtn" onclick="aiSend()">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
 
   <!-- RENDA -->
   <div id="tab-renda" class="sec on">
@@ -3992,6 +4056,13 @@ function initApp(){
   obStart();
   // Push notifications daily check
   initNotifications();
+  // Show AI FAB
+  const fab=document.getElementById('aiFab');if(fab)fab.style.display='flex';
+  // Sync AI header language
+  const hdr=document.getElementById('aiHdrTitle');if(hdr)hdr.textContent=lang==='en'?'Financial Assistant':'Assistente financeiro';
+  const kib=document.getElementById('aiKeyInp');if(kib)kib.placeholder=lang==='en'?'Paste your Anthropic key (sk-ant-...)':'Cole sua chave Anthropic (sk-ant-...)';
+  const ksb=document.getElementById('aiKeySaveBtn');if(ksb)ksb.textContent=lang==='en'?'Save':'Salvar';
+  const ita=document.getElementById('aiInput');if(ita)ita.placeholder=lang==='en'?'Describe your income, expense, goal or debt...':'Descreva sua renda, despesa, meta ou dívida...';
 }
 
 function setUserUI(user){
@@ -5070,6 +5141,205 @@ function closeDebtPayModal(){
 }
 document.getElementById('debtPayModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeDebtPayModal();});
 
+
+// ── AI FINANCIAL ASSISTANT ────────────────────────────────────────
+let _aiKey = localStorage.getItem('ai_key') || '';
+let _aiHistory = [];
+
+function aiToggle(){
+  document.getElementById('aiPanel').classList.contains('open') ? aiClose() : aiOpen();
+}
+function aiOpen(){
+  document.getElementById('aiOverlay').classList.add('open');
+  document.getElementById('aiPanel').classList.add('open');
+  _aiSyncKeyRow();
+  if(!_aiHistory.length) _aiWelcome();
+  setTimeout(()=>document.getElementById('aiInput').focus(), 350);
+}
+function aiClose(){
+  document.getElementById('aiOverlay').classList.remove('open');
+  document.getElementById('aiPanel').classList.remove('open');
+}
+function aiSaveKey(){
+  const v = document.getElementById('aiKeyInp').value.trim();
+  if(!v){ _showToast(lang==='en'?'Enter the key first':'Digite a chave antes de salvar','#ef4444'); return; }
+  _aiKey = v;
+  localStorage.setItem('ai_key', v);
+  _aiSyncKeyRow();
+  _showToast(lang==='en'?'✓ Key saved!':'✓ Chave salva!','#10b981');
+}
+function _aiSyncKeyRow(){
+  document.getElementById('aiKeyRow').style.display = _aiKey ? 'none' : 'flex';
+}
+function _aiWelcome(){
+  _aiMsg('ai', lang==='en'
+    ? 'Hi! Describe any income, expense, goal or debt in natural language and I\'ll add it automatically.\n\nExamples:\n• "Netflix $18 and Spotify $11 monthly"\n• "I receive $3 000 on the 15th"\n• "Save $5 000 for vacation by December"\n• "$10k debt at 18% annual interest"'
+    : 'Olá! Descreva qualquer renda, despesa, meta ou dívida em linguagem natural e eu adiciono automaticamente.\n\nExemplos:\n• "Aluguel de $1 900 todo dia 1"\n• "Recebo $3 000 todo dia 15"\n• "Quero juntar $5 000 para viagem até dezembro"\n• "Tenho Netflix de $18 e Spotify de $11 todo mês"');
+}
+function aiKeyDown(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();aiSend();}
+}
+async function aiSend(){
+  if(!_aiKey){
+    _showToast(lang==='en'?'Set your Anthropic API key first':'Configure sua chave Anthropic primeiro','#ef4444');
+    document.getElementById('aiKeyRow').style.display='flex';
+    return;
+  }
+  const inp = document.getElementById('aiInput');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value=''; inp.style.height='';
+  _aiMsg('user', text);
+  _aiHistory.push({role:'user', content:text});
+  const sendBtn = document.getElementById('aiSendBtn');
+  sendBtn.disabled = true;
+  const typingEl = _aiTyping();
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':_aiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true',
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:_aiSystemPrompt(),
+        messages:_aiHistory,
+      }),
+    });
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${res.status}`);}
+    const data = await res.json();
+    const raw = data.content?.[0]?.text || '';
+    _aiHistory.push({role:'assistant', content:raw});
+    typingEl.remove();
+    _aiHandleResponse(raw);
+  } catch(err){
+    typingEl.remove();
+    _aiMsg('ai',(lang==='en'?'Error: ':'Erro: ')+err.message,'err');
+    console.error('[AI]',err);
+  } finally{
+    sendBtn.disabled=false;
+    document.getElementById('aiInput').focus();
+  }
+}
+function _aiTyping(){
+  const msgs=document.getElementById('aiMsgs');
+  const el=document.createElement('div');
+  el.className='ai-typing';
+  el.innerHTML='<div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div>';
+  msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;
+  return el;
+}
+function _aiMsg(role, text, cls=''){
+  const msgs=document.getElementById('aiMsgs');
+  const el=document.createElement('div');
+  el.className='ai-msg ai-msg-'+role+(cls?' '+cls:'');
+  el.textContent=text;
+  msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;
+}
+function _aiHandleResponse(raw){
+  let parsed;
+  try{
+    const clean=raw.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,'').trim();
+    parsed=JSON.parse(clean);
+  } catch(e){ _aiMsg('ai',raw); return; }
+  const reply=parsed.reply||'';
+  const actions=parsed.actions||[];
+  if(!actions.length){ _aiMsg('ai',reply||(lang==='en'?'No items recognized.':'Nenhum item reconhecido.')); return; }
+  const created=_aiDoInsert(actions);
+  let msg=reply+'\n\n'+created.map(c=>'✓ '+c).join('\n');
+  _aiMsg('ai',msg.trim(),'ok');
+  buildRendaList();renderBills();buildMetas();buildDividas();rebuild();
+}
+function _aiDoInsert(actions){
+  const created=[];
+  const now=new Date();
+  actions.forEach(a=>{
+    const tbl=a.table, d=a.data||{};
+    try{
+      if(tbl==='rendas'){
+        const nr={id:newId(),name:d.name||'Renda',val:Number(d.val)||0,type:d.type||'monthly',
+          day:Number(d.day)||1,day2:d.day2?Number(d.day2):null,
+          month:now.getMonth(),year:now.getFullYear(),locked:false,
+          dow:d.dow!=null?Number(d.dow):5};
+        rendas.push(nr);saveRenda(nr);
+        created.push(`${nr.name} — $${nr.val} (${nr.type})`);
+      } else if(tbl==='bills'){
+        const nb={id:newId(),name:d.name||'Despesa',val:Number(d.val)||0,
+          type:d.type||'monthly',day:Number(d.day)||1,locked:false,
+          cat:d.cat||'outros',note:d.note||null};
+        if(nb.type==='once'){nb.month=d.month!=null?Number(d.month)-1:now.getMonth();nb.year=Number(d.year)||now.getFullYear();}
+        bills.push(nb);saveBill(nb);
+        created.push(`${nb.name} — $${nb.val} (${nb.type})`);
+      } else if(tbl==='metas'){
+        const tDay=Number(d.day)||1,tMo=Number(d.month)||(now.getMonth()+2),tYr=Number(d.year)||(now.getFullYear()+1);
+        const tDate=new Date(tYr,tMo-1,tDay);
+        let fri=0;const cur=new Date();const dtf=(5-cur.getDay()+7)%7||7;cur.setDate(cur.getDate()+dtf);
+        while(cur<=tDate){fri++;cur.setDate(cur.getDate()+7);}
+        const wl=Math.max(1,fri),npw=Math.ceil((Number(d.val)||0)/wl);
+        const metaId=newId(),billId=newId();
+        const nb={id:billId,name:'Guardar — '+d.name,val:npw,day:5,type:'weekly',locked:false,cat:'outros',
+          metaId,metaEnd:tDate,note:`Save every Friday until ${tMo}/${tDay}/${tYr}`};
+        bills.push(nb);saveBill(nb);
+        const nm={id:metaId,name:d.name||'Meta',val:Number(d.val)||0,day:tDay,month:tMo-1,year:tYr,
+          desc:d.descricao||'',done:false,billId,needPerWeek:npw,weeksLeft:wl,checkins:[]};
+        nm.checkins=generateMetaCheckins(nm);metas.push(nm);saveMeta(nm);
+        created.push(`${nm.name} — $${nm.val} (meta)`);
+      } else if(tbl==='dividas'){
+        const tot=Number(d.total)||0;
+        const nd={id:newId(),name:d.name||'Dívida',total:tot,remaining:Number(d.remaining)||tot,
+          juros:Number(d.juros)||0,min_payment:Number(d.min_payment)||Math.ceil(tot/12),
+          frequencia:d.frequencia||'monthly',target_date:d.target_date||null,payments:[],parcelas:[]};
+        nd.parcelas=generateDebtInstallments(nd);dividas.push(nd);saveDivida(nd);
+        created.push(`${nd.name} — $${nd.total} (${lang==='en'?'debt':'dívida'})`);
+      }
+    } catch(e){console.error('[AI insert]',tbl,e);}
+  });
+  return created;
+}
+function _aiSystemPrompt(){
+  const today=_dateToStr(new Date());
+  const yr=new Date().getFullYear();
+  return `You are a financial data extractor for TryFreed, a bilingual (PT-BR/EN) personal finance app. The user may write in Portuguese or English.
+
+TASK: Extract financial entities from the user message and return ONLY a raw JSON object — no markdown, no code fences, no explanation.
+
+Today: ${today}
+
+OUTPUT FORMAT:
+{"reply":"<short friendly confirmation in user's language>","actions":[{"table":"<table>","data":{...}}]}
+
+TABLE rendas (income):
+  name:string, val:number, type:"monthly"|"weekly"|"biweekly"|"once"
+  day:1-31 (day of month; 99=last) for monthly/once
+  dow:0-6 (0=Sun…6=Sat) for weekly
+  day2:number|null (2nd payday for biweekly only)
+
+TABLE bills (expenses):
+  name:string, val:number, type:"monthly"|"weekly"|"once"
+  day:1-31 (99=last), cat:"moradia"|"transporte"|"alimentacao"|"educacao"|"viagem"|"assinaturas"|"lazer"|"saude"|"vestuario"|"generosidade"|"outros"
+  note:string|null
+  month:1-12 and year:number (only when type="once")
+
+TABLE metas (savings goals):
+  name:string, val:number (target), day:1-28, month:1-12, year:number(>=${yr}), descricao:string
+
+TABLE dividas (debts):
+  name:string, total:number, remaining:number (=total for new debt)
+  juros:number (annual % e.g. 18), min_payment:number (if unknown use total/12)
+  target_date:"YYYY-MM-DD"|null, frequencia:"monthly"|"weekly"
+
+RULES:
+- Reply in the same language the user wrote in.
+- Multiple items in one message → all go in the actions array.
+- Infer cat from context: Netflix/Spotify/streaming→assinaturas, rent/aluguel→moradia, food/comida→alimentacao, gym/academia→saude, car/carro→transporte, travel/viagem→viagem.
+- Default day:1 if not specified for monthly bills/income.
+- Default target year to ${yr+1} for metas if not specified.
+- Return {"reply":"…","actions":[]} if nothing financial is found.`;
+}
 
 bootApp();
 </script>
