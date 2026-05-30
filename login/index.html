@@ -313,18 +313,31 @@ body.dark .gs-done{color:#a78bfa;border-color:rgba(167,139,250,.3)}
   position:absolute;
   background:#1a1025;
   border:1px solid rgba(124,58,237,0.35);
-  border-radius:14px;padding:16px;
-  width:280px;max-width:calc(100vw - 24px);
-  box-shadow:0 16px 48px rgba(0,0,0,0.6);
+  border-radius:16px;
+  padding:16px 20px;
+  width:min(340px,90vw);
+  box-shadow:0 10px 32px rgba(0,0,0,0.45);
   pointer-events:all;
   transition:left .35s cubic-bezier(.4,0,.2,1),top .35s cubic-bezier(.4,0,.2,1),bottom .35s cubic-bezier(.4,0,.2,1),background .25s;
 }
+@media(min-width:641px){#tourTooltip{width:380px}}
 #tourTooltip.tour-ai{background:linear-gradient(135deg,#3b1a6e 0%,#5b21b6 52%,#1d4ed8 100%);border-color:rgba(167,139,250,0.45)}
 #tourTooltip.tour-ai #tourTitle{color:#fff}
 #tourTooltip.tour-ai #tourDesc{color:rgba(255,255,255,0.78)}
 #tourTooltip.tour-ai #tourBullets{color:rgba(255,255,255,0.78)}
 #tourTooltip.tour-ai #tourEmoji{font-size:30px;margin-bottom:10px}
 #tourBullets{display:none;flex-direction:column;gap:3px;margin-top:8px;font-size:11.5px;color:#9ca3af;line-height:1.5}
+.tour-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tour-counter{font-size:11px;color:#6b7280;white-space:nowrap}
+.tour-btns{display:flex;gap:8px;flex-shrink:0}
+.tour-skip-btn{padding:7px 13px;border-radius:9px;border:0.5px solid rgba(124,58,237,0.25);background:transparent;color:#8b85aa;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background .12s}
+.tour-skip-btn:hover{background:rgba(124,58,237,0.08)}
+.tour-next-btn{padding:7px 16px;border-radius:9px;border:none;background:#7c3aed;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:opacity .12s}
+.tour-next-btn:hover{opacity:.88}
+#tourTooltip.tour-ai .tour-skip-btn{color:rgba(255,255,255,0.55);border-color:rgba(255,255,255,0.2)}
+#tourTooltip.tour-ai .tour-skip-btn:hover{background:rgba(255,255,255,0.08)}
+#tourTooltip.tour-ai .tour-counter{color:rgba(255,255,255,0.4)}
+#tourTooltip.tour-ai .tour-next-btn{background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.3)}
 #tourArrow{position:absolute;width:0;height:0;transition:left .35s cubic-bezier(.4,0,.2,1)}
 #tourArrow.up{
   top:-10px;
@@ -1542,11 +1555,11 @@ body:not(.dark) .tab.on{color:#7c3aed}
     <div id="tourDesc" style="font-size:12px;color:#9ca3af;line-height:1.55;margin-bottom:0"></div>
     <div id="tourBullets"></div>
     <div style="height:12px" id="tourSpacer"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <div id="tourCounter" style="font-size:11px;color:#6b7280"></div>
-      <div style="display:flex;gap:8px">
-        <button onclick="tourSkip()" style="padding:5px 12px;border-radius:8px;border:0.5px solid rgba(124,58,237,0.25);background:transparent;color:#8b85aa;font-size:12px;cursor:pointer" id="tourSkipBtn">Pular tour</button>
-        <button onclick="tourNext()" style="padding:5px 14px;border-radius:8px;border:none;background:#7c3aed;color:#fff;font-size:12px;font-weight:600;cursor:pointer" id="tourNextBtn">Próximo →</button>
+    <div class="tour-footer">
+      <div id="tourCounter" class="tour-counter"></div>
+      <div class="tour-btns">
+        <button onclick="tourSkip()" class="tour-skip-btn" id="tourSkipBtn">Pular tour</button>
+        <button onclick="tourNext()" class="tour-next-btn" id="tourNextBtn">Próximo →</button>
       </div>
     </div>
   </div>
@@ -4481,9 +4494,11 @@ function tourShow(){
   const hl=document.getElementById('tourHighlight');
   const tt=document.getElementById('tourTooltip');
   const ar=document.getElementById('tourArrow');
-  const BN_H=64;
+  // bottom nav: position:fixed; bottom:20px; height:65px → top edge at 85px from screen bottom
+  const BN_CLEAR=20+65+15; // 100px — safe clearance above bottom nav
   const pad=8;
-  const ttW=Math.min(280,window.innerWidth-24);
+  // Match actual CSS width: min(340px,90vw) on mobile, 380px on desktop
+  const ttW=isMobile?Math.min(340,Math.round(window.innerWidth*0.9)):Math.min(380,window.innerWidth-24);
 
   if(el){
     const r=el.getBoundingClientRect();
@@ -4501,23 +4516,28 @@ function tourShow(){
     ar.style.display='';
 
     if(isMobile){
-      // Anchor tooltip above bottom nav, arrow pointing down
+      // Anchor tooltip above bottom nav with proper clearance
       ar.className='down';
       tt.style.top='auto';
-      tt.style.bottom=(BN_H+12)+'px';
+      tt.style.bottom=BN_CLEAR+'px';
     } else {
-      // Anchor tooltip below element, arrow pointing up
+      // Anchor tooltip below element, arrow pointing up; flip up if not enough space
       ar.className='up';
       tt.style.bottom='auto';
       const ttTop=r.bottom+pad+12;
-      tt.style.top=(ttTop+220>window.innerHeight?r.top-pad-220:ttTop)+'px';
+      tt.style.top=(ttTop+260>window.innerHeight?r.top-pad-260:ttTop)+'px';
     }
   } else {
+    // Centered card — no highlight or arrow
     hl.style.display='none';
     ar.style.display='none';
     tt.style.bottom='auto';
-    tt.style.left=Math.max(12,window.innerWidth/2-140)+'px';
-    tt.style.top=Math.max(60,window.innerHeight/2-100)+'px';
+    const ttLeft=Math.max(12,Math.round((window.innerWidth-ttW)/2));
+    tt.style.left=ttLeft+'px';
+    // Vertically: center but ensure it stays above bottom nav
+    const maxBottom=window.innerHeight-BN_CLEAR;
+    const idealTop=Math.round(window.innerHeight/2-120);
+    tt.style.top=Math.min(Math.max(idealTop,60),maxBottom-240)+'px';
   }
 
   const isLast=_tourStep===TOUR_STEPS.length-1;
