@@ -5177,6 +5177,9 @@ async function aiSend(){
       throw new Error(JSON.stringify(fnErr));
     }
     console.log('[AI] response:', data);
+    if(data?.type === 'error'){
+      throw new Error(data.error?.message || JSON.stringify(data.error));
+    }
     const raw = data?.content?.[0]?.text || '';
     _aiHistory.push({role:'assistant', content:raw});
     typingEl.remove();
