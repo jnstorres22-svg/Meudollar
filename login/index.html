@@ -1115,6 +1115,14 @@ body:not(.dark) .tab.on{color:#7c3aed}
 .ai-textarea:focus{outline:none;border-color:#7c3aed}
 .ai-send-btn{width:42px;height:42px;border-radius:50%;border:none;background:linear-gradient(135deg,#7c3aed,#b47bff);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;transition:opacity .15s,transform .1s}
 .ai-send-btn:hover{opacity:.88}.ai-send-btn:active{transform:scale(.92)}.ai-send-btn:disabled{opacity:.35;cursor:not-allowed}
+.ai-img-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(124,58,237,0.35);background:var(--accent-dim);color:var(--accent);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;font-size:16px;transition:background .15s,border-color .15s}
+.ai-img-btn:hover{background:rgba(124,58,237,0.15);border-color:var(--accent)}
+.ai-img-preview-bar{display:none;padding:6px 16px 0;align-items:center;gap:8px}
+.ai-img-preview-bar.show{display:flex}
+.ai-img-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;border:1px solid var(--border)}
+.ai-img-remove{background:transparent;border:none;font-size:14px;color:var(--sub);cursor:pointer;padding:2px 6px;border-radius:6px}
+.ai-img-remove:hover{background:rgba(239,68,68,0.1);color:#ef4444}
+.ai-img-name{font-size:11px;color:var(--sub);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 </style>
 </head>
@@ -1642,7 +1650,14 @@ body:not(.dark) .tab.on{color:#7c3aed}
       <button class="ai-close-btn" onclick="aiClose()">✕</button>
     </div>
     <div class="ai-msgs" id="aiMsgs"></div>
+    <div class="ai-img-preview-bar" id="aiImgPreviewBar">
+      <img class="ai-img-thumb" src="" alt="">
+      <span class="ai-img-name"></span>
+      <button class="ai-img-remove" onclick="aiImgRemove()">✕</button>
+    </div>
     <div class="ai-inp-row">
+      <input type="file" id="aiImgInput" accept="image/*" style="display:none" onchange="aiImgSelect(event)">
+      <button class="ai-img-btn" id="aiImgBtn" onclick="document.getElementById('aiImgInput').click()" title="Anexar imagem / Attach image" style="width:36px;height:36px;min-width:36px;border-radius:50%;border:2px solid #7c3aed;background:rgba(124,58,237,0.1);color:#7c3aed;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;font-size:18px;padding:0">📎</button>
       <textarea class="ai-textarea" id="aiInput" rows="1"
         placeholder="Descreva sua renda, despesa, meta ou dívida..."
         onkeydown="aiKeyDown(event)"
@@ -2457,7 +2472,7 @@ function showLogin(){
   document.getElementById('homeScreen').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('resetScreen').style.display='none';
-  document.getElementById('splitContainer').classList.remove('right-panel-active');
+  document.getElementById('splitContainer')?.classList.remove('right-panel-active');
   _authMode='login';
   document.getElementById('authBtn').textContent=t('login_btn');
   document.getElementById('loginSubtitle').textContent=t('login_subtitle');
@@ -2497,7 +2512,7 @@ function toggleAuthMode(){
   document.getElementById('loginPwdLabel').textContent=t('login_pwd_label');
   document.getElementById('loginForgotLink').textContent=t('login_forgot');
   document.getElementById('loginOrLabel').textContent=t('login_or');
-  document.getElementById('splitContainer').classList.toggle('right-panel-active',!isLogin);
+  document.getElementById('splitContainer')?.classList.toggle('right-panel-active',!isLogin);
   document.getElementById('mobileTabLogin').classList.toggle('active',isLogin);
   document.getElementById('mobileTabSignup').classList.toggle('active',!isLogin);
 }
@@ -5136,6 +5151,8 @@ document.getElementById('debtPayModal').addEventListener('click',e=>{if(e.target
 
 // ── AI FINANCIAL ASSISTANT ────────────────────────────────────────
 let _aiHistory = [];
+let _aiImgData = null; // { base64, mediaType, name }
+let _aiWelcomed = false;
 
 function aiToggle(){
   document.getElementById('aiPanel').classList.contains('open') ? aiClose() : aiOpen();
@@ -5143,7 +5160,7 @@ function aiToggle(){
 function aiOpen(){
   document.getElementById('aiOverlay').classList.add('open');
   document.getElementById('aiPanel').classList.add('open');
-  if(!_aiHistory.length) _aiWelcome();
+  if(!_aiWelcomed){ _aiWelcomed=true; _aiWelcome(); }
   setTimeout(()=>document.getElementById('aiInput').focus(), 350);
 }
 function aiClose(){
@@ -5158,13 +5175,50 @@ function _aiWelcome(){
 function aiKeyDown(e){
   if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();aiSend();}
 }
+function aiImgSelect(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const dataUrl = ev.target.result;
+    const base64 = dataUrl.split(',')[1];
+    const mediaType = file.type || 'image/jpeg';
+    _aiImgData = { base64, mediaType, name: file.name, dataUrl };
+    const bar = document.getElementById('aiImgPreviewBar');
+    bar.classList.add('show');
+    bar.querySelector('.ai-img-thumb').src = dataUrl;
+    bar.querySelector('.ai-img-name').textContent = file.name;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+function aiImgRemove(){
+  _aiImgData = null;
+  const bar = document.getElementById('aiImgPreviewBar');
+  bar.classList.remove('show');
+}
 async function aiSend(){
   const inp = document.getElementById('aiInput');
   const text = inp.value.trim();
-  if(!text) return;
+  if(!text && !_aiImgData) return;
+  const imgSnapshot = _aiImgData;
   inp.value=''; inp.style.height='';
-  _aiMsg('user', text);
-  _aiHistory.push({role:'user', content:text});
+  const defaultText = lang==='en'
+    ? 'What does this image show? Identify expenses, amounts and dates.'
+    : 'O que está escrito nessa imagem? Identifique despesas, valores e datas.';
+  const finalText = text || (imgSnapshot ? defaultText : '');
+  let userContent;
+  if(imgSnapshot){
+    userContent = [
+      { type:'image', source:{ type:'base64', media_type: imgSnapshot.mediaType, data: imgSnapshot.base64 } },
+      { type:'text', text: finalText }
+    ];
+  } else {
+    userContent = finalText;
+  }
+  _aiMsg('user', finalText, '', imgSnapshot ? imgSnapshot.dataUrl : null);
+  _aiHistory.push({role:'user', content: userContent});
+  if(imgSnapshot) aiImgRemove();
   const sendBtn = document.getElementById('aiSendBtn');
   sendBtn.disabled = true;
   const typingEl = _aiTyping();
@@ -5197,11 +5251,19 @@ function _aiTyping(){
   msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;
   return el;
 }
-function _aiMsg(role, text, cls=''){
+function _aiMsg(role, text, cls='', imageDataUrl=null){
   const msgs=document.getElementById('aiMsgs');
   const el=document.createElement('div');
   el.className='ai-msg ai-msg-'+role+(cls?' '+cls:'');
-  el.textContent=text;
+  if(imageDataUrl){
+    const img=document.createElement('img');
+    img.src=imageDataUrl;
+    img.style.cssText='display:block;max-width:180px;max-height:180px;border-radius:8px;margin-bottom:6px;object-fit:cover;border:1px solid var(--border)';
+    el.appendChild(img);
+  }
+  const span=document.createElement('span');
+  span.textContent=text;
+  el.appendChild(span);
   msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;
 }
 function _aiHandleResponse(raw){
