@@ -283,6 +283,16 @@ body.dark .gs-done{color:#a78bfa;border-color:rgba(167,139,250,.3)}
 .ob-dot{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,0.15);transition:all .3s}
 .ob-dot.active{background:#7c3aed;width:18px}
 .ob-dot.done{background:rgba(124,58,237,0.4)}
+.ob-start-options{display:flex;flex-direction:column;gap:12px;width:100%;max-width:300px;margin-bottom:1.5rem}
+.ob-start-option{
+  padding:16px 20px;border-radius:14px;border:2px solid rgba(255,255,255,0.10);
+  background:rgba(255,255,255,0.04);cursor:pointer;text-align:left;
+  transition:all .2s;color:inherit;font-family:inherit;width:100%;
+}
+.ob-start-option:hover{border-color:rgba(124,58,237,0.5);background:rgba(124,58,237,0.08)}
+.ob-start-option.selected{border-color:#7c3aed;background:rgba(124,58,237,0.18)}
+.ob-start-option-title{font-size:15px;font-weight:700;color:#f9fafb;margin-bottom:3px}
+.ob-start-option-desc{font-size:12px;color:#9ca3af;line-height:1.5}
 
 /* ── TOUR ──────────────────────────────────────────────────────── */
 #tourOverlay{
@@ -1299,6 +1309,7 @@ body:not(.dark) .tab.on{color:#7c3aed}
         <div class="ob-dot"></div>
         <div class="ob-dot"></div>
         <div class="ob-dot"></div>
+        <div class="ob-dot"></div>
       </div>
     </div>
 
@@ -1315,6 +1326,7 @@ body:not(.dark) .tab.on{color:#7c3aed}
       <div class="ob-dots">
         <div class="ob-dot done"></div>
         <div class="ob-dot active"></div>
+        <div class="ob-dot"></div>
         <div class="ob-dot"></div>
         <div class="ob-dot"></div>
         <div class="ob-dot"></div>
@@ -1336,6 +1348,7 @@ body:not(.dark) .tab.on{color:#7c3aed}
         <div class="ob-dot active"></div>
         <div class="ob-dot"></div>
         <div class="ob-dot"></div>
+        <div class="ob-dot"></div>
       </div>
     </div>
 
@@ -1354,19 +1367,49 @@ body:not(.dark) .tab.on{color:#7c3aed}
         <div class="ob-dot done"></div>
         <div class="ob-dot active"></div>
         <div class="ob-dot"></div>
+        <div class="ob-dot"></div>
       </div>
     </div>
 
-    <!-- Slide 4: CTA -->
+    <!-- Slide 4: Ponto de início -->
     <div class="ob-slide" id="ob-slide-4">
-      <div class="ob-badge" id="ob-s4-badge">Pronto!</div>
-      <div class="ob-slide-title" id="ob-s4-title">O seu controle começa agora</div>
-      <div class="ob-slide-sub" id="ob-s4-sub">Adicione sua renda, despesas e metas. Tudo em um só lugar — rápido, simples, bonito.</div>
-      <button class="ob-cta-btn" onclick="obFinish()" id="ob-s4-cta">Explorar o app →</button>
-      <div class="ob-nav" style="justify-content:center;margin-top:1rem">
+      <div class="ob-badge" id="ob-s4-badge">Rastreamento</div>
+      <div class="ob-slide-title" id="ob-s4-title">Quando você quer começar?</div>
+      <div class="ob-slide-sub" id="ob-s4-sub">Escolha o ponto de início do seu histórico financeiro.</div>
+      <div class="ob-start-options">
+        <button class="ob-start-option" id="ob-s4-opt-jan" onclick="obSetStartDate('jan2026')">
+          <div class="ob-start-option-title" id="ob-s4-opt-jan-title">Inserir dados desde Janeiro 2026</div>
+          <div class="ob-start-option-desc" id="ob-s4-opt-jan-desc">Ideal para quem quer registrar transações passadas e ver o histórico completo.</div>
+        </button>
+        <button class="ob-start-option" id="ob-s4-opt-today" onclick="obSetStartDate('today')">
+          <div class="ob-start-option-title" id="ob-s4-opt-today-title">Começar de hoje</div>
+          <div class="ob-start-option-desc" id="ob-s4-opt-today-desc">Rastreie suas finanças a partir de agora, sem dados anteriores.</div>
+        </button>
+      </div>
+      <div class="ob-nav" style="justify-content:center;margin-top:.5rem">
         <button class="ob-nav-btn" onclick="obGoSlide(3)" id="ob-s4-back" style="flex:unset;padding:8px 16px;font-size:12px">← Voltar</button>
       </div>
       <div class="ob-dots">
+        <div class="ob-dot done"></div>
+        <div class="ob-dot done"></div>
+        <div class="ob-dot done"></div>
+        <div class="ob-dot done"></div>
+        <div class="ob-dot active"></div>
+        <div class="ob-dot"></div>
+      </div>
+    </div>
+
+    <!-- Slide 5: CTA -->
+    <div class="ob-slide" id="ob-slide-5">
+      <div class="ob-badge" id="ob-s5-badge">Pronto!</div>
+      <div class="ob-slide-title" id="ob-s5-title">O seu controle começa agora</div>
+      <div class="ob-slide-sub" id="ob-s5-sub">Adicione sua renda, despesas e metas. Tudo em um só lugar — rápido, simples, bonito.</div>
+      <button class="ob-cta-btn" onclick="obFinish()" id="ob-s5-cta">Explorar o app →</button>
+      <div class="ob-nav" style="justify-content:center;margin-top:1rem">
+        <button class="ob-nav-btn" onclick="obGoSlide(4)" id="ob-s5-back" style="flex:unset;padding:8px 16px;font-size:12px">← Voltar</button>
+      </div>
+      <div class="ob-dots">
+        <div class="ob-dot done"></div>
         <div class="ob-dot done"></div>
         <div class="ob-dot done"></div>
         <div class="ob-dot done"></div>
@@ -2293,9 +2336,9 @@ function applyLang(){
 }
 function _qry(sel,attr,val){const el=document.querySelector(sel);if(el)el[attr]=val;}
 
-// ── Dynamic period — starts today, no end limit (10 years ahead) ──
+// ── Dynamic period — default Jan 2026, updated from Supabase profile ──
 const _today = new Date();
-let START = new Date(_today.getFullYear(), _today.getMonth(), _today.getDate());
+let START = new Date(2026, 0, 1);
 let END   = new Date(_today.getFullYear()+10, 11, 31);
 let initialBalance = 0;
 
@@ -2475,7 +2518,7 @@ async function loadFromSupabase(){
     _supa.from('bills').select('*').eq('user_id',uid),
     _supa.from('metas').select('*').eq('user_id',uid),
     _supa.from('dividas').select('*').eq('user_id',uid),
-    _supa.from('profiles').select('initial_balance').eq('user_id',uid).maybeSingle(),
+    _supa.from('profiles').select('initial_balance,start_date').eq('user_id',uid).maybeSingle(),
   ]);
   if(r.error||b.error||m.error||dv.error){
     const errs=[r.error,b.error,m.error,dv.error].filter(Boolean);
@@ -2513,6 +2556,12 @@ async function loadFromSupabase(){
   } else {
     const saved=localStorage.getItem('ib_'+uid);
     if(saved!=null) initialBalance=parseFloat(saved)||0;
+  }
+  // load start_date — default Jan 2026 for users without a saved choice
+  if(prof.data?.start_date){
+    START=new Date(prof.data.start_date+'T00:00:00');
+  } else {
+    START=new Date(2026,0,1);
   }
 }
 
@@ -4003,7 +4052,7 @@ function obStart(){
 }
 
 function obGoSlide(n){
-  [0,1,2,3,4].forEach(i=>{
+  [0,1,2,3,4,5].forEach(i=>{
     const s=document.getElementById('ob-slide-'+i);
     if(s) s.classList.toggle('active',i===n);
   });
@@ -4029,11 +4078,19 @@ function obApplyLang(){
   if(el('ob-s3-sub')) el('ob-s3-sub').textContent="We don't want you thinking about money all day. We want you thinking about it just enough to stop worrying — and live free.";
   if(el('ob-s3-back')) el('ob-s3-back').textContent='← Back';
   if(el('ob-s3-next')) el('ob-s3-next').textContent='Next →';
-  if(el('ob-s4-badge')) el('ob-s4-badge').textContent='Ready!';
-  if(el('ob-s4-title')) el('ob-s4-title').textContent='Your control starts now';
-  if(el('ob-s4-sub')) el('ob-s4-sub').textContent='Add your income, expenses and goals. All in one place — fast, simple, beautiful.';
-  if(el('ob-s4-cta')) el('ob-s4-cta').textContent='Explore the app →';
+  if(el('ob-s4-badge')) el('ob-s4-badge').textContent='Tracking';
+  if(el('ob-s4-title')) el('ob-s4-title').textContent='When do you want to start?';
+  if(el('ob-s4-sub')) el('ob-s4-sub').textContent='Choose the starting point for your financial history.';
+  if(el('ob-s4-opt-jan-title')) el('ob-s4-opt-jan-title').textContent='Enter data since January 2026';
+  if(el('ob-s4-opt-jan-desc')) el('ob-s4-opt-jan-desc').textContent='Great if you want to log past transactions and see your full history.';
+  if(el('ob-s4-opt-today-title')) el('ob-s4-opt-today-title').textContent='Start from today';
+  if(el('ob-s4-opt-today-desc')) el('ob-s4-opt-today-desc').textContent='Track your finances from now on, no past data needed.';
   if(el('ob-s4-back')) el('ob-s4-back').textContent='← Back';
+  if(el('ob-s5-badge')) el('ob-s5-badge').textContent='Ready!';
+  if(el('ob-s5-title')) el('ob-s5-title').textContent='Your control starts now';
+  if(el('ob-s5-sub')) el('ob-s5-sub').textContent='Add your income, expenses and goals. All in one place — fast, simple, beautiful.';
+  if(el('ob-s5-cta')) el('ob-s5-cta').textContent='Explore the app →';
+  if(el('ob-s5-back')) el('ob-s5-back').textContent='← Back';
 }
 
 function obReset(){
@@ -4041,6 +4098,19 @@ function obReset(){
   localStorage.removeItem('ob_done_v2_'+_user.id);
   closeDrawer();
   obStart();
+}
+
+async function obSetStartDate(choice){
+  document.querySelectorAll('.ob-start-option').forEach(b=>b.classList.remove('selected'));
+  const btn=document.getElementById(choice==='jan2026'?'ob-s4-opt-jan':'ob-s4-opt-today');
+  if(btn) btn.classList.add('selected');
+  START=choice==='jan2026'?new Date(2026,0,1):new Date(_today.getFullYear(),_today.getMonth(),_today.getDate());
+  if(_user){
+    const d=START;
+    const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    _supa.from('profiles').upsert({user_id:_user.id,start_date:ds},{onConflict:'user_id'});
+  }
+  setTimeout(()=>obGoSlide(5),180);
 }
 
 function obFinish(){
