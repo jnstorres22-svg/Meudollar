@@ -5,11 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TryFreed</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='60 40 160 160'><defs><linearGradient id='iBg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%237c3aed'/><stop offset='100%25' stop-color='%234c1d95'/></linearGradient><linearGradient id='iArr' x1='0%25' y1='0%25' x2='100%25' y2='0%25'><stop offset='0%25' stop-color='rgba(255,255,255,0.4)'/><stop offset='100%25' stop-color='white'/></linearGradient></defs><rect x='60' y='40' width='160' height='160' rx='32' fill='url(%23iBg)'/><rect x='78' y='158' width='22' height='22' rx='4' fill='rgba(255,255,255,0.22)'/><rect x='108' y='138' width='22' height='42' rx='4' fill='rgba(255,255,255,0.35)'/><rect x='138' y='118' width='22' height='62' rx='4' fill='rgba(255,255,255,0.48)'/><path d='M89 152 Q130 190 168 110' fill='none' stroke='url(%23iArr)' stroke-width='4' stroke-linecap='round'/><path d='M157 112 L169 106 L175 118' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/><line x1='178' y1='52' x2='178' y2='88' stroke='white' stroke-width='7' stroke-linecap='round'/><line x1='160' y1='64' x2='196' y2='64' stroke='white' stroke-width='7' stroke-linecap='round'/></svg>">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -2141,6 +2137,18 @@ body.dark .theme-pill-dark{color:#fff}
 </div>
 
 <script>
+// ── LAZY SCRIPT LOADER ────────────────────────────────────────────
+const _loadedScripts={};
+function loadScript(src){
+  if(_loadedScripts[src]) return _loadedScripts[src];
+  _loadedScripts[src]=new Promise((ok,err)=>{
+    const s=document.createElement('script');
+    s.src=src; s.onload=ok; s.onerror=err;
+    document.head.appendChild(s);
+  });
+  return _loadedScripts[src];
+}
+
 // ── i18n ─────────────────────────────────────────────────────────
 let lang = localStorage.getItem('lang') || 'pt';
 const TRANSLATIONS = {
@@ -3993,6 +4001,7 @@ function buildRelatorio(){
       <div id="extratoList" style="max-height:300px;overflow-y:auto"></div>
     </div>`;
 
+  if(typeof Chart==='undefined') return;
   // destroy old charts
   Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}});charts={};
   const cc=chartColors();
@@ -4253,6 +4262,11 @@ function showTab(tabId){
     if(el) el.classList.toggle('on',k===tabId);
   });
   updateBnShape(tabId);
+  if(tabId==='relatorio' && typeof Chart==='undefined'){
+    loadScript('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js')
+      .then(()=>buildRelatorio())
+      .catch(()=>showToast(lang==='en'?'Failed to load charts':'Erro ao carregar gráficos'));
+  }
 }
 
 // DRAWER
@@ -4916,7 +4930,12 @@ document.addEventListener('keydown',e=>{
 
 // ── EXPORT EXCEL ─────────────────────────────────────────────────
 function exportExcel(){
-  if(typeof XLSX==='undefined'){alert('SheetJS não carregou. Verifique sua conexão.');return;}
+  if(typeof XLSX==='undefined'){
+    loadScript('https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js')
+      .then(()=>exportExcel())
+      .catch(()=>showToast(lang==='en'?'Failed to load SheetJS. Check your connection.':'Erro ao carregar SheetJS. Verifique sua conexão.'));
+    return;
+  }
   const isEN=lang==='en';
   const wb=XLSX.utils.book_new();
 
@@ -4981,7 +5000,10 @@ function exportExcel(){
 function exportPDF(){
   try{
     if(typeof window.jspdf==='undefined'){
-      showToast(lang==='en'?'jsPDF not loaded. Check your connection.':'jsPDF não carregou. Verifique sua conexão.');
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js')
+        .then(()=>loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js'))
+        .then(()=>exportPDF())
+        .catch(()=>showToast(lang==='en'?'Failed to load PDF library. Check your connection.':'Erro ao carregar biblioteca PDF. Verifique sua conexão.'));
       return;
     }
     const {jsPDF}=window.jspdf;
@@ -5858,17 +5880,26 @@ function aiImgSelect(e){
     } else if(ext === 'xlsx' || ext === 'xls'){
       const reader = new FileReader();
       reader.onload = ev => {
-        try{
-          const wb = XLSX.read(new Uint8Array(ev.target.result), { type:'array' });
-          const allText = wb.SheetNames.map(sn =>
-            `=== ${sn} ===\n` + XLSX.utils.sheet_to_csv(wb.Sheets[sn])
-          ).join('\n\n');
-          _aiImgList.push({ id, type:'sheet', text: allText, name: file.name });
-        } catch(err){
-          console.error('[AI] XLSX parse error', err);
-          _aiImgList.push({ id, type:'sheet', text: lang==='en'?'[Failed to parse file]':'[Erro ao ler arquivo]', name: file.name });
-        }
-        _aiRenderPreviewBar();
+        const buf = ev.target.result;
+        const ensureXLSX = typeof XLSX!=='undefined'
+          ? Promise.resolve()
+          : loadScript('https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js');
+        ensureXLSX.then(()=>{
+          try{
+            const wb = XLSX.read(new Uint8Array(buf), { type:'array' });
+            const allText = wb.SheetNames.map(sn =>
+              `=== ${sn} ===\n` + XLSX.utils.sheet_to_csv(wb.Sheets[sn])
+            ).join('\n\n');
+            _aiImgList.push({ id, type:'sheet', text: allText, name: file.name });
+          } catch(err){
+            console.error('[AI] XLSX parse error', err);
+            _aiImgList.push({ id, type:'sheet', text: lang==='en'?'[Failed to parse file]':'[Erro ao ler arquivo]', name: file.name });
+          }
+          _aiRenderPreviewBar();
+        }).catch(()=>{
+          _aiImgList.push({ id, type:'sheet', text: lang==='en'?'[Failed to load parser]':'[Erro ao carregar parser]', name: file.name });
+          _aiRenderPreviewBar();
+        });
       };
       reader.readAsArrayBuffer(file);
     } else {
