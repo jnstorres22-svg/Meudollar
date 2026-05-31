@@ -225,6 +225,8 @@ body.dark .gs-done{color:#a78bfa;border-color:rgba(167,139,250,.3)}
 .bar-fill{height:4px;border-radius:3px;transition:width .4s ease}
 /* RELATORIO */
 .report-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.btn-export{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;height:34px}
+.btn-export:hover{background:var(--accent-dim)}
 .report-section{background:var(--report-bg);border:1px solid var(--report-border);border-radius:8px;padding:1rem;margin-bottom:1rem;box-shadow:var(--shadow)}
 .report-section h3{font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text);letter-spacing:.01em}
 .chart-wrap{position:relative;max-height:280px}
@@ -1715,7 +1717,7 @@ body.dark .theme-pill-dark{color:#fff}
     <div class="dr-card">
       <div class="dr-item" onclick="exportExcel();closeDrawer()">
         <div class="dr-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-        <span class="dr-label" id="drawerExportBtn">Exportar Excel</span>
+        <span class="dr-label" id="drawerExportBtn">Exportar Excel / Export Excel</span>
         <svg class="dr-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
       <div class="dr-sep"></div>
@@ -2050,6 +2052,8 @@ body.dark .theme-pill-dark{color:#fff}
         <option value="m" data-i18n="rep_period_m">Mês atual</option>
       </select>
       <button class="btn primary" onclick="buildRelatorio()" data-i18n="rep_update">Atualizar</button>
+      <button class="btn-export" onclick="exportExcel()" id="repExportExcelBtn" data-i18n="rep_export_excel">📊 Exportar Excel</button>
+      <button class="btn-export" onclick="exportPDF()" id="repExportPDFBtn" data-i18n="rep_export_pdf">📄 Exportar PDF</button>
     </div>
     <div id="relatorioContent"></div>
   </div>
@@ -2233,6 +2237,7 @@ const TRANSLATIONS = {
     meta_warn_risk_msg:(sob,altMonth,altYear,altVal)=>`Sobra insuficiente. Sugestão: adiar para ${altMonth} ${altYear} ou reduzir a meta para ${altVal}.`,
     // Relatorio
     rep_period_label:'Período:', rep_period_all:'Todo período', rep_period_m:'Mês atual', rep_update:'Atualizar',
+    rep_export_excel:'📊 Exportar Excel', rep_export_pdf:'📄 Exportar PDF',
     rep_summary_title:'Resumo do período',
     rep_total_in:'Total entrou', rep_total_out:'Total saiu', rep_balance:'Saldo',
     rep_cat_title:'Despesas por categoria',
@@ -2419,6 +2424,7 @@ const TRANSLATIONS = {
     meta_warn_tight_msg:(sob,need,diff)=>`It will be tight. Try cutting ${diff}/week in expenses.`,
     meta_warn_risk_msg:(sob,altMonth,altYear,altVal)=>`Surplus insufficient. Suggestion: postpone to ${altMonth} ${altYear} or reduce goal to ${altVal}.`,
     rep_period_label:'Period:', rep_period_all:'All time', rep_period_m:'Current month', rep_update:'Update',
+    rep_export_excel:'📊 Export Excel', rep_export_pdf:'📄 Export PDF',
     rep_summary_title:'Period summary',
     rep_total_in:'Total in', rep_total_out:'Total out', rep_balance:'Balance',
     rep_cat_title:'Expenses by category',
@@ -2643,6 +2649,10 @@ function applyLang(){
   if(btnEN){btnEN.style.fontWeight=lang==='en'?'700':'400';btnEN.style.color=lang==='en'?'var(--blue)':'var(--sub)';}
   const dtb=document.getElementById('drawerTourBtn');
   if(dtb) dtb.textContent=t('tour_replay');
+  const deb=document.getElementById('drawerExportBtn');
+  if(deb) deb.textContent=lang==='en'?'Export Excel':'Exportar Excel';
+  const depb=document.getElementById('drawerExportPDFBtn');
+  if(depb) depb.textContent=lang==='en'?'Export PDF':'Exportar PDF';
   const dcpb=document.getElementById('drawerChangePassBtn');
   if(dcpb) dcpb.textContent=t('drawer_change_pass');
   const dnsl=document.getElementById('drawerNotifSectionLabel');
